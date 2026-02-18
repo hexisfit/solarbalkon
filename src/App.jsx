@@ -33,9 +33,9 @@ const APPLIANCES = [
 ];
 
 const PRODUCTS = [
-  { name: 'EcoFlow DELTA 3', capacity: 1024, output: 1800, cycles: 4000, warranty: 5, price: 'від $799', color: '#4caf50' },
-  { name: 'Anker SOLIX C1000', capacity: 1024, output: 2000, cycles: 4000, warranty: 5, price: 'від $699', color: '#8bc34a' },
-  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 'від €699', color: '#fbc02d' },
+  { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: '40,000 грн', color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
+  { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: '50,000 грн', color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 'від €699', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
 ];
 
 const ADVANTAGES = [
@@ -408,7 +408,24 @@ body {
 .product-name {
   font-family:var(--font-display);
   font-size:1.3rem; font-weight:700;
-  color:var(--gray-900); margin-bottom:1.5rem;
+  color:var(--gray-900); margin-bottom:1rem;
+}
+.product-img-wrap {
+  width:100%; height:180px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--gray-50); border-radius:var(--radius);
+  margin-bottom:1.5rem; overflow:hidden;
+}
+.product-img-wrap img {
+  max-width:80%; max-height:160px;
+  object-fit:contain;
+}
+.product-img-placeholder {
+  width:100%; height:180px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--gray-50); border-radius:var(--radius);
+  margin-bottom:1.5rem; color:var(--gray-400);
+  font-size:0.85rem;
 }
 .product-spec {
   display:flex; justify-content:space-between;
@@ -859,12 +876,16 @@ export default function SolarBalkon() {
             <div className={`product-card fade-up-d${i + 1}`} key={i} style={{ borderTop: `4px solid ${p.color}` }}>
               <div className="product-name">{p.name}</div>
 
+              <div className="product-img-wrap">
+                <img src={p.image} alt={p.name} onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<span style="color:var(--gray-400);font-size:0.85rem">Фото: ${p.name}</span>`; }} />
+              </div>
+
               <div className="product-spec">
                 <span className="product-spec-label">Ємність</span>
                 <span className="product-spec-value">{p.capacity} Вт·год</span>
               </div>
               <div className="product-bar-bg">
-                <div className="product-bar-fill" style={{ width: `${(p.capacity / 2000) * 100}%`, background: p.color }} />
+                <div className="product-bar-fill" style={{ width: `${(p.capacity / 2400) * 100}%`, background: p.color }} />
               </div>
 
               <div className="product-spec" style={{ marginTop: '1rem' }}>
@@ -872,7 +893,7 @@ export default function SolarBalkon() {
                 <span className="product-spec-value">{p.output} Вт</span>
               </div>
               <div className="product-bar-bg">
-                <div className="product-bar-fill" style={{ width: `${(p.output / 2000) * 100}%`, background: p.color }} />
+                <div className="product-bar-fill" style={{ width: `${(p.output / 2400) * 100}%`, background: p.color }} />
               </div>
 
               <div className="product-spec" style={{ marginTop: '1rem' }}>
@@ -886,6 +907,16 @@ export default function SolarBalkon() {
               <div className="product-spec" style={{ marginTop: '1rem' }}>
                 <span className="product-spec-label">Гарантія</span>
                 <span className="product-spec-value">{p.warranty} років</span>
+              </div>
+
+              <div className="product-spec">
+                <span className="product-spec-label">Батарея</span>
+                <span className="product-spec-value">{p.battery}</span>
+              </div>
+
+              <div className="product-spec">
+                <span className="product-spec-label">Захист</span>
+                <span className="product-spec-value">{p.ip}</span>
               </div>
 
               <div className="product-price" style={{ color: p.color }}>{p.price}</div>
