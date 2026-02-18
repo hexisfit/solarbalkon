@@ -35,7 +35,7 @@ const APPLIANCES = [
 const PRODUCTS = [
   { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: '40,000 грн', color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
   { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: '50,000 грн', color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
-  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 'від €699', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: '40,000 грн', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
 ];
 
 const ADVANTAGES = [
