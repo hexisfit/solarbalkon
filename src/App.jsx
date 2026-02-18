@@ -6,26 +6,29 @@ const TARIFFS = {
   commercial:  { label: 'Комерційний', now: 7.50, forecast: 9.00, night: 5.25, min: 200, max: 10000, step: 100, unit: 'грн/кВт·год' },
 };
 
+const PRIMARY_COUNT = 6; // visible by default
 const APPLIANCES = [
-  { name: 'Холодильник', watts: 150, hours: 24 },
+  // === PRIMARY (always visible) ===
+  { name: 'Газовий котел', watts: 150, hours: 24 },
+  { name: 'Роутер Wi-Fi', watts: 10, hours: 24 },
+  { name: 'Зарядка телефону', watts: 20, hours: 3 },
+  { name: "Комп'ютер", watts: 300, hours: 8 },
   { name: 'Пральна машина', watts: 500, hours: 1 },
-  { name: 'Бойлер', watts: 2000, hours: 2 },
+  { name: 'Освітлення LED', watts: 50, hours: 6 },
+  // === SECONDARY (collapsed) ===
+  { name: 'Холодильник', watts: 150, hours: 24 },
   { name: 'Кондиціонер', watts: 1000, hours: 6 },
   { name: 'Телевізор', watts: 100, hours: 5 },
-  { name: "Комп'ютер", watts: 300, hours: 8 },
-  { name: 'Освітлення LED', watts: 50, hours: 6 },
+  { name: 'Ноутбук', watts: 65, hours: 6 },
   { name: 'Мікрохвильовка', watts: 800, hours: 0.3 },
   { name: 'Електроплита', watts: 2000, hours: 1 },
+  { name: 'Електрочайник', watts: 2000, hours: 0.1 },
   { name: 'Посудомийка', watts: 1800, hours: 1 },
   { name: 'Праска', watts: 2200, hours: 0.3 },
   { name: 'Фен', watts: 1500, hours: 0.2 },
   { name: 'Пилосос', watts: 1400, hours: 0.3 },
-  { name: 'Роутер Wi-Fi', watts: 10, hours: 24 },
-  { name: 'Зарядка телефону', watts: 20, hours: 3 },
-  { name: 'Ноутбук', watts: 65, hours: 6 },
   { name: 'Обігрівач', watts: 1500, hours: 4 },
   { name: 'Вентилятор', watts: 60, hours: 8 },
-  { name: 'Електрочайник', watts: 2000, hours: 0.1 },
   { name: 'Сушильна машина', watts: 2500, hours: 1 },
 ];
 
@@ -630,9 +633,10 @@ body {
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
   const [tariffType, setTariffType] = useState('residential');
-  const [selectedAppliances, setSelectedAppliances] = useState([]);
+  const [selectedAppliances, setSelectedAppliances] = useState([0]); // Газовий котел selected by default
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
+  const [showMoreAppliances, setShowMoreAppliances] = useState(false);
 
   const tariff = TARIFFS[tariffType];
 
@@ -766,7 +770,7 @@ export default function SolarBalkon() {
         </div>
 
         <div className="calc-grid">
-          {APPLIANCES.map((a, i) => (
+          {APPLIANCES.slice(0, PRIMARY_COUNT).map((a, i) => (
             <div
               key={i}
               className={`calc-item ${selectedAppliances.includes(i) ? 'active' : ''}`}
@@ -776,6 +780,42 @@ export default function SolarBalkon() {
               <span className="calc-item-watts">{a.watts} Вт</span>
             </div>
           ))}
+        </div>
+
+        {showMoreAppliances && (
+          <div className="calc-grid" style={{ marginTop: '0.75rem' }}>
+            {APPLIANCES.slice(PRIMARY_COUNT).map((a, i) => {
+              const idx = i + PRIMARY_COUNT;
+              return (
+                <div
+                  key={idx}
+                  className={`calc-item ${selectedAppliances.includes(idx) ? 'active' : ''}`}
+                  onClick={() => toggleAppliance(idx)}
+                >
+                  <span className="calc-item-name">{a.name}</span>
+                  <span className="calc-item-watts">{a.watts} Вт</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '2rem' }}>
+          <button
+            onClick={() => setShowMoreAppliances(p => !p)}
+            style={{
+              background: 'none', border: '1px solid var(--gray-300)',
+              borderRadius: '50px', padding: '10px 24px',
+              cursor: 'pointer', fontFamily: 'var(--font-body)',
+              fontSize: '0.9rem', fontWeight: 600,
+              color: 'var(--green-700)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { e.target.style.background = 'var(--green-50)'; e.target.style.borderColor = 'var(--green-400)'; }}
+            onMouseLeave={e => { e.target.style.background = 'none'; e.target.style.borderColor = 'var(--gray-300)'; }}
+          >
+            {showMoreAppliances ? 'Сховати ▲' : `Інші прилади (${APPLIANCES.length - PRIMARY_COUNT}) ▼`}
+          </button>
         </div>
 
         {selectedAppliances.length > 0 && (
