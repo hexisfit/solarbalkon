@@ -1,645 +1,1044 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from 'react';
+
+/* ───────────────────────── CONFIG ───────────────────────── */
+const TARIFFS = {
+  residential: { label: 'Побутовий', now: 4.32, forecast: 6.64, night: 2.16, min: 100, max: 800, step: 50, unit: 'грн/кВт·год' },
+  commercial:  { label: 'Комерційний', now: 7.50, forecast: 9.00, night: 5.25, min: 200, max: 10000, step: 100, unit: 'грн/кВт·год' },
+};
 
 const APPLIANCES = [
-  { id: "fridge", name: "🧊 Холодильник", watts: 150, hours: 24, defaultOn: true },
-  { id: "led4", name: "💡 LED (4 шт)", watts: 40, hours: 6, defaultOn: true },
-  { id: "tv", name: "📺 Телевізор", watts: 100, hours: 5, defaultOn: true },
-  { id: "laptop", name: "💻 Ноутбук", watts: 65, hours: 8, defaultOn: true },
-  { id: "router", name: "📡 Wi-Fi роутер", watts: 12, hours: 24, defaultOn: true },
-  { id: "phone", name: "📱 Зарядка (2)", watts: 20, hours: 3, defaultOn: false },
-  { id: "microwave", name: "🍽️ Мікрохвильовка", watts: 1000, hours: 0.3, defaultOn: false },
-  { id: "kettle", name: "☕ Чайник", watts: 1800, hours: 0.15, defaultOn: false },
-  { id: "washer", name: "👕 Пральна", watts: 500, hours: 1.5, defaultOn: false },
-  { id: "iron", name: "👔 Праска", watts: 2000, hours: 0.3, defaultOn: false },
-  { id: "heater", name: "🔥 Обігрівач", watts: 1500, hours: 4, defaultOn: false },
-  { id: "fan", name: "🌀 Вентилятор", watts: 50, hours: 6, defaultOn: false },
-  { id: "desktop", name: "🖥️ ПК", watts: 300, hours: 6, defaultOn: false },
-  { id: "monitor", name: "🖥️ Монітор", watts: 40, hours: 6, defaultOn: false },
-  { id: "cashier", name: "🧾 Каса", watts: 50, hours: 12, defaultOn: false },
-  { id: "coffeem", name: "☕ Кавомашина", watts: 1200, hours: 1, defaultOn: false },
-  { id: "projector", name: "📽️ Проектор", watts: 300, hours: 4, defaultOn: false },
-  { id: "printer", name: "🖨️ Принтер", watts: 150, hours: 2, defaultOn: false },
-  { id: "ac", name: "❄️ Кондиціонер", watts: 1200, hours: 6, defaultOn: false },
-  { id: "security", name: "📹 Відеонагляд", watts: 30, hours: 24, defaultOn: false },
+  { name: 'Холодильник', watts: 150, hours: 24 },
+  { name: 'Пральна машина', watts: 500, hours: 1 },
+  { name: 'Бойлер', watts: 2000, hours: 2 },
+  { name: 'Кондиціонер', watts: 1000, hours: 6 },
+  { name: 'Телевізор', watts: 100, hours: 5 },
+  { name: "Комп'ютер", watts: 300, hours: 8 },
+  { name: 'Освітлення LED', watts: 50, hours: 6 },
+  { name: 'Мікрохвильовка', watts: 800, hours: 0.3 },
+  { name: 'Електроплита', watts: 2000, hours: 1 },
+  { name: 'Посудомийка', watts: 1800, hours: 1 },
+  { name: 'Праска', watts: 2200, hours: 0.3 },
+  { name: 'Фен', watts: 1500, hours: 0.2 },
+  { name: 'Пилосос', watts: 1400, hours: 0.3 },
+  { name: 'Роутер Wi-Fi', watts: 10, hours: 24 },
+  { name: 'Зарядка телефону', watts: 20, hours: 3 },
+  { name: 'Ноутбук', watts: 65, hours: 6 },
+  { name: 'Обігрівач', watts: 1500, hours: 4 },
+  { name: 'Вентилятор', watts: 60, hours: 8 },
+  { name: 'Електрочайник', watts: 2000, hours: 0.1 },
+  { name: 'Сушильна машина', watts: 2500, hours: 1 },
 ];
 
 const PRODUCTS = [
-  { id: "ecoflow", name: "EcoFlow DELTA 3", capacity: 1024, output: 1800, maxOutput: 2600, solar: 500, cycles: 4000, warranty: 5, chargeTime: "56 хв", solarCharge: "2 год", battery: "LiFePO4", expandable: "до 5 кВт·год", ups: "10 мс", features: ["X-Stream", "X-Boost 2600Вт", "13 портів", "Додаток"], color: "#22c55e", price: "від $799", img: "⚡" },
-  { id: "anker", name: "Anker SOLIX C1000", capacity: 1024, output: 2000, maxOutput: 3000, solar: 600, cycles: 4000, warranty: 5, chargeTime: "49 хв", solarCharge: "1.8 год", battery: "LiFePO4", expandable: "Ні", ups: "10 мс", features: ["HyperFlash", "TOU режим", "10 портів", "Тиха"], color: "#38bdf8", price: "від $699", img: "🔋" },
-  { id: "deye", name: "Deye AE-FS2.0-2H2", capacity: 2000, output: 800, maxOutput: 800, solar: 1000, cycles: 6000, warranty: 10, chargeTime: "~2.5 год", solarCharge: "2-3 год", battery: "LiFePO4", expandable: "до 10 кВт·год", ups: "4 мс", features: ["All-in-One", "2×MPPT", "IP65", "WiFi/BT", "10кВт розш."], color: "#f97316", price: "від €699", img: "☀️" },
+  { name: 'EcoFlow DELTA 3', capacity: 1024, output: 1800, cycles: 4000, warranty: 5, price: 'від $799', color: '#4caf50' },
+  { name: 'Anker SOLIX C1000', capacity: 1024, output: 2000, cycles: 4000, warranty: 5, price: 'від $699', color: '#8bc34a' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 'від €699', color: '#fbc02d' },
 ];
 
-const PANEL = {
-  name: "Trina TSM-455 NEG9R.28",
-  type: "Vertex S+ N-type",
-  watts: 455,
-  efficiency: "22.8%",
-  length: 1762, width: 1134, depth: 30,
-  weight: 21,
-  cells: 144,
-  voc: "53.4 В",
-  isc: "10.77 А",
-  warranty: "25 років продукт / 30 років продуктивність",
-  ip: "IP68",
-  tempRange: "-40°C — +85°C",
-  price: 3450,
-};
+const ADVANTAGES = [
+  { icon: '☀️', title: 'Чиста енергія', desc: 'Знижуйте вуглецевий слід вашого дому щодня' },
+  { icon: '💰', title: 'Економія коштів', desc: 'Зменшіть рахунки за електроенергію до 80%' },
+  { icon: '🔌', title: 'Легке підключення', desc: 'Plug & Play — встановлення за 30 хвилин' },
+  { icon: '🏠', title: 'Для будь-якого балкону', desc: 'Компактні панелі під будь-який розмір' },
+  { icon: '📱', title: 'Моніторинг 24/7', desc: 'Контроль через додаток у смартфоні' },
+  { icon: '🏦', title: 'Кредит 0%', desc: 'Державна програма до 480,000 грн на 10 років' },
+];
 
-const INVERTER = {
-  name: "Deye SUN-M80G4-EU-Q0",
-  watts: 800,
-  maxInput: 1200,
-  mppt: 2,
-  efficiency: "96.5%",
-  ip: "IP67",
-  wifi: true,
-  dims: "280.5 × 190 × 40 мм",
-  weight: 3,
-  warranty: "15 років",
-  tempRange: "-40°C — +65°C",
-  price: 6200,
-};
+/* ───────────────────────── STYLES ───────────────────────── */
+const css = `
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
 
-const SMARTMETER = {
-  name: "Deye SUN-SMART-CT01",
-  type: "3-фази, LoRa / RS485",
-  range: "до 200 м бездротово",
-  dims: "53 × 96 × 64 мм",
-  weight: 0.15,
-  warranty: "5 років",
-  price: 4000,
-};
-
-const DEYE_STORAGE_PRICE = 40000;
-
-const SOLAR = {
-  2: { watts: 800, area: `~${((PANEL.length * PANEL.width * 2) / 1e6).toFixed(1)} м²`, desc: `2 × ${PANEL.watts} Вт`, panelCost: PANEL.price * 2, invCost: INVERTER.price, meterCost: SMARTMETER.price },
-  4: { watts: 1600, area: `~${((PANEL.length * PANEL.width * 4) / 1e6).toFixed(1)} м²`, desc: `4 × ${PANEL.watts} Вт`, panelCost: PANEL.price * 4, invCost: INVERTER.price * 2, meterCost: SMARTMETER.price },
-};
-
-const TARIFFS = {
-  household: { label: "🏠 Побутовий", current: 4.32, future: 6.64, night: 2.16, currentLabel: "4.32 грн", futureLabel: "6.64 грн", nightLabel: "2.16 грн", desc: "Фіксований тариф для населення (до 30.04.2026).", avgCons: 250, maxCons: 800 },
-  commercial: { label: "🏢 Комерційний", current: 7.50, future: 9.00, night: 5.25, currentLabel: "~7.50 грн", futureLabel: "~9.00 грн", nightLabel: "~5.25 грн", desc: "РДН (~6.9грн) + передача (0.71грн) + розподіл (~2.7грн).", avgCons: 1500, maxCons: 10000 },
-};
-const SUN_H = 3.5;
-
-function C({ value, suffix = "", decimals = 0 }) {
-  const [d, setD] = useState(0);
-  useEffect(() => { let s = Date.now(); const r = () => { let p = Math.min((Date.now() - s) / 600, 1); setD(value * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(r); }; r(); }, [value]);
-  return <span>{d.toFixed(decimals)}{suffix}</span>;
+:root {
+  --green-900: #1a5c2a;
+  --green-700: #2d7a3a;
+  --green-600: #388e3c;
+  --green-500: #4caf50;
+  --green-400: #66bb6a;
+  --green-300: #81c784;
+  --green-200: #a5d6a7;
+  --green-100: #c8e6c9;
+  --green-50:  #e8f5e9;
+  --yellow-600: #f9a825;
+  --yellow-500: #fbc02d;
+  --yellow-400: #fdd835;
+  --yellow-300: #ffee58;
+  --yellow-200: #fff59d;
+  --yellow-100: #fff9c4;
+  --white: #ffffff;
+  --gray-50:  #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', Tahoma, sans-serif;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.14);
+  --radius: 12px;
+  --radius-lg: 20px;
 }
 
-export default function App() {
-  const [sel, setSel] = useState(APPLIANCES.filter(a => a.defaultOn).map(a => a.id));
-  const [prod, setProd] = useState("deye");
-  const [panels, setPanels] = useState(2);
-  const [page, setPage] = useState("hero");
-  const [tt, setTt] = useState("household");
-  const [cons, setCons] = useState(250);
-  const [showAll, setShowAll] = useState(false);
-  const [showFinancing, setShowFinancing] = useState(false);
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  const t = TARIFFS[tt];
-  const switchT = v => { setTt(v); setCons(TARIFFS[v].avgCons); };
-  const toggle = id => setSel(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const product = PRODUCTS.find(p => p.id === prod);
-  const solar = SOLAR[panels];
-  const totalW = APPLIANCES.filter(a => sel.includes(a.id)).reduce((s, a) => s + a.watts, 0);
-  const dailyWh = APPLIANCES.filter(a => sel.includes(a.id)).reduce((s, a) => s + a.watts * a.hours, 0);
-  const runtime = product ? (product.capacity / (totalW || 1)).toFixed(1) : 0;
-  const canPower = product ? totalW <= product.output : false;
-  const dSolar = (solar.watts * SUN_H) / 1000;
-  const mSolar = dSolar * 30;
-  const savNow = mSolar * t.current;
-  const savFut = mSolar * t.future;
-  const selfPct = Math.min(100, Math.round((mSolar / (cons || 1)) * 100));
-  const bill = cons * t.current;
-  const billAfter = Math.max(0, cons - mSolar) * t.current;
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--gray-800);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
 
-  // Deye system pricing
-  const sysTotal = DEYE_STORAGE_PRICE + solar.panelCost + solar.invCost + solar.meterCost;
-  const payback = savNow > 0 ? (sysTotal / (savNow * 12)).toFixed(1) : "∞";
-  const monthlyCredit = (sysTotal / 120).toFixed(0); // 10 years = 120 months at 0%
-  const items = showAll ? APPLIANCES : APPLIANCES.slice(0, 10);
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateX(-20px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes pulse {
+  0%,100% { transform:scale(1); }
+  50%     { transform:scale(1.05); }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-8px); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
 
-  const S = { bg: "#080c15", card: "rgba(255,255,255,0.03)", brd: "rgba(255,255,255,0.06)", gold: "#fbbf24", txt: "#e5e7eb", mut: "#6b7280", grn: "#34d399", pnk: "#f472b6", blu: "#60a5fa", org: "#f97316", vio: "#a78bfa" };
+.fade-up { animation: fadeUp 0.7s ease-out both; }
+.fade-up-d1 { animation: fadeUp 0.7s ease-out 0.1s both; }
+.fade-up-d2 { animation: fadeUp 0.7s ease-out 0.2s both; }
+.fade-up-d3 { animation: fadeUp 0.7s ease-out 0.3s both; }
+.fade-up-d4 { animation: fadeUp 0.7s ease-out 0.4s both; }
 
-  const Pill = ({ active, color, children, onClick }) => (
-    <button onClick={onClick} style={{ padding: "10px 20px", borderRadius: 12, border: `1.5px solid ${active ? color + "60" : S.brd}`, background: active ? color + "12" : "transparent", color: active ? color : S.mut, fontFamily: "Space Grotesk,sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all 0.25s" }}>{children}</button>
-  );
-  const Cd = ({ children, style = {} }) => <div style={{ background: S.card, border: `1px solid ${S.brd}`, borderRadius: 18, padding: 24, ...style }}>{children}</div>;
-  const Bar = ({ pct, color = S.gold, h = 8 }) => (
-    <div style={{ height: h, borderRadius: h / 2, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-      <div style={{ height: "100%", borderRadius: h / 2, transition: "width 0.6s", width: `${Math.min(100, pct)}%`, background: `linear-gradient(90deg,${color},${color}cc)` }} />
-    </div>
-  );
-  const Spec = ({ label, value, color = S.txt }) => (
-    <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${S.brd}`, fontSize: 12 }}>
-      <span style={{ color: S.mut }}>{label}</span><span style={{ fontWeight: 600, color }}>{value}</span>
-    </div>
-  );
+/* NAV */
+.nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 2rem;
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: var(--shadow-md); }
+.nav-inner {
+  max-width: 1200px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 800;
+  color: var(--green-700);
+  text-decoration: none;
+  display:flex; align-items:center; gap:8px;
+}
+.nav-logo span { color: var(--yellow-600); }
+.nav-links { display:flex; gap:2rem; list-style:none; }
+.nav-links a {
+  text-decoration:none; color:var(--gray-600);
+  font-weight:500; font-size:0.95rem;
+  transition: color 0.2s;
+  position:relative;
+}
+.nav-links a:hover { color:var(--green-700); }
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0;
+  width:0; height:2px; background:var(--green-500);
+  transition: width 0.3s;
+}
+.nav-links a:hover::after { width:100%; }
+
+/* HERO */
+.hero {
+  min-height:100vh; display:flex; align-items:center;
+  padding: 100px 2rem 60px;
+  background: linear-gradient(135deg, var(--green-50) 0%, var(--white) 40%, var(--yellow-100) 100%);
+  position:relative; overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; top:-200px; right:-200px;
+  width:600px; height:600px; border-radius:50%;
+  background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
+}
+.hero::after {
+  content:''; position:absolute; bottom:-100px; left:-100px;
+  width:400px; height:400px; border-radius:50%;
+  background: radial-gradient(circle, rgba(251,192,45,0.1) 0%, transparent 70%);
+}
+.hero-inner {
+  max-width:1200px; margin:0 auto; width:100%;
+  position:relative; z-index:1;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--green-100); color:var(--green-700);
+  padding:8px 16px; border-radius:50px;
+  font-size:0.85rem; font-weight:600;
+  margin-bottom:1.5rem;
+}
+.hero h1 {
+  font-family:var(--font-display);
+  font-size:clamp(2.4rem, 5vw, 4rem);
+  font-weight:800; line-height:1.15;
+  color:var(--gray-900);
+  margin-bottom:1rem;
+}
+.hero h1 em {
+  font-style:normal;
+  background: linear-gradient(135deg, var(--green-600), var(--yellow-600));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub {
+  font-size:1.2rem; color:var(--gray-600);
+  max-width:600px; margin-bottom:2.5rem;
+  line-height:1.7;
+}
+.hero-cta {
+  display:inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white; padding:14px 32px;
+  border-radius:50px; font-size:1rem; font-weight:600;
+  text-decoration:none; border:none; cursor:pointer;
+  box-shadow: 0 4px 16px rgba(76,175,80,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.hero-cta:hover {
+  transform:translateY(-2px);
+  box-shadow: 0 6px 24px rgba(76,175,80,0.4);
+}
+
+/* TARIFF TOGGLE */
+.tariff-toggle {
+  display:flex; gap:0; background:var(--gray-100);
+  border-radius:50px; padding:4px; width:fit-content;
+  margin: 0 auto 2rem;
+}
+.tariff-btn {
+  padding:10px 24px; border-radius:50px;
+  border:none; cursor:pointer;
+  font-family:var(--font-body); font-weight:600;
+  font-size:0.9rem;
+  transition: all 0.3s;
+  background:transparent; color:var(--gray-500);
+}
+.tariff-btn.active {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white;
+  box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+}
+
+/* TARIFF CARDS */
+.tariff-cards {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap:1rem; max-width:700px; margin:0 auto 3rem;
+}
+.tariff-card {
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  border-radius:var(--radius);
+  padding:1.25rem; text-align:center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.tariff-card:hover {
+  transform:translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.tariff-card-label {
+  font-size:0.8rem; color:var(--gray-500);
+  text-transform:uppercase; letter-spacing:0.5px;
+  margin-bottom:0.5rem;
+}
+.tariff-card-value {
+  font-family:var(--font-display);
+  font-size:1.8rem; font-weight:700;
+  color:var(--green-700);
+}
+.tariff-card-unit {
+  font-size:0.75rem; color:var(--gray-400);
+}
+
+/* ADVANTAGES */
+.advantages {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap:1.5rem; max-width:1200px; margin:0 auto;
+}
+.adv-card {
+  display:flex; align-items:flex-start; gap:1rem;
+  padding:1.5rem; border-radius:var(--radius);
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.adv-card:hover {
+  transform:translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.adv-icon {
+  font-size:2rem; width:56px; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--green-50); border-radius:var(--radius);
+  flex-shrink:0;
+}
+.adv-title {
+  font-family:var(--font-display);
+  font-weight:700; font-size:1.05rem;
+  color:var(--gray-900); margin-bottom:0.25rem;
+}
+.adv-desc { font-size:0.9rem; color:var(--gray-500); }
+
+/* SECTIONS */
+.section {
+  padding: 80px 2rem;
+}
+.section-alt { background: var(--gray-50); }
+.section-green { background: linear-gradient(135deg, var(--green-50), var(--yellow-100)); }
+.section-title {
+  font-family:var(--font-display);
+  font-size:clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight:800; text-align:center;
+  color:var(--gray-900);
+  margin-bottom:0.5rem;
+}
+.section-sub {
+  text-align:center; color:var(--gray-500);
+  font-size:1.05rem; margin-bottom:3rem;
+  max-width:600px; margin-left:auto; margin-right:auto;
+}
+
+/* CALCULATOR */
+.calc-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap:0.75rem; max-width:1100px; margin:0 auto 2rem;
+}
+.calc-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px;
+  border:1px solid var(--gray-200);
+  border-radius:var(--radius);
+  background:var(--white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor:pointer; user-select:none;
+}
+.calc-item:hover { border-color:var(--green-300); }
+.calc-item.active {
+  border-color:var(--green-500);
+  background:var(--green-50);
+  box-shadow: 0 0 0 2px rgba(76,175,80,0.15);
+}
+.calc-item-name {
+  font-size:0.88rem; font-weight:500; color:var(--gray-700);
+}
+.calc-item-watts {
+  font-size:0.78rem; color:var(--gray-400);
+  font-weight:500;
+}
+.calc-result {
+  max-width:800px; margin:0 auto;
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  border-radius:var(--radius-lg);
+  padding:2rem; color:white;
+  box-shadow: var(--shadow-lg);
+}
+.calc-result-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap:1.5rem;
+}
+.calc-result-item { text-align:center; }
+.calc-result-label {
+  font-size:0.8rem; opacity:0.8;
+  text-transform:uppercase; letter-spacing:0.5px;
+  margin-bottom:0.3rem;
+}
+.calc-result-value {
+  font-family:var(--font-display);
+  font-size:2rem; font-weight:700;
+}
+.calc-result-note {
+  text-align:center; margin-top:1rem;
+  font-size:0.85rem; opacity:0.75;
+}
+
+/* PRODUCTS */
+.products-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
+  gap:1.5rem; max-width:1100px; margin:0 auto;
+}
+.product-card {
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position:relative; overflow:hidden;
+}
+.product-card:hover {
+  transform:translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.product-card::before {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:4px;
+}
+.product-name {
+  font-family:var(--font-display);
+  font-size:1.3rem; font-weight:700;
+  color:var(--gray-900); margin-bottom:1.5rem;
+}
+.product-spec {
+  display:flex; justify-content:space-between;
+  padding:0.6rem 0; border-bottom:1px solid var(--gray-100);
+}
+.product-spec-label { font-size:0.88rem; color:var(--gray-500); }
+.product-spec-value { font-size:0.88rem; font-weight:600; color:var(--gray-800); }
+.product-bar-bg {
+  height:8px; background:var(--gray-100);
+  border-radius:4px; margin-top:6px; overflow:hidden;
+}
+.product-bar-fill {
+  height:100%; border-radius:4px;
+  transition: width 1s ease-out;
+}
+.product-price {
+  margin-top:1.5rem; text-align:center;
+  font-family:var(--font-display);
+  font-size:1.4rem; font-weight:700;
+}
+
+/* EQUIPMENT */
+.equip-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+  gap:1.5rem; max-width:1100px; margin:0 auto 2rem;
+}
+.equip-card {
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  box-shadow: var(--shadow-sm);
+}
+.equip-card-title {
+  font-family:var(--font-display);
+  font-size:1.15rem; font-weight:700;
+  color:var(--gray-900); margin-bottom:0.25rem;
+}
+.equip-card-subtitle {
+  font-size:0.85rem; color:var(--gray-400);
+  margin-bottom:1.25rem;
+}
+.equip-spec {
+  display:flex; justify-content:space-between;
+  padding:0.5rem 0; border-bottom:1px solid var(--gray-100);
+  font-size:0.88rem;
+}
+.equip-spec-label { color:var(--gray-500); }
+.equip-spec-value { font-weight:600; color:var(--gray-700); }
+
+/* PRICING TABLE */
+.pricing-table {
+  max-width:800px; margin:0 auto;
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow: var(--shadow-sm);
+}
+.pricing-row {
+  display:grid; grid-template-columns: 2fr 1fr 1fr;
+  padding:1rem 1.5rem;
+  border-bottom:1px solid var(--gray-100);
+  align-items:center;
+}
+.pricing-row:last-child { border-bottom:none; }
+.pricing-header {
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  color:white; font-weight:700;
+}
+.pricing-header .pricing-cell { color:white; }
+.pricing-cell {
+  font-size:0.9rem; color:var(--gray-700);
+}
+.pricing-cell:not(:first-child) { text-align:center; font-weight:600; }
+.pricing-total {
+  background:var(--green-50);
+  font-weight:700;
+}
+.pricing-total .pricing-cell { color:var(--green-700); font-size:1rem; }
+
+/* CREDIT */
+.credit-banner {
+  max-width:800px; margin:2rem auto 0;
+  background: linear-gradient(135deg, var(--yellow-500), var(--yellow-600));
+  border-radius:var(--radius-lg);
+  padding:2rem; text-align:center;
+  box-shadow: var(--shadow-md);
+}
+.credit-banner h3 {
+  font-family:var(--font-display);
+  font-size:1.4rem; font-weight:700;
+  color:var(--gray-900); margin-bottom:0.5rem;
+}
+.credit-banner p {
+  color:var(--gray-800); font-size:0.95rem;
+}
+.credit-details {
+  display:flex; gap:2rem; justify-content:center;
+  margin-top:1rem; flex-wrap:wrap;
+}
+.credit-detail {
+  text-align:center;
+}
+.credit-detail-value {
+  font-family:var(--font-display);
+  font-size:1.6rem; font-weight:800;
+  color:var(--gray-900);
+}
+.credit-detail-label {
+  font-size:0.78rem; color:var(--gray-700);
+}
+
+/* SAVINGS */
+.savings-container { max-width:800px; margin:0 auto; }
+.savings-slider-wrap {
+  text-align:center; margin-bottom:2rem;
+}
+.savings-slider-label {
+  font-size:0.9rem; color:var(--gray-500); margin-bottom:0.5rem;
+}
+.savings-slider-value {
+  font-family:var(--font-display);
+  font-size:2.2rem; font-weight:800;
+  color:var(--green-700);
+  margin-bottom:1rem;
+}
+.savings-slider {
+  width:100%; max-width:500px;
+  -webkit-appearance:none; appearance:none;
+  height:8px; border-radius:4px;
+  background: linear-gradient(90deg, var(--green-300), var(--yellow-400));
+  outline:none;
+  cursor:pointer;
+}
+.savings-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--green-600);
+  border:3px solid white;
+  box-shadow: var(--shadow-md);
+  cursor:pointer;
+  transition: transform 0.15s;
+}
+.savings-slider::-webkit-slider-thumb:hover { transform:scale(1.15); }
+
+.savings-cards {
+  display:grid; grid-template-columns: 1fr 1fr;
+  gap:1.5rem; margin-bottom:2rem;
+}
+.savings-card {
+  padding:1.5rem; border-radius:var(--radius-lg);
+  text-align:center;
+}
+.savings-card.before {
+  background:var(--gray-100); border:1px solid var(--gray-200);
+}
+.savings-card.after {
+  background:var(--green-50); border:1px solid var(--green-200);
+}
+.savings-card-label {
+  font-size:0.85rem; color:var(--gray-500);
+  text-transform:uppercase; letter-spacing:0.5px;
+  margin-bottom:0.5rem;
+}
+.savings-card-value {
+  font-family:var(--font-display);
+  font-size:2rem; font-weight:700;
+}
+.savings-card.before .savings-card-value { color:var(--gray-700); }
+.savings-card.after .savings-card-value { color:var(--green-700); }
+
+.savings-stats {
+  display:grid; grid-template-columns: repeat(3, 1fr);
+  gap:1rem;
+}
+.savings-stat {
+  text-align:center; padding:1.5rem;
+  background:var(--white); border:1px solid var(--gray-200);
+  border-radius:var(--radius);
+}
+.savings-stat-value {
+  font-family:var(--font-display);
+  font-size:1.6rem; font-weight:700;
+  color:var(--green-700);
+}
+.savings-stat-label {
+  font-size:0.8rem; color:var(--gray-500);
+  margin-top:0.25rem;
+}
+
+/* FOOTER */
+.footer {
+  background:var(--gray-900); color:var(--gray-400);
+  padding:3rem 2rem; text-align:center;
+}
+.footer-logo {
+  font-family:var(--font-display);
+  font-size:1.3rem; font-weight:800;
+  color:white; margin-bottom:0.5rem;
+}
+.footer-logo span { color:var(--yellow-500); }
+.footer p { font-size:0.85rem; }
+
+/* MOBILE */
+@media (max-width:768px) {
+  .nav-links { display:none; }
+  .hero { padding:100px 1.5rem 40px; }
+  .hero h1 { font-size:2rem; }
+  .section { padding:50px 1.5rem; }
+  .tariff-cards { grid-template-columns:1fr 1fr; }
+  .calc-grid { grid-template-columns:1fr 1fr; }
+  .savings-cards { grid-template-columns:1fr; }
+  .savings-stats { grid-template-columns:1fr; }
+  .products-grid { grid-template-columns:1fr; }
+  .equip-grid { grid-template-columns:1fr; }
+  .pricing-row { grid-template-columns:1.5fr 1fr 1fr; padding:0.75rem 1rem; }
+  .credit-details { gap:1rem; }
+}
+`;
+
+/* ───────────────────────── COMPONENT ───────────────────────── */
+export default function SolarBalkon() {
+  const [tariffType, setTariffType] = useState('residential');
+  const [selectedAppliances, setSelectedAppliances] = useState([]);
+  const [consumption, setConsumption] = useState(250);
+  const [scrolled, setScrolled] = useState(false);
+
+  const tariff = TARIFFS[tariffType];
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const toggleAppliance = (idx) => {
+    setSelectedAppliances(prev =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
+
+  // Calculator
+  const totalWatts = selectedAppliances.reduce((s, i) => s + APPLIANCES[i].watts, 0);
+  const totalDailyKwh = selectedAppliances.reduce((s, i) => s + (APPLIANCES[i].watts * APPLIANCES[i].hours) / 1000, 0);
+  const monthlyKwh = totalDailyKwh * 30;
+  const panels2 = 2, panels4 = 4;
+  const solarHours = 3.5;
+  const gen2daily = panels2 * 455 * solarHours / 1000;
+  const gen4daily = panels4 * 455 * solarHours / 1000;
+  const coverage2 = totalDailyKwh > 0 ? Math.min(100, (gen2daily / totalDailyKwh) * 100) : 0;
+  const coverage4 = totalDailyKwh > 0 ? Math.min(100, (gen4daily / totalDailyKwh) * 100) : 0;
+
+  // Savings
+  const billBefore = consumption * tariff.now;
+  const solarGen = gen4daily * 30;
+  const covered = Math.min(consumption, solarGen);
+  const billAfter = (consumption - covered) * tariff.now;
+  const monthlySaving = billBefore - billAfter;
+  const yearlySaving = monthlySaving * 12;
+  const systemCost = 70200;
+  const paybackMonths = monthlySaving > 0 ? Math.ceil(systemCost / monthlySaving) : 0;
+  const saving10y = yearlySaving * 10 - systemCost;
 
   return (
-    <div style={{ fontFamily: "'Segoe UI',system-ui,sans-serif", background: S.bg, color: S.txt, minHeight: "100vh" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#fbbf24;border-radius:3px}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes glow{0%,100%{text-shadow:0 0 20px rgba(251,191,36,0.3)}50%{text-shadow:0 0 40px rgba(251,191,36,0.6)}}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-        input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none}
-        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fbbf24;cursor:pointer;box-shadow:0 2px 8px rgba(251,191,36,0.4)}
-      `}</style>
+    <>
+      <style>{css}</style>
 
       {/* NAV */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(8,12,21,0.92)", backdropFilter: "blur(16px)", borderBottom: `1px solid ${S.brd}`, padding: "10px 16px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 24 }}>⚡</span>
-            <span style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: 16 }}>
-              <span style={{ color: S.gold }}>Solar</span><span>Balkon</span>
-              <span style={{ color: S.mut, fontSize: 11, fontWeight: 400, marginLeft: 4 }}>.ua</span>
-            </span>
-          </div>
-          <div style={{ display: "flex", gap: 2 }}>
-            {[["hero","🏠"],["calc","🔌"],["products","📊"],["solar","☀️"],["savings","💰"]].map(([id, l]) => (
-              <button key={id} onClick={() => setPage(id)} style={{ padding: "7px 14px", borderRadius: 10, border: "none", cursor: "pointer", fontFamily: "Space Grotesk,sans-serif", fontSize: 13, fontWeight: 500, background: page === id ? "rgba(251,191,36,0.12)" : "transparent", color: page === id ? S.gold : S.mut, transition: "all 0.2s" }}>
-                {l} {id === "hero" ? "Головна" : id === "calc" ? "Калькулятор" : id === "products" ? "Системи" : id === "solar" ? "Панелі" : "Економія"}
-              </button>
-            ))}
-          </div>
+      <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
+        <div className="nav-inner">
+          <a href="#home" className="nav-logo">☀ Solar<span>Balkon</span></a>
+          <ul className="nav-links">
+            <li><a href="#home">Головна</a></li>
+            <li><a href="#calc">Калькулятор</a></li>
+            <li><a href="#systems">Системи</a></li>
+            <li><a href="#equip">Обладнання</a></li>
+            <li><a href="#savings">Економія</a></li>
+          </ul>
         </div>
       </nav>
 
-      {/* ============ HERO ============ */}
-      {page === "hero" && (
-        <div style={{ animation: "fadeUp 0.5s", padding: "50px 16px", textAlign: "center", position: "relative", overflow: "hidden", minHeight: "85vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ position: "absolute", top: "-30%", right: "-15%", width: "60%", height: "120%", background: "radial-gradient(ellipse, rgba(251,191,36,0.04) 0%, transparent 60%)", pointerEvents: "none" }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <span style={{ display: "inline-block", padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, background: "rgba(251,191,36,0.1)", color: S.gold, border: "1px solid rgba(251,191,36,0.2)", marginBottom: 16 }}>🇺🇦 Для дому та бізнесу • Кредит 0% від держави</span>
-            <h1 style={{ fontFamily: "Syne,sans-serif", fontSize: "clamp(34px,6vw,64px)", fontWeight: 800, lineHeight: 1.05, marginBottom: 20, letterSpacing: "-2px" }}>
-              Балконна<br /><span style={{ color: S.gold, animation: "glow 3s infinite" }}>електростанція</span>
-            </h1>
-            <p style={{ fontSize: "clamp(15px,2vw,18px)", color: S.mut, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 36px" }}>
-              Сонячні панелі + накопичувач. Державний кредит 0% до 480 000 грн на 10 років.
-            </p>
-            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <button onClick={() => setPage("calc")} style={{ background: `linear-gradient(135deg, ${S.gold}, #f59e0b)`, color: "#080c15", border: "none", padding: "14px 32px", borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "Space Grotesk,sans-serif", boxShadow: "0 4px 20px rgba(251,191,36,0.25)" }}>🔌 Калькулятор</button>
-              <button onClick={() => setPage("solar")} style={{ background: "transparent", color: S.gold, border: "2px solid rgba(251,191,36,0.3)", padding: "12px 28px", borderRadius: 12, fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "Space Grotesk,sans-serif" }}>☀️ Обладнання та ціни →</button>
-            </div>
+      {/* HERO */}
+      <section className="hero" id="home">
+        <div className="hero-inner">
+          <div className="hero-badge fade-up">🌿 Відновлювальна енергія для кожного</div>
+          <h1 className="fade-up-d1">
+            Сонячна електростанція<br />на <em>вашому балконі</em>
+          </h1>
+          <p className="hero-sub fade-up-d2">
+            Перетворіть балкон на джерело чистої енергії. Зменште рахунки за світло
+            до 80% з балконними сонячними панелями та державним кредитом 0%.
+          </p>
+          <a href="#calc" className="hero-cta fade-up-d3">
+            Розрахувати економію →
+          </a>
 
-            {/* Tariff + financing cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, maxWidth: 850, margin: "46px auto 0" }}>
-              <Cd style={{ textAlign: "center", padding: 20, borderTop: `3px solid ${S.blu}` }}>
-                <div style={{ fontSize: 10, color: S.blu, fontWeight: 600, marginBottom: 4 }}>🏠 ПОБУТОВИЙ</div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontSize: 24, fontWeight: 800, color: S.gold }}>4.32 грн</div>
-                <div style={{ fontSize: 10, color: S.mut }}>→ 6.64 грн прогноз</div>
-              </Cd>
-              <Cd style={{ textAlign: "center", padding: 20, borderTop: `3px solid ${S.org}` }}>
-                <div style={{ fontSize: 10, color: S.org, fontWeight: 600, marginBottom: 4 }}>🏢 КОМЕРЦІЙНИЙ</div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontSize: 24, fontWeight: 800, color: S.org }}>~7.50 грн</div>
-                <div style={{ fontSize: 10, color: S.mut }}>→ ~9.00 грн прогноз</div>
-              </Cd>
-              <Cd style={{ textAlign: "center", padding: 20, borderTop: `3px solid ${S.grn}` }}>
-                <div style={{ fontSize: 10, color: S.grn, fontWeight: 600, marginBottom: 4 }}>🏦 КРЕДИТ 0%</div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontSize: 24, fontWeight: 800, color: S.grn }}>480к грн</div>
-                <div style={{ fontSize: 10, color: S.mut }}>на 10 років від держави</div>
-              </Cd>
+          {/* TARIFF CARDS */}
+          <div style={{ marginTop: '4rem' }}>
+            <div className="tariff-toggle">
+              <button
+                className={`tariff-btn ${tariffType === 'residential' ? 'active' : ''}`}
+                onClick={() => setTariffType('residential')}
+              >Побутовий</button>
+              <button
+                className={`tariff-btn ${tariffType === 'commercial' ? 'active' : ''}`}
+                onClick={() => setTariffType('commercial')}
+              >Комерційний</button>
             </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 10, marginTop: 32, maxWidth: 920, marginLeft: "auto", marginRight: "auto" }}>
-              {[
-                { i: "🛡️", t: "Блекаути", d: "UPS 4-10 мс", c: S.gold },
-                { i: "📉", t: "Менші рахунки", d: "Дім -40%, бізнес -30%", c: S.grn },
-                { i: "🔌", t: "Plug & Play", d: "Без електрика", c: S.blu },
-                { i: "💼", t: "Для бізнесу", d: "Окупність 1.5-3 р.", c: S.org },
-                { i: "🏦", t: "Кредит 0%", d: "Джерела енергії", c: S.grn },
-                { i: "🌱", t: "10+ років", d: "LiFePO4, 6000 циклів", c: S.vio },
-              ].map((f, i) => (
-                <div key={i} style={{ background: S.card, border: `1px solid ${S.brd}`, borderRadius: 14, padding: 14, textAlign: "center" }}>
-                  <div style={{ fontSize: 24, marginBottom: 5, animation: `float ${3 + i * 0.4}s ease-in-out infinite` }}>{f.i}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: f.c, marginBottom: 2 }}>{f.t}</div>
-                  <div style={{ fontSize: 10, color: S.mut }}>{f.d}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ============ CALCULATOR ============ */}
-      {page === "calc" && (
-        <div style={{ animation: "fadeUp 0.4s", padding: "40px 16px", maxWidth: 1100, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "Syne,sans-serif", fontSize: "clamp(22px,4vw,32px)", fontWeight: 800, textAlign: "center", marginBottom: 4 }}>⚡ Калькулятор потреб</h2>
-          <p style={{ color: S.mut, textAlign: "center", fontSize: 13, marginBottom: 20 }}>Тариф → прилади → система</p>
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 20 }}>
-            <Pill active={tt === "household"} color={S.blu} onClick={() => switchT("household")}>🏠 Побутовий</Pill>
-            <Pill active={tt === "commercial"} color={S.org} onClick={() => switchT("commercial")}>🏢 Комерційний</Pill>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22, alignItems: "start" }}>
-            <div>
-              <div style={{ fontSize: 11, color: S.mut, marginBottom: 8 }}>{tt === "commercial" ? "Обладнання:" : "Прилади:"}</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                {items.map(a => (
-                  <button key={a.id} onClick={() => toggle(a.id)} style={{ padding: "7px 10px", borderRadius: 9, cursor: "pointer", border: `1px solid ${sel.includes(a.id) ? "rgba(251,191,36,0.4)" : S.brd}`, background: sel.includes(a.id) ? "rgba(251,191,36,0.08)" : S.card, color: sel.includes(a.id) ? S.gold : S.mut, fontSize: 11, fontFamily: "Space Grotesk,sans-serif", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-                    {a.name} <span style={{ fontSize: 9, opacity: 0.5 }}>{a.watts}Вт</span>
-                  </button>
-                ))}
+            <div className="tariff-cards">
+              <div className="tariff-card fade-up-d1">
+                <div className="tariff-card-label">Поточний тариф</div>
+                <div className="tariff-card-value">{tariff.now}</div>
+                <div className="tariff-card-unit">{tariff.unit}</div>
               </div>
-              {!showAll && <button onClick={() => setShowAll(true)} style={{ marginTop: 6, background: "none", border: "none", color: S.gold, cursor: "pointer", fontSize: 11 }}>+ Більше</button>}
-              <Cd style={{ marginTop: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-                  <span style={{ fontSize: 12, color: S.mut }}>Потужність</span>
-                  <span style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: totalW > (product?.output || 0) ? "#ef4444" : S.gold, fontSize: 16 }}><C value={totalW} suffix=" Вт" /></span>
-                </div>
-                <Bar pct={(totalW / (product?.output || 1800)) * 100} color={totalW > (product?.output || 0) ? "#ef4444" : S.gold} />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
-                  <span style={{ fontSize: 12, color: S.mut }}>Денне</span>
-                  <span style={{ fontWeight: 700, color: S.grn }}><C value={dailyWh / 1000} suffix=" кВт·год" decimals={1} /></span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-                  <span style={{ fontSize: 12, color: S.mut }}>Вартість/день</span>
-                  <span style={{ fontWeight: 700, color: S.pnk }}><C value={(dailyWh / 1000) * t.current} suffix=" грн" decimals={1} /></span>
-                </div>
-                <div style={{ marginTop: 10, padding: 9, borderRadius: 10, background: canPower ? "rgba(52,211,153,0.05)" : "rgba(239,68,68,0.05)", border: `1px solid ${canPower ? "rgba(52,211,153,0.1)" : "rgba(239,68,68,0.1)"}` }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: canPower ? S.grn : "#ef4444" }}>{canPower ? "✅ Покриває" : "⚠️ Перевищено"}</div>
-                  {canPower && totalW > 0 && <div style={{ fontSize: 11, color: S.mut, marginTop: 2 }}>Автономність: <strong style={{ color: S.gold }}>~{runtime} год</strong></div>}
-                </div>
-              </Cd>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: S.mut, marginBottom: 8 }}>Система:</div>
-              {PRODUCTS.map(p => (
-                <div key={p.id} onClick={() => setProd(p.id)} style={{ background: prod === p.id ? `${p.color}08` : S.card, border: `1px solid ${prod === p.id ? p.color + "50" : S.brd}`, borderRadius: 14, padding: 14, marginBottom: 7, cursor: "pointer", transition: "all 0.3s" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 26 }}>{p.img}</span>
-                      <div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800 }}>{p.name}</div><div style={{ fontSize: 10, color: S.mut }}>{p.capacity}Вт·год • {p.output}Вт</div></div>
-                    </div>
-                    <div style={{ fontFamily: "Syne,sans-serif", fontSize: 12, fontWeight: 800, color: p.color }}>{p.price}</div>
-                  </div>
-                  {prod === p.id && (
-                    <div style={{ marginTop: 10, animation: "fadeUp 0.3s" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 4 }}>
-                        {[["Ємність", `${p.capacity}Вт·год`], ["Вихід", `${p.output}Вт`], ["Макс", `${p.maxOutput}Вт`], ["Сонце", `${p.solar}Вт`], ["Зарядка", p.chargeTime], ["Батарея", p.battery], ["Цикли", `${p.cycles}`], ["Гарантія", `${p.warranty}р.`], ["UPS", p.ups]].map(([l, v]) => (
-                          <div key={l} style={{ fontSize: 10 }}><span style={{ color: S.mut }}>{l}: </span><span style={{ fontWeight: 600 }}>{v}</span></div>
-                        ))}
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 3, marginTop: 6 }}>
-                        {p.features.map(f => <span key={f} style={{ padding: "2px 6px", borderRadius: 10, fontSize: 9, fontWeight: 600, background: p.color + "12", color: p.color }}>{f}</span>)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+              <div className="tariff-card fade-up-d2">
+                <div className="tariff-card-label">Прогноз</div>
+                <div className="tariff-card-value" style={{ color: 'var(--yellow-600)' }}>{tariff.forecast}</div>
+                <div className="tariff-card-unit">{tariff.unit}</div>
+              </div>
+              <div className="tariff-card fade-up-d3">
+                <div className="tariff-card-label">Нічний тариф</div>
+                <div className="tariff-card-value" style={{ color: 'var(--gray-500)' }}>{tariff.night}</div>
+                <div className="tariff-card-unit">{tariff.unit}</div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* ============ PRODUCTS ============ */}
-      {page === "products" && (
-        <div style={{ animation: "fadeUp 0.4s", padding: "40px 16px", maxWidth: 1100, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "Syne,sans-serif", fontSize: "clamp(22px,4vw,32px)", fontWeight: 800, textAlign: "center", marginBottom: 26 }}>📊 Порівняння систем</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
-            {PRODUCTS.map(p => (
-              <div key={p.id} style={{ background: S.card, border: `1px solid ${S.brd}`, borderRadius: 16, borderTop: `3px solid ${p.color}`, padding: 20 }}>
-                <div style={{ textAlign: "center", marginBottom: 12 }}>
-                  <div style={{ fontSize: 36, marginBottom: 6 }}>{p.img}</div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800 }}>{p.name}</div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 16, fontWeight: 800, color: p.color, marginTop: 4 }}>{p.price}</div>
-                </div>
-                {[["Ємність", `${p.capacity}Вт·год`, p.capacity / 20], ["Вихід", `${p.output}Вт`, p.output / 20], ["Сонце", `${p.solar}Вт`, p.solar / 10], ["Цикли", `${p.cycles}`, p.cycles / 60], ["Гарантія", `${p.warranty}р.`, p.warranty * 10]].map(([l, v, b]) => (
-                  <div key={l} style={{ marginBottom: 6 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 2 }}><span style={{ color: S.mut }}>{l}</span><span style={{ fontWeight: 600 }}>{v}</span></div>
-                    <Bar pct={b} color={p.color} h={5} />
-                  </div>
-                ))}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 3, marginTop: 8 }}>
-                  {p.features.map(f => <span key={f} style={{ padding: "2px 6px", borderRadius: 10, fontSize: 9, fontWeight: 600, background: p.color + "10", color: p.color }}>{f}</span>)}
+          {/* ADVANTAGES */}
+          <div className="advantages" style={{ marginTop: '2rem' }}>
+            {ADVANTAGES.map((a, i) => (
+              <div className={`adv-card fade-up-d${Math.min(i + 1, 4)}`} key={i}>
+                <div className="adv-icon">{a.icon}</div>
+                <div>
+                  <div className="adv-title">{a.title}</div>
+                  <div className="adv-desc">{a.desc}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
+      </section>
 
-      {/* ============ SOLAR — with panel specs, pricing, financing ============ */}
-      {page === "solar" && (
-        <div style={{ animation: "fadeUp 0.4s", padding: "40px 16px", maxWidth: 1000, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "Syne,sans-serif", fontSize: "clamp(22px,4vw,32px)", fontWeight: 800, textAlign: "center", marginBottom: 6 }}>☀️ Обладнання та ціни</h2>
-          <p style={{ color: S.mut, textAlign: "center", fontSize: 13, marginBottom: 22 }}>Система Deye «під ключ» + державне кредитування 0%</p>
+      {/* CALCULATOR */}
+      <section className="section section-alt" id="calc">
+        <div className="section-title fade-up">Калькулятор споживання</div>
+        <div className="section-sub fade-up-d1">Оберіть прилади, які ви використовуєте щодня</div>
 
-          {/* Panel selector */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 22 }}>
-            <div style={{ display: "flex", background: S.card, borderRadius: 14, padding: 4, border: `1px solid ${S.brd}` }}>
-              {[2, 4].map(n => <button key={n} onClick={() => setPanels(n)} style={{ padding: "10px 22px", borderRadius: 11, border: "none", cursor: "pointer", fontFamily: "Space Grotesk,sans-serif", fontWeight: 600, fontSize: 13, background: panels === n ? `linear-gradient(135deg,${S.gold},#f59e0b)` : "transparent", color: panels === n ? "#080c15" : S.mut, transition: "all 0.3s" }}>{n} панелі ({SOLAR[n].watts} Вт)</button>)}
-            </div>
-          </div>
-
-          {/* ---- PANEL CARD with dimensions ---- */}
-          <Cd style={{ marginBottom: 16, padding: 22 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
-              <div style={{ flex: "1 1 320px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <span style={{ fontSize: 32 }}>🔲</span>
-                  <div>
-                    <div style={{ fontFamily: "Syne,sans-serif", fontSize: 15, fontWeight: 800 }}>{PANEL.name}</div>
-                    <div style={{ fontSize: 11, color: S.mut }}>{PANEL.type} • Монокристал 210мм • {PANEL.cells} комірок</div>
-                  </div>
-                </div>
-                <Spec label="Потужність" value={`${PANEL.watts} Вт`} color={S.gold} />
-                <Spec label="ККД" value={PANEL.efficiency} color={S.grn} />
-                <Spec label="Напруга хол. ходу" value={PANEL.voc} />
-                <Spec label="Струм к.з." value={PANEL.isc} />
-                <Spec label="Захист" value={PANEL.ip} />
-                <Spec label="Температура" value={PANEL.tempRange} />
-                <Spec label="Гарантія" value={PANEL.warranty} color={S.grn} />
-                <Spec label="Ціна" value={`${PANEL.price.toLocaleString()} грн / шт`} color={S.gold} />
-              </div>
-
-              {/* DIMENSIONS VISUAL */}
-              <div style={{ flex: "0 0 280px", textAlign: "center" }}>
-                <div style={{ fontSize: 11, color: S.gold, fontWeight: 600, marginBottom: 8 }}>📐 ГАБАРИТИ ПАНЕЛІ</div>
-                <div style={{ position: "relative", width: 180, height: 250, margin: "0 auto", border: `2px solid ${S.gold}40`, borderRadius: 8, background: "rgba(251,191,36,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {/* Height label */}
-                  <div style={{ position: "absolute", right: -54, top: "50%", transform: "translateY(-50%) rotate(90deg)", fontSize: 11, fontWeight: 700, color: S.gold, whiteSpace: "nowrap" }}>
-                    {PANEL.length} мм
-                  </div>
-                  {/* Width label */}
-                  <div style={{ position: "absolute", bottom: -22, left: "50%", transform: "translateX(-50%)", fontSize: 11, fontWeight: 700, color: S.gold }}>
-                    {PANEL.width} мм
-                  </div>
-                  {/* Depth */}
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 28, marginBottom: 4 }}>☀️</div>
-                    <div style={{ fontSize: 10, color: S.mut }}>товщина</div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: S.gold }}>{PANEL.depth} мм</div>
-                    <div style={{ fontSize: 10, color: S.mut, marginTop: 4 }}>вага</div>
-                    <div style={{ fontSize: 13, fontWeight: 800 }}>{PANEL.weight} кг</div>
-                  </div>
-                  {/* Corner marks */}
-                  {[[0,0],[1,0],[0,1],[1,1]].map(([x,y],i)=>(
-                    <div key={i} style={{position:"absolute",[y?"bottom":"top"]:2,[x?"right":"left"]:2,width:12,height:12,borderColor:S.gold+"60",borderStyle:"solid",borderWidth:0,[`border${y?"Bottom":"Top"}Width`]:2,[`border${x?"Right":"Left"}Width`]:2,[`border${y?"Bottom":"Top"}${x?"Right":"Left"}Radius`]:3}} />
-                  ))}
-                </div>
-                <div style={{ marginTop: 28, fontSize: 11, color: S.mut, lineHeight: 1.6 }}>
-                  <strong style={{ color: S.txt }}>{panels} панелі:</strong><br />
-                  {panels === 2 ? `${PANEL.length} × ${PANEL.width * 2} мм (в ряд)` : `${PANEL.length * 2} × ${PANEL.width * 2} мм (2×2)`}<br/>
-                  Площа: <strong style={{ color: S.grn }}>{solar.area}</strong> • Вага: <strong>{PANEL.weight * panels} кг</strong>
-                </div>
-              </div>
-            </div>
-          </Cd>
-
-          {/* ---- INVERTER + SMART METER ---- */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
-            <Cd style={{ padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 26 }}>⚡</span>
-                <div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800 }}>Мікроінвертор</div>
-                  <div style={{ fontSize: 10, color: S.mut }}>{INVERTER.name}</div>
-                </div>
-              </div>
-              <Spec label="Потужність" value={`${INVERTER.watts} Вт`} color={S.org} />
-              <Spec label="Макс. вхід" value={`${INVERTER.maxInput} Вт`} />
-              <Spec label="MPPT" value={`${INVERTER.mppt} трекери`} />
-              <Spec label="ККД" value={INVERTER.efficiency} color={S.grn} />
-              <Spec label="Захист" value={INVERTER.ip} />
-              <Spec label="Розміри" value={INVERTER.dims} />
-              <Spec label="Вага" value={`${INVERTER.weight} кг`} />
-              <Spec label="WiFi" value="✅ Моніторинг через додаток" color={S.grn} />
-              <Spec label="Гарантія" value={INVERTER.warranty} color={S.grn} />
-              <Spec label="Ціна" value={`${INVERTER.price.toLocaleString()} грн / шт`} color={S.gold} />
-              <div style={{ fontSize: 10, color: S.mut, marginTop: 6 }}>
-                {panels === 2 ? "× 1 шт (2 входи для 2 панелей)" : "× 2 шт (для 4 панелей)"}
-              </div>
-            </Cd>
-            <Cd style={{ padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 26 }}>📊</span>
-                <div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800 }}>Смарт-лічильник</div>
-                  <div style={{ fontSize: 10, color: S.mut }}>{SMARTMETER.name}</div>
-                </div>
-              </div>
-              <Spec label="Тип" value={SMARTMETER.type} />
-              <Spec label="Дальність" value={SMARTMETER.range} />
-              <Spec label="Розміри" value={SMARTMETER.dims} />
-              <Spec label="Вага" value={`${SMARTMETER.weight} кг`} />
-              <Spec label="Гарантія" value={SMARTMETER.warranty} />
-              <Spec label="Ціна" value={`${SMARTMETER.price.toLocaleString()} грн`} color={S.gold} />
-              <div style={{ marginTop: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 26 }}>🔋</span>
-                  <div>
-                    <div style={{ fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800 }}>Накопичувач Deye</div>
-                    <div style={{ fontSize: 10, color: S.mut }}>AE-FS2.0-2H2 • 2 кВт·год LiFePO4</div>
-                  </div>
-                </div>
-                <Spec label="Ємність" value="2000 Вт·год" color={S.org} />
-                <Spec label="Цикли" value="6000" />
-                <Spec label="Ціна" value={`${DEYE_STORAGE_PRICE.toLocaleString()} грн`} color={S.gold} />
-              </div>
-            </Cd>
-          </div>
-
-          {/* ---- TOTAL PRICE ---- */}
-          <Cd style={{ padding: 22, borderLeft: `3px solid ${S.gold}`, marginBottom: 16 }}>
-            <div style={{ fontFamily: "Syne,sans-serif", fontSize: 15, fontWeight: 800, marginBottom: 12 }}>💰 Вартість системи «під ключ» ({panels} панелі)</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 4 }}>
-              {[
-                [`🔋 Накопичувач Deye AE-FS2.0-2H2`, `${DEYE_STORAGE_PRICE.toLocaleString()} грн`],
-                [`☀️ Панелі ${PANEL.name} × ${panels} шт`, `${solar.panelCost.toLocaleString()} грн`],
-                [`⚡ Інвертор ${INVERTER.name} × ${panels === 2 ? 1 : 2} шт`, `${solar.invCost.toLocaleString()} грн`],
-                [`📊 Смарт-лічильник ${SMARTMETER.name}`, `${solar.meterCost.toLocaleString()} грн`],
-              ].map(([l, v]) => (
-                <div key={l} style={{ display: "contents" }}>
-                  <div style={{ fontSize: 12, color: S.mut, padding: "4px 0" }}>{l}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, textAlign: "right", padding: "4px 0" }}>{v}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ borderTop: `2px solid ${S.gold}40`, marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontFamily: "Syne,sans-serif", fontSize: 16, fontWeight: 800 }}>Разом:</span>
-              <span style={{ fontFamily: "Syne,sans-serif", fontSize: 24, fontWeight: 800, color: S.gold }}>{sysTotal.toLocaleString()} грн</span>
-            </div>
-          </Cd>
-
-          {/* ---- GOVERNMENT FINANCING ---- */}
-          <Cd style={{ padding: 22, borderLeft: `3px solid ${S.grn}`, marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <div>
-                <div style={{ fontFamily: "Syne,sans-serif", fontSize: 15, fontWeight: 800, color: S.grn }}>🏦 Державна програма «Джерела енергії»</div>
-                <div style={{ fontSize: 11, color: S.mut, marginTop: 3 }}>Безвідсотковий кредит від держави • 43+ банки-партнери</div>
-              </div>
-              <button onClick={() => setShowFinancing(!showFinancing)} style={{ background: "rgba(52,211,153,0.1)", border: `1px solid rgba(52,211,153,0.2)`, color: S.grn, padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                {showFinancing ? "Згорнути" : "Детальніше ↓"}
-              </button>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: showFinancing ? 16 : 0 }}>
-              {[
-                ["0%", "Ставка", "Повна компенсація відсотків державою"],
-                [`${sysTotal.toLocaleString()} грн`, "Ваша система", `${panels} панелі + накопичувач + інвертор`],
-                [`~${monthlyCredit} грн/міс`, "Платіж", "На 10 років без переплати"],
-                [`~${payback} р.`, "Окупність", `При тарифі ${t.currentLabel}/кВт·год`],
-              ].map(([val, label, desc]) => (
-                <div key={label} style={{ textAlign: "center", padding: 12, borderRadius: 12, background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.08)" }}>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 18, fontWeight: 800, color: S.grn }}>{val}</div>
-                  <div style={{ fontSize: 11, fontWeight: 600, marginTop: 2 }}>{label}</div>
-                  <div style={{ fontSize: 9, color: S.mut, marginTop: 2 }}>{desc}</div>
-                </div>
-              ))}
-            </div>
-
-            {showFinancing && (
-              <div style={{ animation: "fadeUp 0.3s" }}>
-                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: S.grn }}>Умови програми:</div>
-                <div style={{ fontSize: 11, color: S.mut, lineHeight: 2 }}>
-                  ✓ Кредит до <strong style={{ color: S.txt }}>480 000 грн</strong> на термін до <strong style={{ color: S.txt }}>10 років</strong><br />
-                  ✓ Ставка <strong style={{ color: S.grn }}>0%</strong> — відсотки компенсує держава (ФРП)<br />
-                  ✓ Компенсація до <strong style={{ color: S.txt }}>30% тіла кредиту</strong> (до ~244 000 грн)<br />
-                  ✓ Без застави, без першого внеску (Глобус Банк та ін.)<br />
-                  ✓ Потужність системи — до <strong style={{ color: S.txt }}>10 кВт</strong><br />
-                  ✓ Площа будинку — до 300 м² (для приватних осіб)<br />
-                  ✓ 43+ банки: ПриватБанк, Ощадбанк, Сенс Банк, Укргазбанк, Райффайзен, Глобус та ін.<br />
-                  ✓ Фотозвіт про встановлення — протягом 90 днів<br />
-                  ⚠️ Підключення «зеленого тарифу» не дозволяється
-                </div>
-                <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "rgba(249,115,22,0.04)", border: "1px solid rgba(249,115,22,0.1)" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: S.org, marginBottom: 4 }}>💼 Для бізнесу: «Доступні кредити 5-7-9%»</div>
-                  <div style={{ fontSize: 11, color: S.mut, lineHeight: 1.8 }}>
-                    ✓ До 150 млн грн на термін до 10 років<br />
-                    ✓ Ставка 5-9% (менше на прифронтових територіях)<br />
-                    ✓ Кредитні «канікули» 6-12 місяців
-                  </div>
-                </div>
-              </div>
-            )}
-          </Cd>
-
-          {/* ---- WHERE TO INSTALL ---- */}
-          <Cd style={{ padding: 20 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>📐 Де встановити ({panels} панелі — {solar.area})</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {[
-                { p: "Перила балкону", d: `${PANEL.length}×${PANEL.width}мм × ${panels} вертик.`, i: "🏗️", ok: panels <= 2 },
-                { p: "Козирок / навіс", d: `Під кутом 30-45°, макс. ефект.`, i: "🏠", ok: true },
-                { p: "Плоский дах", d: `${panels} панелі на кронштейнах`, i: "🏘️", ok: true },
-                { p: "Фасад / стіна", d: `${panels} панелі вертикально`, i: "🏢", ok: true },
-              ].map(x => (
-                <div key={x.p} style={{ display: "flex", gap: 10, alignItems: "center", padding: 10, borderRadius: 10, background: x.ok ? "rgba(52,211,153,0.03)" : "transparent", border: `1px solid ${x.ok ? "rgba(52,211,153,0.1)" : S.brd}` }}>
-                  <span style={{ fontSize: 20 }}>{x.i}</span>
-                  <div><div style={{ fontSize: 12, fontWeight: 600, color: x.ok ? S.grn : S.mut }}>{x.p} {x.ok && "✓"}</div><div style={{ fontSize: 10, color: S.mut }}>{x.d}</div></div>
-                </div>
-              ))}
-            </div>
-          </Cd>
+        <div className="tariff-toggle" style={{ marginBottom: '2rem' }}>
+          <button
+            className={`tariff-btn ${tariffType === 'residential' ? 'active' : ''}`}
+            onClick={() => setTariffType('residential')}
+          >Побутовий</button>
+          <button
+            className={`tariff-btn ${tariffType === 'commercial' ? 'active' : ''}`}
+            onClick={() => setTariffType('commercial')}
+          >Комерційний</button>
         </div>
-      )}
 
-      {/* ============ SAVINGS ============ */}
-      {page === "savings" && (
-        <div style={{ animation: "fadeUp 0.4s", padding: "40px 16px", maxWidth: 780, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "Syne,sans-serif", fontSize: "clamp(22px,4vw,32px)", fontWeight: 800, textAlign: "center", marginBottom: 20 }}>💰 Розрахунок економії</h2>
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 18 }}>
-            <Pill active={tt === "household"} color={S.blu} onClick={() => switchT("household")}>🏠 Побутовий</Pill>
-            <Pill active={tt === "commercial"} color={S.org} onClick={() => switchT("commercial")}>🏢 Комерційний</Pill>
+        <div className="calc-grid">
+          {APPLIANCES.map((a, i) => (
+            <div
+              key={i}
+              className={`calc-item ${selectedAppliances.includes(i) ? 'active' : ''}`}
+              onClick={() => toggleAppliance(i)}
+            >
+              <span className="calc-item-name">{a.name}</span>
+              <span className="calc-item-watts">{a.watts} Вт</span>
+            </div>
+          ))}
+        </div>
+
+        {selectedAppliances.length > 0 && (
+          <div className="calc-result fade-up">
+            <div className="calc-result-grid">
+              <div className="calc-result-item">
+                <div className="calc-result-label">Потужність</div>
+                <div className="calc-result-value">{totalWatts.toLocaleString()} Вт</div>
+              </div>
+              <div className="calc-result-item">
+                <div className="calc-result-label">Щоденне споживання</div>
+                <div className="calc-result-value">{totalDailyKwh.toFixed(1)} кВт·год</div>
+              </div>
+              <div className="calc-result-item">
+                <div className="calc-result-label">Щомісячне</div>
+                <div className="calc-result-value">{monthlyKwh.toFixed(0)} кВт·год</div>
+              </div>
+              <div className="calc-result-item">
+                <div className="calc-result-label">Покриття (2 панелі)</div>
+                <div className="calc-result-value">{coverage2.toFixed(0)}%</div>
+              </div>
+              <div className="calc-result-item">
+                <div className="calc-result-label">Покриття (4 панелі)</div>
+                <div className="calc-result-value">{coverage4.toFixed(0)}%</div>
+              </div>
+            </div>
+            <div className="calc-result-note">
+              * Розрахунок базується на середніх 3.5 сонячних годинах / день та панелях Trina 455 Вт
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* PRODUCTS / SYSTEMS */}
+      <section className="section" id="systems">
+        <div className="section-title fade-up">Системи накопичення</div>
+        <div className="section-sub fade-up-d1">Порівняйте три рішення для зберігання енергії</div>
+
+        <div className="products-grid">
+          {PRODUCTS.map((p, i) => (
+            <div className={`product-card fade-up-d${i + 1}`} key={i} style={{ borderTop: `4px solid ${p.color}` }}>
+              <div className="product-name">{p.name}</div>
+
+              <div className="product-spec">
+                <span className="product-spec-label">Ємність</span>
+                <span className="product-spec-value">{p.capacity} Вт·год</span>
+              </div>
+              <div className="product-bar-bg">
+                <div className="product-bar-fill" style={{ width: `${(p.capacity / 2000) * 100}%`, background: p.color }} />
+              </div>
+
+              <div className="product-spec" style={{ marginTop: '1rem' }}>
+                <span className="product-spec-label">Вихідна потужність</span>
+                <span className="product-spec-value">{p.output} Вт</span>
+              </div>
+              <div className="product-bar-bg">
+                <div className="product-bar-fill" style={{ width: `${(p.output / 2000) * 100}%`, background: p.color }} />
+              </div>
+
+              <div className="product-spec" style={{ marginTop: '1rem' }}>
+                <span className="product-spec-label">Цикли</span>
+                <span className="product-spec-value">{p.cycles.toLocaleString()}</span>
+              </div>
+              <div className="product-bar-bg">
+                <div className="product-bar-fill" style={{ width: `${(p.cycles / 6000) * 100}%`, background: p.color }} />
+              </div>
+
+              <div className="product-spec" style={{ marginTop: '1rem' }}>
+                <span className="product-spec-label">Гарантія</span>
+                <span className="product-spec-value">{p.warranty} років</span>
+              </div>
+
+              <div className="product-price" style={{ color: p.color }}>{p.price}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* EQUIPMENT */}
+      <section className="section section-alt" id="equip">
+        <div className="section-title fade-up">Обладнання</div>
+        <div className="section-sub fade-up-d1">Якісні компоненти для вашої системи</div>
+
+        <div className="equip-grid">
+          {/* Panel */}
+          <div className="equip-card fade-up-d1">
+            <div className="equip-card-title">Trina TSM-455 NEG9R.28</div>
+            <div className="equip-card-subtitle">Сонячна панель 455 Вт</div>
+            {[
+              ['Потужність', '455 Вт'],
+              ['ККД', '22.8%'],
+              ['Розміри', '1762 × 1134 × 30 мм'],
+              ['Площа', '~2.0 м²'],
+              ['Тип', 'N-type монокристал'],
+              ['Гарантія', '25 / 30 років'],
+              ['Ціна', '3,450 грн / шт'],
+            ].map(([l, v], j) => (
+              <div className="equip-spec" key={j}>
+                <span className="equip-spec-label">{l}</span>
+                <span className="equip-spec-value">{v}</span>
+              </div>
+            ))}
           </div>
 
-          <Cd style={{ marginBottom: 14, padding: 14, borderLeft: `3px solid ${tt === "commercial" ? S.org : S.blu}` }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-              <div style={{ fontSize: 11, color: S.mut, maxWidth: 340 }}>{t.desc}</div>
-              <div style={{ display: "flex", gap: 12 }}>
-                {[["Зараз", t.currentLabel, S.gold], ["Ніч", t.nightLabel, S.grn], ["Прогноз", t.futureLabel, S.pnk]].map(([l, v, c]) => (
-                  <div key={l} style={{ textAlign: "center" }}><div style={{ fontSize: 9, color: S.mut }}>{l}</div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 15, fontWeight: 800, color: c }}>{v}</div></div>
-                ))}
+          {/* Inverter */}
+          <div className="equip-card fade-up-d2">
+            <div className="equip-card-title">Deye SUN-M80G4-EU-Q0</div>
+            <div className="equip-card-subtitle">Мікроінвертор 800 Вт</div>
+            {[
+              ['Потужність', '800 Вт'],
+              ['ККД', '96.5%'],
+              ['MPPT трекери', '2'],
+              ['Макс. вхід', '1200 Вт'],
+              ['Захист', 'IP67'],
+              ['Гарантія', '15 років'],
+              ['Ціна', '6,200 грн / шт'],
+            ].map(([l, v], j) => (
+              <div className="equip-spec" key={j}>
+                <span className="equip-spec-label">{l}</span>
+                <span className="equip-spec-value">{v}</span>
               </div>
-            </div>
-          </Cd>
-
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
-            <div style={{ display: "flex", background: S.card, borderRadius: 12, padding: 3, border: `1px solid ${S.brd}` }}>
-              {[2, 4].map(n => <button key={n} onClick={() => setPanels(n)} style={{ padding: "7px 18px", borderRadius: 10, border: "none", cursor: "pointer", fontFamily: "Space Grotesk,sans-serif", fontWeight: 600, fontSize: 12, background: panels === n ? `linear-gradient(135deg,${S.gold},#f59e0b)` : "transparent", color: panels === n ? "#080c15" : S.mut }}>{n} пан. ({SOLAR[n].watts}Вт)</button>)}
-            </div>
+            ))}
           </div>
 
-          <Cd style={{ padding: 24 }}>
-            <div style={{ marginBottom: 18 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 12, color: S.mut }}>Споживання</span>
-                <span style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, color: S.gold }}>{cons} кВт·год/міс</span>
+          {/* Smart Meter */}
+          <div className="equip-card fade-up-d3">
+            <div className="equip-card-title">Deye SUN-SMART-CT01</div>
+            <div className="equip-card-subtitle">Smart Meter 3-фазний</div>
+            {[
+              ["Зв'язок", 'LoRa / RS485'],
+              ['Дальність', 'до 200 м'],
+              ['Дисплей', 'LCD'],
+              ['Монтаж', 'DIN-рейка'],
+              ['Захист', 'IP20'],
+              ['Гарантія', '5 років'],
+              ['Ціна', '4,000 грн / шт'],
+            ].map(([l, v], j) => (
+              <div className="equip-spec" key={j}>
+                <span className="equip-spec-label">{l}</span>
+                <span className="equip-spec-value">{v}</span>
               </div>
-              <input type="range" min={tt === "commercial" ? 200 : 100} max={t.maxCons} value={cons} onChange={e => setCons(+e.target.value)} />
-            </div>
+            ))}
+          </div>
+        </div>
 
-            <div style={{ marginBottom: 18, padding: 14, borderRadius: 12, background: "rgba(255,255,255,0.02)", border: `1px solid ${S.brd}` }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 8, alignItems: "center" }}>
-                <div style={{ textAlign: "center" }}><div style={{ fontSize: 9, color: "#ef4444", fontWeight: 600 }}>Без системи</div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 18, fontWeight: 800, color: "#ef4444" }}><C value={bill} suffix=" грн" decimals={0} /></div></div>
-                <div style={{ fontSize: 20, color: S.gold }}>→</div>
-                <div style={{ textAlign: "center" }}><div style={{ fontSize: 9, color: S.grn, fontWeight: 600 }}>З системою</div><div style={{ fontFamily: "Syne,sans-serif", fontSize: 18, fontWeight: 800, color: S.grn }}><C value={billAfter} suffix=" грн" decimals={0} /></div></div>
+        {/* PRICING TABLE */}
+        <div style={{ marginTop: '3rem' }}>
+          <div className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>
+            Ціна системи «під ключ»
+          </div>
+          <div className="pricing-table">
+            <div className="pricing-row pricing-header">
+              <div className="pricing-cell">Компонент</div>
+              <div className="pricing-cell">2 панелі</div>
+              <div className="pricing-cell">4 панелі</div>
+            </div>
+            {[
+              ['Накопичувач Deye', '40,000 грн', '40,000 грн'],
+              ['Панелі Trina', '6,900 грн', '13,800 грн'],
+              ['Інвертор Deye', '6,200 грн', '12,400 грн'],
+              ['Smart Meter', '4,000 грн', '4,000 грн'],
+            ].map(([c, p2, p4], j) => (
+              <div className="pricing-row" key={j}>
+                <div className="pricing-cell">{c}</div>
+                <div className="pricing-cell">{p2}</div>
+                <div className="pricing-cell">{p4}</div>
               </div>
-              <div style={{ textAlign: "center", marginTop: 6, fontFamily: "Syne,sans-serif", fontSize: 13, fontWeight: 800, color: S.gold }}>
-                Економія: <C value={savNow} suffix=" грн/міс" decimals={0} />
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-              {[[`Зараз (${t.currentLabel})`, savNow, S.gold], [`Прогноз (${t.futureLabel})`, savFut, S.pnk]].map(([l, v, c]) => (
-                <div key={l} style={{ padding: 12, borderRadius: 12, background: `${c}08`, border: `1px solid ${c}15`, textAlign: "center" }}>
-                  <div style={{ fontSize: 10, color: c, fontWeight: 600 }}>{l}</div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 16, fontWeight: 800, color: c }}><C value={v} suffix=" грн/міс" decimals={0} /></div>
-                  <div style={{ fontSize: 10, color: S.mut }}><C value={v * 12} suffix=" грн/рік" decimals={0} /></div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                <span style={{ fontSize: 11, color: S.mut }}>Власна генерація</span>
-                <span style={{ fontWeight: 700, color: S.grn }}>{selfPct}%</span>
-              </div>
-              <Bar pct={selfPct} color={S.grn} h={8} />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-              {[
-                ["⏱️ Окупність", `~${payback} р.`, S.vio],
-                ["💰 За 10 років", `${(savNow * 120).toLocaleString(undefined, { maximumFractionDigits: 0 })} грн`, S.grn],
-                ["🏦 Кредит 0%", `~${monthlyCredit} грн/міс`, S.blu],
-              ].map(([l, v, c]) => (
-                <div key={l} style={{ padding: 10, borderRadius: 12, background: `${c}08`, border: `1px solid ${c}15`, textAlign: "center" }}>
-                  <div style={{ fontSize: 9, color: c, fontWeight: 600 }}>{l}</div>
-                  <div style={{ fontFamily: "Syne,sans-serif", fontSize: 16, fontWeight: 800, color: c }}>{v}</div>
-                </div>
-              ))}
-            </div>
-          </Cd>
-
-          <div style={{ textAlign: "center", marginTop: 28, padding: 28, background: S.card, border: `1px solid ${S.brd}`, borderRadius: 16 }}>
-            <h3 style={{ fontFamily: "Syne,sans-serif", fontSize: 18, fontWeight: 800, marginBottom: 8 }}>
-              Готові? <span style={{ color: S.gold }}>Система від {sysTotal.toLocaleString()} грн</span>
-            </h3>
-            <p style={{ color: S.mut, fontSize: 12, marginBottom: 16 }}>
-              Кредит 0% = ~{monthlyCredit} грн/міс. Економія з першого місяця!
-            </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-              <button style={{ background: `linear-gradient(135deg,${S.gold},#f59e0b)`, color: "#080c15", border: "none", padding: "12px 24px", borderRadius: 12, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "Space Grotesk,sans-serif" }}>📞 Консультація</button>
-              <button style={{ background: "transparent", color: S.gold, border: "2px solid rgba(251,191,36,0.3)", padding: "10px 18px", borderRadius: 12, fontWeight: 600, fontSize: 12, cursor: "pointer" }}>📱 Telegram</button>
+            ))}
+            <div className="pricing-row pricing-total">
+              <div className="pricing-cell">РАЗОМ</div>
+              <div className="pricing-cell">57,100 грн</div>
+              <div className="pricing-cell">70,200 грн</div>
             </div>
           </div>
         </div>
-      )}
 
-      <footer style={{ background: "#060910", padding: "20px 16px", borderTop: `1px solid ${S.brd}`, marginTop: page === "hero" ? 0 : 32 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <span style={{ fontFamily: "Syne,sans-serif", fontWeight: 800, fontSize: 14, color: S.gold }}>⚡ SolarBalkon<span style={{ color: "#374151", fontSize: 11 }}>.ua</span></span>
-          <span style={{ fontSize: 10, color: "#374151" }}>© 2026 — Балконні енергосистеми</span>
+        {/* CREDIT */}
+        <div className="credit-banner">
+          <h3>Державний кредит 0% — «Джерела енергії»</h3>
+          <p>Програма для фізичних осіб через 43 банки-партнери</p>
+          <div className="credit-details">
+            <div className="credit-detail">
+              <div className="credit-detail-value">0%</div>
+              <div className="credit-detail-label">Ставка</div>
+            </div>
+            <div className="credit-detail">
+              <div className="credit-detail-value">480,000</div>
+              <div className="credit-detail-label">грн максимум</div>
+            </div>
+            <div className="credit-detail">
+              <div className="credit-detail-value">10</div>
+              <div className="credit-detail-label">років</div>
+            </div>
+            <div className="credit-detail">
+              <div className="credit-detail-value">30%</div>
+              <div className="credit-detail-label">Компенсація</div>
+            </div>
+          </div>
         </div>
+      </section>
+
+      {/* SAVINGS */}
+      <section className="section section-green" id="savings">
+        <div className="section-title fade-up">Калькулятор економії</div>
+        <div className="section-sub fade-up-d1">
+          Дізнайтесь, скільки ви зможете зекономити з системою на 4 панелі
+        </div>
+
+        <div className="savings-container">
+          <div className="savings-slider-wrap">
+            <div className="savings-slider-label">Ваше місячне споживання</div>
+            <div className="savings-slider-value">{consumption} кВт·год</div>
+            <input
+              type="range"
+              className="savings-slider"
+              min={tariff.min}
+              max={tariff.max}
+              step={tariff.step}
+              value={consumption}
+              onChange={e => setConsumption(+e.target.value)}
+            />
+          </div>
+
+          <div className="savings-cards">
+            <div className="savings-card before">
+              <div className="savings-card-label">Рахунок без панелей</div>
+              <div className="savings-card-value">{billBefore.toFixed(0)} грн</div>
+            </div>
+            <div className="savings-card after">
+              <div className="savings-card-label">Рахунок з панелями</div>
+              <div className="savings-card-value">{billAfter.toFixed(0)} грн</div>
+            </div>
+          </div>
+
+          <div className="savings-stats">
+            <div className="savings-stat">
+              <div className="savings-stat-value">{monthlySaving.toFixed(0)} грн</div>
+              <div className="savings-stat-label">Економія / місяць</div>
+            </div>
+            <div className="savings-stat">
+              <div className="savings-stat-value">
+                {paybackMonths > 0 ? `${(paybackMonths / 12).toFixed(1)} р.` : '—'}
+              </div>
+              <div className="savings-stat-label">Окупність</div>
+            </div>
+            <div className="savings-stat">
+              <div className="savings-stat-value">
+                {saving10y > 0 ? `${(saving10y / 1000).toFixed(0)}k грн` : '—'}
+              </div>
+              <div className="savings-stat-label">Вигода за 10 років</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+        <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+        <p style={{ marginTop: '0.5rem', fontSize: '0.78rem' }}>
+          Балконні сонячні електростанції в Україні
+        </p>
       </footer>
-    </div>
+    </>
   );
 }
