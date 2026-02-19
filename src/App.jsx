@@ -182,13 +182,15 @@ body {
   background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
 }
 .hero::after {
-  content:''; position:absolute; bottom:-100px; left:-100px;
-  width:400px; height:400px; border-radius:50%;
-  background: radial-gradient(circle, rgba(251,192,45,0.1) 0%, transparent 70%);
+  content:''; position:absolute; right:-5%; bottom:-5%;
+  width:55%; height:85%;
+  background: url('/hero-bg.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.15; pointer-events: none;
 }
 .hero-inner {
   max-width:1200px; margin:0 auto; width:100%;
-  position:relative; z-index:1;
+  position:relative; z-index:1; text-align: left;
 }
 .hero-badge {
   display:inline-flex; align-items:center; gap:8px;
@@ -202,7 +204,7 @@ body {
   font-size:clamp(2.4rem, 5vw, 4rem);
   font-weight:800; line-height:1.15;
   color:var(--gray-900);
-  margin-bottom:1rem;
+  margin-bottom:1rem; max-width: 650px;
 }
 .hero h1 em {
   font-style:normal;
@@ -787,7 +789,10 @@ body {
 @media (max-width:768px) {
   .nav-links { display:none; }
   .hero { padding:100px 1.5rem 40px; }
-  .hero h1 { font-size:2rem; }
+  .hero::after { display: none; }
+  .hero-inner { text-align: center; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero h1 { font-size:2rem; max-width: none; }
   .section { padding:50px 1.5rem; }
   .tariff-cards { grid-template-columns:1fr 1fr; }
   .calc-grid { grid-template-columns:1fr 1fr; }
@@ -1584,15 +1589,8 @@ export default function SolarBalkon() {
               </p>
             </div>
             <div className="detail-feature-img">
-              <div className="detail-video-wrap" style={{ maxWidth: '100%', margin: 0, boxShadow: 'none' }}>
-                <iframe
-                  src="https://www.youtube.com/embed/7qATOYRR6Bc"
-                  title="Zendure SolarFlow 2400 AC+ Battery Maintenance"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                <img src="/zendure-bms.png" alt="Intelligent Battery Self-Maintenance BMS" />
               </div>
-            </div>
           </div>
 
           {/* FEATURE 5: Metering Accessories */}
@@ -1608,7 +1606,7 @@ export default function SolarBalkon() {
                 </p>
               </div>
               <div className="detail-feature-img">
-                <img src="https://zendure.com/cdn/shop/files/PC_4.png?v=1770270189&width=1200" alt="Metering Accessories" />
+                <img src="/zendure-metering.webp" alt="Metering Accessories" />
               </div>
             </div>
           </div>
@@ -1622,7 +1620,7 @@ export default function SolarBalkon() {
               Сумісний з усіма мікроінверторами до 2000 Вт. Підтримка Home Assistant,
               Homey, Shelly через MQTT.
             </p>
-            <img src="https://zendure.com/cdn/shop/files/PC_3.png?v=1770270189&width=1200" alt="All-in-One Design" />
+            <img src="/zendure-allinone.png" alt="All-in-One Design" />
           </div>
 
           {/* FEATURE 7: Weather-proof + Warranty */}
@@ -1638,7 +1636,7 @@ export default function SolarBalkon() {
                 </p>
               </div>
               <div className="detail-feature-img">
-                <img src="https://zendure.com/cdn/shop/files/PC_5.png?v=1770270189&width=1200" alt="IP65 Weather Proof" />
+                <img src="/zendure-weather.webp" alt="IP65 Weather Proof" />
               </div>
             </div>
           </div>
