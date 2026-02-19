@@ -182,7 +182,7 @@ body {
   background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
 }
 .hero::after {
-  content:''; position:absolute; right:-2%; top:10%;
+  content:''; position:absolute; right:-2%; top:-5%;
   width:50%; height:80%;
   background: url('/hero-bg.png') no-repeat center center;
   background-size: contain;
