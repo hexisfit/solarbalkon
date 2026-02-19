@@ -182,11 +182,11 @@ body {
   background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
 }
 .hero::after {
-  content:''; position:absolute; right:-5%; bottom:-5%;
-  width:55%; height:85%;
+  content:''; position:absolute; right:-2%; top:10%;
+  width:50%; height:80%;
   background: url('/hero-bg.png') no-repeat center center;
   background-size: contain;
-  opacity: 0.15; pointer-events: none;
+  opacity: 0.18; pointer-events: none;
 }
 .hero-inner {
   max-width:1200px; margin:0 auto; width:100%;
@@ -1572,7 +1572,14 @@ export default function SolarBalkon() {
                 </p>
               </div>
               <div className="detail-feature-img">
-                <img src="https://zendure.com/cdn/shop/files/PC_2.png?v=1770270189&width=1200" alt="Plug and Play Setup" />
+                <div className="detail-video-wrap" style={{ maxWidth: '100%', margin: 0, boxShadow: 'none' }}>
+                  <iframe
+                    src="https://www.youtube.com/embed/7qATOYRR6Bc"
+                    title="Zendure SolarFlow 2400 AC+ Installation"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             </div>
           </div>
