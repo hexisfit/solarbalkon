@@ -182,8 +182,8 @@ body {
   background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
 }
 .hero::after {
-  content:''; position:absolute; right:-2%; top:-5%;
-  width:50%; height:80%;
+  content:''; position:absolute; right:-2%; top:5%;
+  width:50%; height:65%;
   background: url('/hero-bg.png') no-repeat center center;
   background-size: contain;
   opacity: 0.18; pointer-events: none;
@@ -1465,6 +1465,23 @@ export default function SolarBalkon() {
               до 6,000 циклів — це понад 15 років надійної роботи.
             </p>
             <img src="https://de.ecoflow.com/cdn/shop/files/02_PC_a6f2a87d-4fa5-4e4e-a726-f800a5ceb282.png?v=1745844265&width=1200" alt="Ready For Any Weather" />
+          </div>
+
+          {/* INSTALLATION MANUAL */}
+          <div className="detail-feature-full" style={{ paddingBottom: '1rem' }}>
+            <h2>📖 Інструкція з встановлення</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1rem', lineHeight: '1.7' }}>
+              Завантажте офіційну інструкцію з встановлення EcoFlow STREAM AC Pro
+              для покрокового керівництва з підключення та налаштування системи.
+            </p>
+            <a
+              className="detail-pdf-btn"
+              href="https://ecoflow-service-us-prod.oss-us-west-1.aliyuncs.com/cms/manual/1758263879628/EcoFlow%20STREAM%20AC%20Pro_User%20Manual.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📄 Завантажити PDF інструкцію
+            </a>
           </div>
 
           {/* CTA */}
