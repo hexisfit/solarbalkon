@@ -1146,6 +1146,17 @@ export default function SolarBalkon() {
                   Детальніше →
                 </button>
               )}
+              {i === 2 && (
+                <button
+                  className="product-btn"
+                  style={{ color: p.color, borderColor: p.color }}
+                  onMouseEnter={e => { e.target.style.background = p.color; }}
+                  onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = p.color; }}
+                  onClick={() => goToPage('deye')}
+                >
+                  Детальніше →
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -1675,6 +1686,171 @@ export default function SolarBalkon() {
             <a
               className="detail-pdf-btn"
               href="https://cdn.shopify.com/s/files/1/0720/4379/0616/files/SolarFlow_2400_AC__User_Manual_EN_FR_20260122.pdf?v=1770547505"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📄 Завантажити PDF інструкцію
+            </a>
+          </div>
+
+          {/* CTA */}
+          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+            <button className="hero-cta" onClick={() => goToPage('home')}>
+              ← Повернутися до калькулятора
+            </button>
+          </div>
+
+          <footer className="footer">
+            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+          </footer>
+        </div>
+      )}
+
+      {/* ═══════ DEYE DETAIL PAGE ═══════ */}
+      {currentPage === 'deye' && (
+        <div className="detail-page">
+          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+
+          {/* HERO */}
+          <div className="detail-hero-section">
+            <div className="detail-hero-img">
+              <img src="/deye.png" alt="Deye AE-FS2.0-2H2" />
+            </div>
+            <div className="detail-hero-info">
+              <h1>Deye AE-FS2.0-2H2</h1>
+              <div className="detail-price">40,000 грн</div>
+              <div className="detail-specs-grid">
+                {[
+                  ['Ємність', '2.0 кВт·год (до 10)'],
+                  ['AC Вихід', '800 Вт'],
+                  ['PV Вхід', '1,000 Вт макс.'],
+                  ['MPPT', '2 трекери'],
+                  ['Батарея', 'LiFePO4 51.2В'],
+                  ['Цикли', '6,000'],
+                  ['Захист', 'IP65'],
+                  ['UPS', '< 4 мс'],
+                  ['Гарантія', '10 років'],
+                  ['Вага', '~26 кг'],
+                  ['Розміри', '450 × 210 × 321 мм'],
+                  ['Температура', '-10°C — +50°C'],
+                ].map(([l, v], j) => (
+                  <div className="detail-spec" key={j}>
+                    <span className="detail-spec-label">{l}</span>
+                    <span className="detail-spec-value">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 1: All-in-One */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>📦 Все в одному — інвертор + батарея + MPPT</h2>
+                <p>
+                  Deye AE-FS2.0-2H2 об'єднує мікроінвертор з 2 MPPT-трекерами, акумулятор
+                  LiFePO4 на 2 кВт·год та систему управління в одному компактному корпусі.
+                  Сумісний з 99% сонячних панелей на ринку. Підтримує AC-зв'язок для
+                  інтеграції з існуючою PV-системою — заряд та розряд на стороні AC.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="https://www.deyestore.com/cdn/shop/files/Balcony-Portrait_2.png?v=1764921140&width=1200" alt="Deye All-in-One" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 2: Battery 6000 cycles */}
+          <div className="detail-feature reverse">
+            <div className="detail-feature-text">
+              <h2>🔋 2000 Вт·год батарея — 10 років служби</h2>
+              <p>
+                В основі системи — акумулятор LiFePO4 на 2 кВт·год, найбезпечніша та
+                найдовговічніша літієва технологія. Вбудована Smart BMS моніторить кожну
+                комірку за температурою, напругою та струмом. Понад 6,000 циклів заряду
+                та 10 років гарантії від виробника.
+              </p>
+            </div>
+            <div className="detail-feature-img">
+              <img src="https://www.deyestore.com/cdn/shop/files/1222222.png?v=1765441573&width=1200" alt="Robust Battery" />
+            </div>
+          </div>
+
+          {/* FEATURE 3: IP65 Weatherproof */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>🌧 IP65 — працює на відкритому повітрі цілий рік</h2>
+                <p>
+                  Повний захист від водяних струменів та пилу — дощ, сніг чи літні грози
+                  не страшні. Робочий діапазон від -10°C до +50°C покриває навіть найсуворіші
+                  зими та найспекотніші літа. Компактні розміри 450 × 210 × 321 мм та вага
+                  всього 26 кг — підходить для будь-якого балкону без настінного кріплення.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="https://www.deyestore.com/cdn/shop/files/155555.png?v=1765441819&width=1200" alt="IP65 Weatherproof" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 4: Smart LCD + App */}
+          <div className="detail-feature reverse">
+            <div className="detail-feature-text">
+              <h2>📱 LCD-дисплей + додаток Deye Cloud</h2>
+              <p>
+                Вбудований LCD-дисплей показує стан батареї миттєво, а додаток Deye Cloud
+                дозволяє детально моніторити систему зі смартфона. Відстежуйте генерацію
+                сонячної енергії, потік потужності в реальному часі та налаштовуйте параметри
+                віддалено. Підключення через Bluetooth та Wi-Fi.
+              </p>
+            </div>
+            <div className="detail-feature-img">
+              <img src="https://www.deyestore.com/cdn/shop/files/177777.png?v=1765441919&width=1200" alt="Smart LCD App Control" />
+            </div>
+          </div>
+
+          {/* FEATURE 5: UPS */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>⚡ UPS — переключення за 4 мілісекунди</h2>
+                <p>
+                  При відключенні електромережі вбудований UPS активується менше ніж за
+                  4 мілісекунди — ваше світло навіть не блимне. Холодильник, роутер та
+                  зарядки продовжують працювати. Батарея на 2 кВт·год забезпечує годинами
+                  роботи основних приладів під час блекауту.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="https://www.deyestore.com/cdn/shop/files/2e820d0d3cd46387a366f486056a04af.png?v=1764931162&width=1200" alt="UPS Function" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 6: Expandable + USB */}
+          <div className="detail-feature-full">
+            <h2>🔌 Розширення до 10 кВт·год + USB зарядка</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1.5rem', lineHeight: '1.7' }}>
+              Додайте до 4 модулів AE-F2.0 (по 2 кВт·год кожен) для загальної ємності 10 кВт·год.
+              Вбудовані порти USB-A та Type-C перетворюють систему на зарядний хаб — заряджайте
+              телефон, планшет чи ноутбук безпосередньо від сонячної енергії.
+            </p>
+            <img src="https://www.deyestore.com/cdn/shop/files/166666.png?v=1765441868&width=1200" alt="Expandable USB Charging" />
+          </div>
+
+          {/* INSTALLATION MANUAL */}
+          <div className="detail-feature-full" style={{ paddingBottom: '1rem' }}>
+            <h2>📖 Інструкція з встановлення</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1rem', lineHeight: '1.7' }}>
+              Завантажте офіційну інструкцію з встановлення Deye AE-FS2.0-2H2
+              для покрокового керівництва з підключення та налаштування системи.
+            </p>
+            <a
+              className="detail-pdf-btn"
+              href="https://deyeess.com/wp-content/uploads/2026/02/Deye-AE-FS2.0-2H2-User-Manual.pdf"
               target="_blank"
               rel="noopener noreferrer"
             >
