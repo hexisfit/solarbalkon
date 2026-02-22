@@ -809,6 +809,121 @@ body {
   background: var(--green-700); border-color: var(--green-700);
 }
 
+/* CONFIGURATOR */
+.config-systems {
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:1rem; max-width:900px; margin:0 auto 2rem;
+}
+.config-sys-btn {
+  padding:1.25rem; border-radius:var(--radius-lg);
+  border:2px solid var(--gray-200); background:var(--white);
+  cursor:pointer; text-align:center;
+  transition: all 0.2s;
+  font-family:var(--font-body);
+}
+.config-sys-btn:hover { border-color:var(--green-300); }
+.config-sys-btn.active {
+  border-color:var(--green-500);
+  background:var(--green-50);
+  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+}
+.config-sys-name {
+  font-family:var(--font-display);
+  font-size:1.05rem; font-weight:700;
+  color:var(--gray-900); margin-bottom:0.25rem;
+}
+.config-sys-price {
+  font-size:0.9rem; font-weight:600; color:var(--green-700);
+}
+.config-panel-toggle {
+  display:flex; gap:0; background:var(--gray-100);
+  border-radius:50px; padding:4px; width:fit-content;
+  margin:0 auto 2rem;
+}
+.config-panel-btn {
+  padding:10px 28px; border-radius:50px;
+  border:none; cursor:pointer;
+  font-family:var(--font-body); font-weight:600;
+  font-size:0.9rem; transition:all 0.3s;
+  background:transparent; color:var(--gray-500);
+}
+.config-panel-btn.active {
+  background:linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white;
+  box-shadow:0 2px 8px rgba(76,175,80,0.3);
+}
+.config-section-label {
+  font-family:var(--font-display);
+  font-size:1.1rem; font-weight:700;
+  color:var(--gray-800); margin-bottom:0.75rem;
+  padding-left:0.5rem;
+  border-left:3px solid var(--green-500);
+}
+.config-items {
+  max-width:900px; margin:0 auto 1.5rem;
+}
+.config-item {
+  display:grid; grid-template-columns:1fr auto auto;
+  align-items:center; gap:1rem;
+  padding:0.85rem 1.25rem;
+  border-bottom:1px solid var(--gray-100);
+  background:var(--white);
+}
+.config-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.config-item:last-child { border-radius:0 0 var(--radius) var(--radius); border-bottom:none; }
+.config-item:only-child { border-radius:var(--radius); }
+.config-item-name { font-size:0.9rem; color:var(--gray-700); }
+.config-item-name small { display:block; font-size:0.78rem; color:var(--gray-400); }
+.config-item-qty {
+  font-size:0.82rem; color:var(--gray-400);
+  white-space:nowrap;
+}
+.config-item-price {
+  font-weight:600; font-size:0.9rem; color:var(--gray-800);
+  text-align:right; white-space:nowrap;
+}
+.config-opt-item {
+  display:grid; grid-template-columns:auto 1fr auto auto;
+  align-items:center; gap:1rem;
+  padding:0.85rem 1.25rem;
+  border-bottom:1px solid var(--gray-100);
+  background:var(--white);
+  cursor:pointer; user-select:none;
+  transition: background 0.15s;
+}
+.config-opt-item:hover { background:var(--gray-50); }
+.config-opt-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.config-opt-item:last-child { border-radius:0 0 var(--radius) var(--radius); border-bottom:none; }
+.config-checkbox {
+  width:22px; height:22px; border-radius:6px;
+  border:2px solid var(--gray-300);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all 0.2s;
+  font-size:0.75rem; color:white;
+}
+.config-checkbox.checked {
+  background:var(--green-500); border-color:var(--green-500);
+}
+.config-total-bar {
+  max-width:900px; margin:2rem auto;
+  background:linear-gradient(135deg, var(--green-600), var(--green-700));
+  border-radius:var(--radius-lg);
+  padding:1.5rem 2rem;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:1rem;
+  color:white; box-shadow:var(--shadow-lg);
+}
+.config-total-label {
+  font-size:1rem; font-weight:500; opacity:0.9;
+}
+.config-total-value {
+  font-family:var(--font-display);
+  font-size:2rem; font-weight:800;
+}
+.config-total-credit {
+  font-size:0.85rem; opacity:0.75;
+}
+
 /* NAV SOCIAL */
 .nav-social {
   display:flex; align-items:center; gap:12px;
@@ -917,6 +1032,11 @@ body {
   .savings-stats { grid-template-columns:1fr; }
   .products-grid { grid-template-columns:1fr; }
   .equip-grid { grid-template-columns:1fr; }
+  .config-systems { grid-template-columns:1fr; }
+  .config-item { grid-template-columns:1fr auto; gap:0.5rem; }
+  .config-item-qty { display:none; }
+  .config-opt-item { grid-template-columns:auto 1fr auto; gap:0.5rem; }
+  .config-total-bar { flex-direction:column; text-align:center; }
   .pricing-row { grid-template-columns:1.5fr 1fr 1fr; padding:0.75rem 1rem; }
   .credit-details { gap:1rem; }
   .detail-hero-section { grid-template-columns:1fr; gap:1.5rem; }
@@ -1129,6 +1249,10 @@ export default function SolarBalkon() {
   const [scrolled, setScrolled] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
   const [sheetPrices, setSheetPrices] = useState(null);
+  const [sheetComponents, setSheetComponents] = useState([]);
+  const [configSystem, setConfigSystem] = useState('zendure');
+  const [configPanels, setConfigPanels] = useState(2);
+  const [configExtras, setConfigExtras] = useState([]);
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -1154,15 +1278,18 @@ export default function SolarBalkon() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  // Fetch prices from API (server-side proxy for Google Sheets + PrivatBank)
+  // Fetch prices + components from API
   useEffect(() => {
     fetch('/api/prices')
       .then(r => r.ok ? r.json() : Promise.reject('API unavailable'))
       .then(data => {
         if (data.prices && Object.keys(data.prices).length > 0) {
           setSheetPrices(data.prices);
-          console.log(`✅ Ціни оновлено | EUR/UAH: ${data.eurRate} (ПриватБанк)`, data.prices);
         }
+        if (data.components && data.components.length > 0) {
+          setSheetComponents(data.components);
+        }
+        console.log(`✅ Ціни оновлено | EUR/UAH: ${data.eurRate} (ПриватБанк)`, data.prices);
       })
       .catch(err => console.log('⚠️ Ціни недоступні, базові ціни:', err));
   }, []);
@@ -1177,6 +1304,37 @@ export default function SolarBalkon() {
   const getPrice = (name) => {
     const num = (sheetPrices && sheetPrices[name]) || DEFAULT_PRICES[name];
     return num ? formatPrice(num) : '—';
+  };
+
+  // Reset extras when system changes
+  useEffect(() => { setConfigExtras([]); }, [configSystem]);
+
+  // Configurator: filter components for selected system
+  const sysComponents = sheetComponents.filter(c => c.systems.includes(configSystem));
+  const requiredComponents = sysComponents.filter(c => !c.optional);
+  const optionalComponents = sysComponents.filter(c => c.optional);
+
+  // Separate panels (they have qty 2 or 4 and same SKU pattern) 
+  const panelItems = sysComponents.filter(c => c.qty === configPanels && c.name.toLowerCase().includes('панель'));
+  const nonPanelRequired = requiredComponents.filter(c => !c.name.toLowerCase().includes('панель'));
+
+  // Calculate config total
+  const configSystemPrice = PRODUCTS.find(p => {
+    if (configSystem === 'zendure') return p.name.includes('Zendure');
+    if (configSystem === 'ecoflow') return p.name.includes('EcoFlow');
+    if (configSystem === 'deye') return p.name.includes('Deye');
+    return false;
+  })?.price || 0;
+
+  const configComponentsTotal = [...nonPanelRequired, ...panelItems].reduce((s, c) => s + (c.priceUah * c.qty), 0);
+  const configExtrasTotal = configExtras.reduce((s, sku) => {
+    const item = optionalComponents.find(c => c.sku === sku);
+    return s + (item ? item.priceUah * item.qty : 0);
+  }, 0);
+  const configTotal = configSystemPrice + configComponentsTotal + configExtrasTotal;
+
+  const toggleExtra = (sku) => {
+    setConfigExtras(prev => prev.includes(sku) ? prev.filter(s => s !== sku) : [...prev, sku]);
   };
 
   // SEO: dynamic title & meta description per page
@@ -1254,7 +1412,7 @@ export default function SolarBalkon() {
             <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a></li>
             <li><a href="/#calc" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('calc')?.scrollIntoView({behavior:'smooth'}), 100); }}>Калькулятор</a></li>
             <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
-            <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Обладнання</a></li>
+            <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Конфігуратор</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
           </ul>
           <div className="nav-social">
@@ -1525,102 +1683,100 @@ export default function SolarBalkon() {
         </div>
       </section>
 
-      {/* EQUIPMENT */}
+      {/* EQUIPMENT / CONFIGURATOR */}
       <section className="section section-alt" id="equip">
-        <div className="section-title fade-up">Обладнання</div>
-        <div className="section-sub fade-up-d1">Якісні компоненти для вашої системи</div>
+        <div className="section-title fade-up">Конфігуратор системи</div>
+        <div className="section-sub fade-up-d1">Оберіть систему, кількість панелей та додаткові компоненти</div>
 
-        <div className="equip-grid">
-          {/* Panel */}
-          <div className="equip-card fade-up-d1">
-            <div className="equip-card-title">Trina TSM-455 NEG9R.28</div>
-            <div className="equip-card-subtitle">Сонячна панель 455 Вт</div>
-            {[
-              ['Потужність', '455 Вт'],
-              ['ККД', '22.8%'],
-              ['Розміри', '1762 × 1134 × 30 мм'],
-              ['Площа', '~2.0 м²'],
-              ['Тип', 'N-type монокристал'],
-              ['Гарантія', '25 / 30 років'],
-              ['Ціна', '3,450 грн / шт'],
-            ].map(([l, v], j) => (
-              <div className="equip-spec" key={j}>
-                <span className="equip-spec-label">{l}</span>
-                <span className="equip-spec-value">{v}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Inverter */}
-          <div className="equip-card fade-up-d2">
-            <div className="equip-card-title">Deye SUN-M80G4-EU-Q0</div>
-            <div className="equip-card-subtitle">Мікроінвертор 800 Вт</div>
-            {[
-              ['Потужність', '800 Вт'],
-              ['ККД', '96.5%'],
-              ['MPPT трекери', '2'],
-              ['Макс. вхід', '1200 Вт'],
-              ['Захист', 'IP67'],
-              ['Гарантія', '15 років'],
-              ['Ціна', '6,200 грн / шт'],
-            ].map(([l, v], j) => (
-              <div className="equip-spec" key={j}>
-                <span className="equip-spec-label">{l}</span>
-                <span className="equip-spec-value">{v}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Smart Meter */}
-          <div className="equip-card fade-up-d3">
-            <div className="equip-card-title">Deye SUN-SMART-CT01</div>
-            <div className="equip-card-subtitle">Smart Meter 3-фазний</div>
-            {[
-              ["Зв'язок", 'LoRa / RS485'],
-              ['Дальність', 'до 200 м'],
-              ['Дисплей', 'LCD'],
-              ['Монтаж', 'DIN-рейка'],
-              ['Захист', 'IP20'],
-              ['Гарантія', '5 років'],
-              ['Ціна', '4,000 грн / шт'],
-            ].map(([l, v], j) => (
-              <div className="equip-spec" key={j}>
-                <span className="equip-spec-label">{l}</span>
-                <span className="equip-spec-value">{v}</span>
-              </div>
-            ))}
-          </div>
+        {/* STEP 1: SYSTEM */}
+        <div className="config-items" style={{ marginBottom: '1.5rem' }}>
+          <div className="config-section-label">1. Оберіть систему накопичення</div>
+        </div>
+        <div className="config-systems">
+          {PRODUCTS.map((p, i) => {
+            const key = i === 0 ? 'ecoflow' : i === 1 ? 'zendure' : 'deye';
+            return (
+              <button
+                key={key}
+                className={`config-sys-btn ${configSystem === key ? 'active' : ''}`}
+                onClick={() => setConfigSystem(key)}
+              >
+                <div className="config-sys-name">{p.name}</div>
+                <div className="config-sys-price">{formatPrice(p.price)}</div>
+              </button>
+            );
+          })}
         </div>
 
-        {/* PRICING TABLE */}
-        <div style={{ marginTop: '3rem' }}>
-          <div className="section-title" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>
-            Ціна системи «під ключ»
-          </div>
-          <div className="pricing-table">
-            <div className="pricing-row pricing-header">
-              <div className="pricing-cell">Компонент</div>
-              <div className="pricing-cell">2 панелі</div>
-              <div className="pricing-cell">4 панелі</div>
+        {/* STEP 2: PANELS */}
+        <div className="config-items" style={{ marginBottom: '0.75rem' }}>
+          <div className="config-section-label">2. Кількість сонячних панелей</div>
+        </div>
+        <div className="config-panel-toggle">
+          <button className={`config-panel-btn ${configPanels === 2 ? 'active' : ''}`} onClick={() => setConfigPanels(2)}>2 панелі</button>
+          <button className={`config-panel-btn ${configPanels === 4 ? 'active' : ''}`} onClick={() => setConfigPanels(4)}>4 панелі</button>
+        </div>
+
+        {/* INCLUDED COMPONENTS */}
+        {(sheetComponents.length > 0) && (<>
+          {/* Panels */}
+          {panelItems.length > 0 && (
+            <div className="config-items">
+              <div className="config-section-label">☀️ Сонячні панелі</div>
+              {panelItems.map((c, i) => (
+                <div className="config-item" key={`panel-${i}`} style={{ border: '1px solid var(--gray-200)', borderBottom: i < panelItems.length - 1 ? 'none' : '1px solid var(--gray-200)' }}>
+                  <div className="config-item-name">{c.name}<small>{c.sku}</small></div>
+                  <div className="config-item-qty">× {c.qty}</div>
+                  <div className="config-item-price">{formatPrice(c.priceUah * c.qty)}</div>
+                </div>
+              ))}
             </div>
-            {[
-              ['Накопичувач Deye', '40,000 грн', '40,000 грн'],
-              ['Панелі Trina', '6,900 грн', '13,800 грн'],
-              ['Інвертор Deye', '6,200 грн', '12,400 грн'],
-              ['Smart Meter', '4,000 грн', '4,000 грн'],
-            ].map(([c, p2, p4], j) => (
-              <div className="pricing-row" key={j}>
-                <div className="pricing-cell">{c}</div>
-                <div className="pricing-cell">{p2}</div>
-                <div className="pricing-cell">{p4}</div>
-              </div>
-            ))}
-            <div className="pricing-row pricing-total">
-              <div className="pricing-cell">РАЗОМ</div>
-              <div className="pricing-cell">57,100 грн</div>
-              <div className="pricing-cell">70,200 грн</div>
+          )}
+
+          {/* Required components */}
+          {nonPanelRequired.length > 0 && (
+            <div className="config-items">
+              <div className="config-section-label">🔧 Необхідні компоненти</div>
+              {nonPanelRequired.map((c, i) => (
+                <div className="config-item" key={`req-${i}`} style={{ border: '1px solid var(--gray-200)', borderBottom: i < nonPanelRequired.length - 1 ? 'none' : '1px solid var(--gray-200)' }}>
+                  <div className="config-item-name">{c.name}<small>{c.sku}</small></div>
+                  <div className="config-item-qty">× {c.qty}</div>
+                  <div className="config-item-price">{formatPrice(c.priceUah * c.qty)}</div>
+                </div>
+              ))}
             </div>
+          )}
+
+          {/* Optional components */}
+          {optionalComponents.length > 0 && (
+            <div className="config-items">
+              <div className="config-section-label">🛒 Додатково (на вибір)</div>
+              {optionalComponents.map((c, i) => {
+                const checked = configExtras.includes(c.sku);
+                return (
+                  <div
+                    className="config-opt-item"
+                    key={`opt-${i}`}
+                    onClick={() => toggleExtra(c.sku)}
+                    style={{ border: '1px solid var(--gray-200)', borderBottom: i < optionalComponents.length - 1 ? 'none' : '1px solid var(--gray-200)' }}
+                  >
+                    <div className={`config-checkbox ${checked ? 'checked' : ''}`}>{checked ? '✓' : ''}</div>
+                    <div className="config-item-name">{c.name}<small>{c.sku} · × {c.qty}</small></div>
+                    <div className="config-item-price">{formatPrice(c.priceUah * c.qty)}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>)}
+
+        {/* TOTAL */}
+        <div className="config-total-bar">
+          <div>
+            <div className="config-total-label">Вартість комплекту «під ключ»</div>
+            <div className="config-total-credit">🏦 Кредит 0% — від {configTotal > 0 ? formatPrice(Math.round(configTotal / 120)) : '—'} / міс</div>
           </div>
+          <div className="config-total-value">{configTotal > 0 ? formatPrice(configTotal) : '—'}</div>
         </div>
 
         {/* CREDIT */}
