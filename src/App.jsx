@@ -1312,7 +1312,7 @@ export default function SolarBalkon() {
   // Configurator: filter components for selected system
   const sysComponents = sheetComponents.filter(c => c.systems.includes(configSystem));
   const requiredComponents = sysComponents.filter(c => !c.optional);
-  const optionalComponents = sysComponents.filter(c => c.optional);
+  const optionalComponents = sysComponents.filter(c => c.optional && !c.name.toLowerCase().includes('панель'));
 
   // Separate panels (they have qty 2 or 4 and same SKU pattern) 
   const panelItems = sysComponents.filter(c => c.qty === configPanels && c.name.toLowerCase().includes('панель'));
