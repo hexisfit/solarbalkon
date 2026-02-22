@@ -151,7 +151,11 @@ body {
   font-size: 1.5rem; font-weight: 800;
   color: var(--green-700);
   text-decoration: none;
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; gap:6px;
+}
+.nav-logo img {
+  height: 32px; width: auto;
+  object-fit: contain;
 }
 .nav-logo span { color: var(--yellow-600); }
 .nav-links { display:flex; gap:2rem; list-style:none; }
@@ -628,6 +632,12 @@ body {
   font-family:var(--font-display);
   font-size:1.3rem; font-weight:800;
   color:white; margin-bottom:0.5rem;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.footer-logo img {
+  height:28px; width:auto;
+  object-fit:contain;
+  filter: brightness(0) invert(1);
 }
 .footer-logo span { color:var(--yellow-500); }
 .footer p { font-size:0.85rem; }
@@ -806,7 +816,123 @@ body {
   .detail-feature { grid-template-columns:1fr; gap:1.5rem; }
   .detail-feature.reverse { direction:ltr; }
   .detail-specs-grid { grid-template-columns:1fr; }
+  .chat-window { width:calc(100vw - 2rem) !important; right:1rem !important; bottom:80px !important; max-height:70vh !important; }
 }
+
+/* CHAT WIDGET */
+.chat-toggle {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  width:60px; height:60px; border-radius:50%;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white; border:none; cursor:pointer;
+  box-shadow: 0 4px 20px rgba(76,175,80,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; transition: transform 0.3s, box-shadow 0.3s;
+}
+.chat-toggle:hover {
+  transform:scale(1.08);
+  box-shadow: 0 6px 28px rgba(76,175,80,0.5);
+}
+.chat-toggle.has-dot::after {
+  content:''; position:absolute; top:4px; right:4px;
+  width:14px; height:14px; border-radius:50%;
+  background:var(--yellow-500); border:2px solid white;
+}
+.chat-window {
+  position:fixed; bottom:96px; right:24px; z-index:9998;
+  width:380px; max-height:520px;
+  background:var(--white);
+  border-radius:var(--radius-lg);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  animation: chatOpen 0.3s ease-out;
+  border:1px solid var(--gray-200);
+}
+@keyframes chatOpen {
+  from { opacity:0; transform:translateY(16px) scale(0.95); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.chat-header {
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  color:white; padding:1rem 1.25rem;
+  display:flex; align-items:center; gap:10px;
+}
+.chat-header-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem;
+}
+.chat-header-info h4 {
+  font-family:var(--font-display); font-size:0.95rem;
+  font-weight:700; margin:0;
+}
+.chat-header-info span {
+  font-size:0.75rem; opacity:0.8;
+}
+.chat-close {
+  margin-left:auto; background:none; border:none;
+  color:white; font-size:1.3rem; cursor:pointer;
+  opacity:0.7; transition:opacity 0.2s;
+}
+.chat-close:hover { opacity:1; }
+.chat-messages {
+  flex:1; overflow-y:auto; padding:1rem;
+  display:flex; flex-direction:column; gap:0.75rem;
+  min-height:280px; max-height:340px;
+  background:var(--gray-50);
+}
+.chat-msg {
+  max-width:85%; padding:10px 14px;
+  border-radius:16px; font-size:0.88rem;
+  line-height:1.5; word-wrap:break-word;
+  animation: fadeUp 0.3s ease-out;
+}
+.chat-msg.bot {
+  align-self:flex-start;
+  background:var(--white);
+  color:var(--gray-800);
+  border:1px solid var(--gray-200);
+  border-bottom-left-radius:4px;
+}
+.chat-msg.user {
+  align-self:flex-end;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white;
+  border-bottom-right-radius:4px;
+}
+.chat-msg.typing {
+  align-self:flex-start;
+  background:var(--white);
+  border:1px solid var(--gray-200);
+  border-bottom-left-radius:4px;
+  color:var(--gray-400);
+  font-style:italic;
+}
+.chat-input-wrap {
+  display:flex; gap:0; padding:0.75rem;
+  border-top:1px solid var(--gray-200);
+  background:var(--white);
+}
+.chat-input {
+  flex:1; border:1px solid var(--gray-300);
+  border-radius:50px 0 0 50px;
+  padding:10px 16px; font-size:0.88rem;
+  font-family:var(--font-body);
+  outline:none; transition:border-color 0.2s;
+}
+.chat-input:focus { border-color:var(--green-400); }
+.chat-input::placeholder { color:var(--gray-400); }
+.chat-send {
+  border:none; background:linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white; padding:0 18px;
+  border-radius:0 50px 50px 0;
+  cursor:pointer; font-size:1.1rem;
+  transition:opacity 0.2s;
+}
+.chat-send:hover { opacity:0.9; }
+.chat-send:disabled { opacity:0.5; cursor:not-allowed; }
 `;
 
 const VIDEOS = [
@@ -844,12 +970,57 @@ export default function SolarBalkon() {
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState(() => {
+    const path = window.location.pathname;
+    if (path === '/ecoflow') return 'ecoflow';
+    if (path === '/zendure') return 'zendure';
+    if (path === '/deye') return 'deye';
+    return 'home';
+  });
 
   const goToPage = (page) => {
+    const url = page === 'home' ? '/' : `/${page}`;
+    window.history.pushState({page}, '', url);
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
+
+  useEffect(() => {
+    const onPopState = (e) => {
+      const page = e.state?.page || 'home';
+      setCurrentPage(page);
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // SEO: dynamic title & meta description per page
+  useEffect(() => {
+    const seo = {
+      home: {
+        title: 'SolarBalkon — Балконні сонячні електростанції в Україні',
+        desc: 'Сонячна станція на вашому балконі. Енергонезалежність, економія до 80%, кредит 0% від держави. EcoFlow, Zendure, Deye.',
+      },
+      ecoflow: {
+        title: 'EcoFlow STREAM AC Pro — Балконна сонячна станція | SolarBalkon',
+        desc: 'EcoFlow STREAM AC Pro: 1.92 кВт·год, 1200 Вт вихід, 6000 циклів. Гібридна система все-в-одному. Ціна 40,000 грн. Кредит 0%.',
+      },
+      zendure: {
+        title: 'Zendure SolarFlow 2400 AC+ — Балконна сонячна станція | SolarBalkon',
+        desc: 'Zendure SolarFlow 2400 AC+: 2.4 кВт·год, 2400 Вт вихід, розширення до 16.8 кВт·год. 10 років гарантії. Ціна 50,000 грн.',
+      },
+      deye: {
+        title: 'Deye AE-FS2.0-2H2 — Балконна сонячна станція | SolarBalkon',
+        desc: 'Deye AE-FS2.0-2H2: 2.0 кВт·год, UPS за 4 мс, USB зарядка, розширення до 10 кВт·год. 10 років гарантії. Ціна 40,000 грн.',
+      },
+    };
+    const page = seo[currentPage] || seo.home;
+    document.title = page.title;
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
+    meta.content = page.desc;
+  }, [currentPage]);
 
   const tariff = TARIFFS[tariffType];
 
@@ -894,13 +1065,13 @@ export default function SolarBalkon() {
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-inner">
-          <a href="#home" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>☀ Solar<span>Balkon</span></a>
+          <a href="/" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></a>
           <ul className="nav-links">
-            <li><a href="#home" onClick={() => goToPage('home')}>Головна</a></li>
-            <li><a href="#calc" onClick={() => goToPage('home')}>Калькулятор</a></li>
-            <li><a href="#systems" onClick={() => goToPage('home')}>Системи</a></li>
-            <li><a href="#equip" onClick={() => goToPage('home')}>Обладнання</a></li>
-            <li><a href="#savings" onClick={() => goToPage('home')}>Економія</a></li>
+            <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a></li>
+            <li><a href="/#calc" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('calc')?.scrollIntoView({behavior:'smooth'}), 100); }}>Калькулятор</a></li>
+            <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
+            <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Обладнання</a></li>
+            <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
           </ul>
         </div>
       </nav>
@@ -1341,7 +1512,7 @@ export default function SolarBalkon() {
 
       {/* FOOTER */}
       <footer className="footer">
-        <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+        <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
         <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
         <p style={{ marginTop: '0.5rem', fontSize: '0.78rem' }}>
           Балконні сонячні електростанції в Україні
@@ -1352,7 +1523,7 @@ export default function SolarBalkon() {
       {/* ═══════ ECOFLOW DETAIL PAGE ═══════ */}
       {currentPage === 'ecoflow' && (
         <div className="detail-page">
-          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+          <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
 
           {/* HERO */}
           <div className="detail-hero-section">
@@ -1506,7 +1677,7 @@ export default function SolarBalkon() {
           </div>
 
           <footer className="footer">
-            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
             <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
           </footer>
         </div>
@@ -1515,7 +1686,7 @@ export default function SolarBalkon() {
       {/* ═══════ ZENDURE DETAIL PAGE ═══════ */}
       {currentPage === 'zendure' && (
         <div className="detail-page">
-          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+          <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
 
           {/* HERO */}
           <div className="detail-hero-section">
@@ -1701,7 +1872,7 @@ export default function SolarBalkon() {
           </div>
 
           <footer className="footer">
-            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
             <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
           </footer>
         </div>
@@ -1710,7 +1881,7 @@ export default function SolarBalkon() {
       {/* ═══════ DEYE DETAIL PAGE ═══════ */}
       {currentPage === 'deye' && (
         <div className="detail-page">
-          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+          <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
 
           {/* HERO */}
           <div className="detail-hero-section">
@@ -1866,7 +2037,7 @@ export default function SolarBalkon() {
           </div>
 
           <footer className="footer">
-            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
             <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
           </footer>
         </div>
