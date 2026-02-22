@@ -49,7 +49,7 @@ function formatPrice(num) {
 const PRODUCTS_BASE = [
   { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: 40000, color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
   { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: 50000, color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
-  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 40000, color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 1000, cycles: 6000, warranty: 10, price: 40000, color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
 ];
 
 const ADVANTAGES = [
@@ -1311,12 +1311,27 @@ export default function SolarBalkon() {
 
   // Configurator: filter components for selected system
   const sysComponents = sheetComponents.filter(c => c.systems.includes(configSystem));
-  const requiredComponents = sysComponents.filter(c => !c.optional);
-  const optionalComponents = sysComponents.filter(c => c.optional && !c.name.toLowerCase().includes('панель'));
 
-  // Separate panels (they have qty 2 or 4 and same SKU pattern) 
-  const panelItems = sysComponents.filter(c => c.qty === configPanels && c.name.toLowerCase().includes('панель'));
-  const nonPanelRequired = requiredComponents.filter(c => !c.name.toLowerCase().includes('панель'));
+  // Smart plugs are always optional
+  const isSmartPlug = (c) => c.name.toLowerCase().includes('розетка') || c.name.toLowerCase().includes('smart plug');
+  const isPanel = (c) => c.name.toLowerCase().includes('панель');
+  const isInverter = (c) => c.name.toLowerCase().includes('інвертор') || c.name.toLowerCase().includes('інвертер');
+
+  const requiredComponents = sysComponents.filter(c => !c.optional && !isSmartPlug(c));
+  const optionalComponents = [
+    ...sysComponents.filter(c => c.optional && !isPanel(c)),
+    ...sysComponents.filter(c => !c.optional && isSmartPlug(c)),
+  ];
+
+  // Separate panels (qty matches selected panel count)
+  const panelItems = sysComponents.filter(c => c.qty === configPanels && isPanel(c));
+  // Required non-panel components, adjust inverter qty for 4 panels
+  const nonPanelRequired = requiredComponents.filter(c => !isPanel(c)).map(c => {
+    if (isInverter(c) && configPanels === 4) {
+      return { ...c, qty: 2 };
+    }
+    return c;
+  });
 
   // Calculate config total
   const configSystemPrice = PRODUCTS.find(p => {
@@ -2229,7 +2244,7 @@ export default function SolarBalkon() {
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '2.0 кВт·год (до 10)'],
-                  ['AC Вихід', '800 Вт'],
+                  ['AC Вихід', '1,000 Вт'],
                   ['PV Вхід', '1,000 Вт макс.'],
                   ['MPPT', '2 трекери'],
                   ['Батарея', 'LiFePO4 51.2В'],
