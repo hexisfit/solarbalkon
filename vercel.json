@@ -3,6 +3,7 @@
     { "source": "/ecoflow", "destination": "/index.html" },
     { "source": "/zendure", "destination": "/index.html" },
     { "source": "/deye", "destination": "/index.html" },
+    { "source": "/credit", "destination": "/index.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

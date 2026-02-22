@@ -810,6 +810,178 @@ body {
 }
 
 /* CONFIGURATOR */
+
+/* CREDIT PAGE */
+.credit-page { padding-top: 64px; }
+.credit-hero-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, var(--yellow-100), var(--green-50));
+  text-align: center;
+}
+.credit-hero-section h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800; color: var(--gray-900);
+  margin-bottom: 1rem;
+}
+.credit-hero-section h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--green-600), var(--yellow-600));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.credit-hero-sub {
+  font-size: 1.15rem; color: var(--gray-600);
+  max-width: 700px; margin: 0 auto 2rem; line-height: 1.7;
+}
+.credit-hero-stats {
+  display: flex; gap: 2rem; justify-content: center;
+  flex-wrap: wrap; margin-top: 2rem;
+}
+.credit-hero-stat {
+  text-align: center; padding: 1.5rem 2rem;
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md); min-width: 140px;
+}
+.credit-hero-stat-value {
+  font-family: var(--font-display);
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--green-700);
+}
+.credit-hero-stat-label {
+  font-size: 0.82rem; color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+.credit-content { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+.credit-block {
+  margin-bottom: 3rem;
+}
+.credit-block h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--gray-900); margin-bottom: 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--green-500);
+}
+.credit-block h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--gray-800); margin: 1.5rem 0 0.75rem;
+}
+.credit-block p {
+  font-size: 0.95rem; color: var(--gray-600);
+  line-height: 1.7; margin-bottom: 0.75rem;
+}
+.credit-steps {
+  display: grid; gap: 0;
+}
+.credit-step {
+  display: grid; grid-template-columns: 56px 1fr;
+  gap: 1rem; padding: 1.25rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.credit-step:last-child { border-bottom: none; }
+.credit-step-num {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-500), var(--green-600));
+  color: white; font-family: var(--font-display);
+  font-size: 1.2rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.credit-step-title {
+  font-weight: 700; color: var(--gray-900);
+  font-size: 1rem; margin-bottom: 0.25rem;
+}
+.credit-step-desc {
+  font-size: 0.9rem; color: var(--gray-600); line-height: 1.6;
+}
+.credit-docs-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin: 1rem 0;
+}
+.credit-doc-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  padding: 1rem; background: var(--gray-50);
+  border-radius: var(--radius); border: 1px solid var(--gray-200);
+}
+.credit-doc-icon {
+  font-size: 1.5rem; flex-shrink: 0; margin-top: 2px;
+}
+.credit-doc-name {
+  font-size: 0.9rem; font-weight: 600; color: var(--gray-800);
+}
+.credit-doc-note {
+  font-size: 0.8rem; color: var(--gray-500); margin-top: 2px;
+}
+.credit-banks-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem; margin: 1rem 0;
+}
+.credit-bank-card {
+  padding: 1.25rem; background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius); text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.credit-bank-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.credit-bank-name {
+  font-weight: 700; font-size: 0.95rem;
+  color: var(--gray-800); margin-bottom: 0.25rem;
+}
+.credit-bank-note {
+  font-size: 0.8rem; color: var(--gray-500);
+}
+.credit-warning {
+  background: var(--yellow-100);
+  border: 1px solid var(--yellow-400);
+  border-radius: var(--radius);
+  padding: 1.25rem; margin: 1.5rem 0;
+}
+.credit-warning-title {
+  font-weight: 700; color: var(--gray-900);
+  font-size: 0.95rem; margin-bottom: 0.5rem;
+}
+.credit-warning-text {
+  font-size: 0.88rem; color: var(--gray-700);
+  line-height: 1.6;
+}
+.credit-company-box {
+  background: linear-gradient(135deg, var(--green-50), var(--yellow-100));
+  border: 2px solid var(--green-300);
+  border-radius: var(--radius-lg);
+  padding: 2rem; text-align: center;
+  margin: 2rem 0;
+}
+.credit-company-box h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--green-700); margin-bottom: 0.75rem;
+}
+.credit-company-box p {
+  color: var(--gray-600); max-width: 600px;
+  margin: 0 auto 0.5rem; line-height: 1.7;
+}
+.credit-company-list {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 0.5rem; margin-top: 1rem;
+}
+.credit-company-tag {
+  background: var(--green-500); color: white;
+  padding: 6px 16px; border-radius: 50px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+@media (max-width:768px) {
+  .credit-docs-grid { grid-template-columns: 1fr; }
+  .credit-banks-grid { grid-template-columns: 1fr 1fr; }
+  .credit-hero-stats { gap: 1rem; }
+  .credit-hero-stat { min-width: 120px; padding: 1rem; }
+  .credit-hero-stat-value { font-size: 1.6rem; }
+}
+
 .config-systems {
   display:grid; grid-template-columns:repeat(3, 1fr);
   gap:1rem; max-width:900px; margin:0 auto 2rem;
@@ -1258,6 +1430,7 @@ export default function SolarBalkon() {
     if (path === '/ecoflow') return 'ecoflow';
     if (path === '/zendure') return 'zendure';
     if (path === '/deye') return 'deye';
+    if (path === '/credit') return 'credit';
     return 'home';
   });
 
@@ -1370,6 +1543,10 @@ export default function SolarBalkon() {
       deye: {
         title: 'Deye AE-FS2.0-2H2 — Балконна сонячна станція | SolarBalkon',
         desc: 'Deye AE-FS2.0-2H2: 2.0 кВт·год, UPS за 4 мс, USB зарядка, розширення до 10 кВт·год. 10 років гарантії. Ціна 40,000 грн.',
+      },
+      credit: {
+        title: 'Кредит 0% на сонячну станцію — Програма «Джерела енергії» | SolarBalkon',
+        desc: 'Державний кредит 0% на сонячні панелі до 480,000 грн на 10 років. Повний пакет документів від SolarBalkon. ПриватБанк, Ощадбанк, Укргазбанк.',
       },
     };
     const page = seo[currentPage] || seo.home;
@@ -1795,7 +1972,7 @@ export default function SolarBalkon() {
         </div>
 
         {/* CREDIT */}
-        <div className="credit-banner">
+        <div className="credit-banner" style={{ cursor: 'pointer' }} onClick={() => goToPage('credit')}>
           <h3>Державний кредит 0% — «Джерела енергії»</h3>
           <p>Програма для фізичних осіб через 43 банки-партнери</p>
           <div className="credit-details">
@@ -1816,6 +1993,7 @@ export default function SolarBalkon() {
               <div className="credit-detail-label">Компенсація</div>
             </div>
           </div>
+          <p style={{ marginTop: '1rem', fontWeight: 600, color: 'var(--gray-900)' }}>Дізнатися більше →</p>
         </div>
       </section>
 
@@ -2385,6 +2563,432 @@ export default function SolarBalkon() {
             <button className="hero-cta" onClick={() => goToPage('home')}>
               ← Повернутися до калькулятора
             </button>
+          </div>
+
+          <SocialFooter />
+        </div>
+      )}
+
+      {/* ═══════ CREDIT PROGRAM PAGE ═══════ */}
+      {currentPage === 'credit' && (
+        <div className="credit-page">
+          <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
+
+          {/* HERO */}
+          <div className="credit-hero-section">
+            <h1>Кредит <em>0%</em> на сонячну електростанцію</h1>
+            <p className="credit-hero-sub">
+              Державна програма «Джерела енергії» дозволяє українцям встановити сонячну станцію
+              без переплат. Держава повністю компенсує відсотки — ви платите лише тіло кредиту.
+              SolarBalkon бере на себе всі документи та встановлення.
+            </p>
+            <div className="credit-hero-stats">
+              <div className="credit-hero-stat">
+                <div className="credit-hero-stat-value">0%</div>
+                <div className="credit-hero-stat-label">Ставка кредиту</div>
+              </div>
+              <div className="credit-hero-stat">
+                <div className="credit-hero-stat-value">480 000</div>
+                <div className="credit-hero-stat-label">грн максимум</div>
+              </div>
+              <div className="credit-hero-stat">
+                <div className="credit-hero-stat-value">10 років</div>
+                <div className="credit-hero-stat-label">Термін кредиту</div>
+              </div>
+              <div className="credit-hero-stat">
+                <div className="credit-hero-stat-value">30%</div>
+                <div className="credit-hero-stat-label">Компенсація тіла</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="credit-content">
+
+            {/* WHAT IS THE PROGRAM */}
+            <div className="credit-block">
+              <h2>🏛 Що таке програма «Джерела енергії»?</h2>
+              <p>
+                «Джерела енергії» — це державна програма фінансової підтримки, затверджена Кабінетом Міністрів України.
+                Вона дозволяє фізичним особам отримати кредит під 0% на придбання та встановлення гібридної системи
+                електропостачання у власному домогосподарстві.
+              </p>
+              <p>
+                Держава через Фонд розвитку підприємництва повністю компенсує банку відсоткову ставку за кредитом,
+                а також до 30% тіла кредиту. Фактично — це чесна розстрочка без жодних переплат.
+              </p>
+              <p>
+                Програма реалізується через банки-партнери. Кредит перераховується безпосередньо на рахунок
+                компанії-установника (SolarBalkon), а клієнт оплачує щомісячні платежі банку.
+              </p>
+            </div>
+
+            {/* WHO CAN GET */}
+            <div className="credit-block">
+              <h2>👤 Хто може отримати кредит?</h2>
+              <p>Програма доступна для фізичних осіб, які відповідають таким умовам:</p>
+              <div className="credit-docs-grid">
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🎂</div>
+                  <div>
+                    <div className="credit-doc-name">Вік від 21 до 70 років</div>
+                    <div className="credit-doc-note">На дату закінчення строку кредиту</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🏠</div>
+                  <div>
+                    <div className="credit-doc-name">Власне домогосподарство</div>
+                    <div className="credit-doc-note">Житловий будинок до 250 м² (без земельної ділянки)</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">💰</div>
+                  <div>
+                    <div className="credit-doc-name">Підтверджений дохід</div>
+                    <div className="credit-doc-note">Сукупний дохід сім'ї до 210 000 грн/міс</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">⚡</div>
+                  <div>
+                    <div className="credit-doc-name">Особовий рахунок електроенергії</div>
+                    <div className="credit-doc-note">Активний рахунок у постачальника</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">📏</div>
+                  <div>
+                    <div className="credit-doc-name">Потужність до 10 кВт</div>
+                    <div className="credit-doc-note">Кожна складова системи — до 10 кВт</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🔋</div>
+                  <div>
+                    <div className="credit-doc-name">Гібридна система</div>
+                    <div className="credit-doc-note">Панелі + інвертор + накопичувач обов'язково</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* REQUIRED DOCUMENTS */}
+            <div className="credit-block">
+              <h2>📋 Необхідні документи</h2>
+              <p>Для оформлення кредиту вам потрібно підготувати наступні документи:</p>
+              <div className="credit-docs-grid">
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🪪</div>
+                  <div>
+                    <div className="credit-doc-name">Паспорт громадянина України</div>
+                    <div className="credit-doc-note">ID-картка або паспорт-книжечка</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🔢</div>
+                  <div>
+                    <div className="credit-doc-name">Ідентифікаційний код (ІПН)</div>
+                    <div className="credit-doc-note">Реєстраційний номер облікової картки</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">💼</div>
+                  <div>
+                    <div className="credit-doc-name">Довідка про доходи</div>
+                    <div className="credit-doc-note">За останні 6 місяців (від роботодавця або з ДПС)</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">✅</div>
+                  <div>
+                    <div className="credit-doc-name">Довідка про несудимість</div>
+                    <div className="credit-doc-note">Формується безкоштовно в додатку «Дія»</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">💍</div>
+                  <div>
+                    <div className="credit-doc-name">Свідоцтво про шлюб</div>
+                    <div className="credit-doc-note">Укладення або розірвання (за наявності)</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🏡</div>
+                  <div>
+                    <div className="credit-doc-name">Документи на нерухомість</div>
+                    <div className="credit-doc-note">Право власності на будинок із зазначенням площі</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">📊</div>
+                  <div>
+                    <div className="credit-doc-name">Рахунок за електроенергію</div>
+                    <div className="credit-doc-note">За останній місяць з номером особового рахунку</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">📝</div>
+                  <div>
+                    <div className="credit-doc-name">Додаткові документи</div>
+                    <div className="credit-doc-note">Банк може запросити довідку про доходи подружжя</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SOLARBALKON PROVIDES */}
+            <div className="credit-company-box">
+              <h3>📦 SolarBalkon надає ВСІ технічні документи</h3>
+              <p>
+                Вам не потрібно шукати специфікації, сертифікати чи складати кошториси —
+                ми готуємо повний пакет технічної документації для банку:
+              </p>
+              <div className="credit-company-list">
+                <span className="credit-company-tag">Рахунок-фактура</span>
+                <span className="credit-company-tag">Кошторис системи</span>
+                <span className="credit-company-tag">Специфікації обладнання</span>
+                <span className="credit-company-tag">Сертифікати якості</span>
+                <span className="credit-company-tag">Договір поставки</span>
+                <span className="credit-company-tag">Акт виконаних робіт</span>
+                <span className="credit-company-tag">Фотозвіт установки</span>
+                <span className="credit-company-tag">Гарантійні талони</span>
+              </div>
+            </div>
+
+            {/* HOW IT WORKS - STEPS */}
+            <div className="credit-block">
+              <h2>🚀 Як отримати кредит — покрокова інструкція</h2>
+
+              <div className="credit-steps">
+                <div className="credit-step">
+                  <div className="credit-step-num">1</div>
+                  <div>
+                    <div className="credit-step-title">Зв'яжіться з нами</div>
+                    <div className="credit-step-desc">
+                      Напишіть у Telegram, Instagram або зателефонуйте. Ми допоможемо обрати
+                      оптимальну систему під ваші потреби та розрахуємо точну вартість.
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">2</div>
+                  <div>
+                    <div className="credit-step-title">Ми готуємо документи для банку</div>
+                    <div className="credit-step-desc">
+                      SolarBalkon формує повний пакет технічних документів: кошторис, специфікації
+                      обладнання, рахунок-фактуру, договір поставки. Все — безкоштовно.
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">3</div>
+                  <div>
+                    <div className="credit-step-title">Ви подаєте заявку в банк</div>
+                    <div className="credit-step-desc">
+                      Зверніться до будь-якого банку-партнера зі своїми особистими документами
+                      та нашим технічним пакетом. Попереднє рішення — за 2 хвилини онлайн
+                      (ПриватБанк через Приват24).
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">4</div>
+                  <div>
+                    <div className="credit-step-title">Банк перераховує кошти</div>
+                    <div className="credit-step-desc">
+                      Після схвалення банк перераховує суму кредиту безпосередньо на рахунок
+                      SolarBalkon. Вам нічого додатково платити на цьому етапі.
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">5</div>
+                  <div>
+                    <div className="credit-step-title">Ми доставляємо та встановлюємо</div>
+                    <div className="credit-step-desc">
+                      Наші спеціалісти погоджують зручну дату, доставляють обладнання, встановлюють
+                      та підключають систему. Повне встановлення — від 1 до 3 днів.
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">6</div>
+                  <div>
+                    <div className="credit-step-title">Фотозвіт для банку</div>
+                    <div className="credit-step-desc">
+                      Ми підготуємо фотозвіт про встановлення, який потрібно надіслати банку
+                      протягом 90 днів. SolarBalkon формує його автоматично після монтажу.
+                    </div>
+                  </div>
+                </div>
+                <div className="credit-step">
+                  <div className="credit-step-num">7</div>
+                  <div>
+                    <div className="credit-step-title">Користуєтесь сонячною енергією!</div>
+                    <div className="credit-step-desc">
+                      Система працює автоматично. Ви економите на електроенергії, а щомісячний платіж
+                      по кредиту — 0% переплати, тільки тіло кредиту. Моніторинг — через додаток.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* BANKS */}
+            <div className="credit-block">
+              <h2>🏦 Банки-партнери програми</h2>
+              <p>
+                Програма «Джерела енергії» реалізується через 43+ банки-партнери.
+                Ось основні банки, де можна оформити кредит:
+              </p>
+              <div className="credit-banks-grid">
+                {[
+                  ['ПриватБанк', 'Онлайн через Приват24'],
+                  ['Ощадбанк', 'У відділенні або онлайн'],
+                  ['Укргазбанк', 'Програма «Еко-енергія»'],
+                  ['Глобус Банк', 'Без першого внеску'],
+                  ['Сенс Банк', '«Джерело Енергії»'],
+                  ['Райффайзен Банк', 'У відділенні'],
+                  ['ОТП Банк', 'Програма OTP Energy'],
+                  ['Банк Львів', 'У відділенні'],
+                ].map(([name, note], i) => (
+                  <div className="credit-bank-card" key={i}>
+                    <div className="credit-bank-name">{name}</div>
+                    <div className="credit-bank-note">{note}</div>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: '0.85rem', color: 'var(--gray-500)', marginTop: '0.5rem' }}>
+                Повний список банків-партнерів — на сайті Фонду розвитку підприємництва.
+                Умови можуть відрізнятися залежно від банку.
+              </p>
+            </div>
+
+            {/* IMPORTANT TO KNOW */}
+            <div className="credit-block">
+              <h2>⚠️ Важливо знати</h2>
+
+              <div className="credit-warning">
+                <div className="credit-warning-title">❌ «Зелений тариф» — заборонено</div>
+                <div className="credit-warning-text">
+                  Підключення «зеленого тарифу» (продаж надлишків електроенергії в мережу)
+                  є підставою для втрати права на компенсацію. Програма розрахована
+                  виключно на власне споживання.
+                </div>
+              </div>
+
+              <div className="credit-warning">
+                <div className="credit-warning-title">⏰ Прострочення платежу — понад 30 днів</div>
+                <div className="credit-warning-text">
+                  У разі прострочення платежу більш ніж на 30 днів ви втрачаєте право на
+                  державну компенсацію відсотків. Після цього банк нараховує ринкову ставку.
+                </div>
+              </div>
+
+              <div className="credit-warning">
+                <div className="credit-warning-title">📸 Введення в експлуатацію — 180 днів</div>
+                <div className="credit-warning-text">
+                  Протягом 180 днів після отримання кредиту необхідно підтвердити банку
+                  введення обладнання в експлуатацію. SolarBalkon надає фотозвіт одразу
+                  після встановлення — зазвичай протягом тижня.
+                </div>
+              </div>
+
+              <div className="credit-warning">
+                <div className="credit-warning-title">🔍 Перевірка кожні 6 місяців</div>
+                <div className="credit-warning-text">
+                  Кожні 6 місяців потрібно підтвердити банку цільове використання обладнання.
+                  Це робиться через фото або через додаток моніторингу системи.
+                </div>
+              </div>
+            </div>
+
+            {/* BUSINESS */}
+            <div className="credit-block">
+              <h2>🏢 Для бізнесу та ОСББ</h2>
+              <p>
+                Для юридичних осіб, ФОП та ОСББ діє окрема програма —
+                «Доступні кредити 5-7-9%»:
+              </p>
+              <div className="credit-docs-grid">
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">💵</div>
+                  <div>
+                    <div className="credit-doc-name">До 5 000 000 грн</div>
+                    <div className="credit-doc-note">Максимальна сума кредиту</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">📅</div>
+                  <div>
+                    <div className="credit-doc-name">До 10 років</div>
+                    <div className="credit-doc-note">Термін кредитування</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">📈</div>
+                  <div>
+                    <div className="credit-doc-name">5-9% річних</div>
+                    <div className="credit-doc-note">Пільгова ставка з держпідтримкою</div>
+                  </div>
+                </div>
+                <div className="credit-doc-item">
+                  <div className="credit-doc-icon">🏗️</div>
+                  <div>
+                    <div className="credit-doc-name">Без обмежень потужності</div>
+                    <div className="credit-doc-note">Проєкти будь-якого масштабу</div>
+                  </div>
+                </div>
+              </div>
+              <p>
+                Зверніться до нас — ми підготуємо бізнес-план та повний пакет технічної
+                документації для подачі в банк.
+              </p>
+            </div>
+
+            {/* CTA */}
+            <div className="credit-company-box">
+              <h3>🤝 Готові оформити кредит 0%?</h3>
+              <p>
+                Зв'яжіться з нами — ми безкоштовно підберемо систему, підготуємо всі документи
+                для банку та встановимо обладнання. Від заявки до встановлення — 2 тижні.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+                <a href="https://t.me/solarbalkonshop" target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 28px',
+                    background: '#0088cc', color: 'white', borderRadius: '50px', fontWeight: 600,
+                    fontSize: '1rem', textDecoration: 'none', transition: 'transform 0.2s' }}
+                  onMouseEnter={e => e.target.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={e => e.target.style.transform = 'none'}
+                >
+                  💬 Telegram
+                </a>
+                <a href="tel:+380XXXXXXXXX"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 28px',
+                    background: 'var(--green-600)', color: 'white', borderRadius: '50px', fontWeight: 600,
+                    fontSize: '1rem', textDecoration: 'none', transition: 'transform 0.2s' }}
+                  onMouseEnter={e => e.target.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={e => e.target.style.transform = 'none'}
+                >
+                  📞 Зателефонувати
+                </a>
+                <a href="mailto:manager@solarbalkon.shop"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '14px 28px',
+                    border: '2px solid var(--green-500)', color: 'var(--green-700)', borderRadius: '50px', fontWeight: 600,
+                    fontSize: '1rem', textDecoration: 'none', background: 'white', transition: 'transform 0.2s' }}
+                  onMouseEnter={e => e.target.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={e => e.target.style.transform = 'none'}
+                >
+                  ✉️ Email
+                </a>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'center', padding: '1rem 0 3rem' }}>
+              <button className="hero-cta" onClick={() => goToPage('home')}>
+                ← Повернутися до калькулятора
+              </button>
+            </div>
           </div>
 
           <SocialFooter />
