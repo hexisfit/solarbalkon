@@ -795,9 +795,102 @@ body {
   background: var(--green-700); border-color: var(--green-700);
 }
 
+/* NAV SOCIAL */
+.nav-social {
+  display:flex; align-items:center; gap:12px;
+  margin-left:1.5rem;
+}
+.nav-social a {
+  width:38px; height:38px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:var(--gray-100);
+  color:var(--gray-600);
+  transition: all 0.2s;
+  text-decoration:none;
+}
+.nav-social a:hover {
+  transform:translateY(-2px);
+}
+.nav-social a.ig:hover {
+  background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
+  color:white;
+}
+.nav-social a.tg:hover {
+  background:#2AABEE;
+  color:white;
+}
+.nav-social svg { width:18px; height:18px; fill:currentColor; }
+
+/* FOOTER SOCIAL */
+.footer-social {
+  display:flex; justify-content:center; gap:16px;
+  margin:1rem 0 0.5rem;
+}
+.footer-social a {
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  color:var(--gray-400);
+  transition: all 0.2s;
+  text-decoration:none;
+}
+.footer-social a:hover { transform:translateY(-2px); }
+.footer-social a.ig:hover {
+  background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
+  color:white;
+}
+.footer-social a.tg:hover {
+  background:#2AABEE;
+  color:white;
+}
+.footer-social svg { width:20px; height:20px; fill:currentColor; }
+.footer-contacts {
+  display:flex; justify-content:center; gap:2rem;
+  flex-wrap:wrap; margin-top:0.5rem;
+}
+.footer-contacts a {
+  color:var(--gray-400); text-decoration:none;
+  font-size:0.85rem; transition: color 0.2s;
+}
+.footer-contacts a:hover { color:var(--yellow-500); }
+
+/* SHARE BAR */
+.share-bar {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; padding:2rem;
+  border-top:1px solid var(--gray-200);
+  max-width:600px; margin:0 auto;
+}
+.share-bar-label {
+  font-size:0.9rem; color:var(--gray-500);
+  font-weight:500;
+}
+.share-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 22px; border-radius:50px;
+  font-family:var(--font-body); font-size:0.88rem;
+  font-weight:600; text-decoration:none;
+  border:none; cursor:pointer;
+  transition: all 0.2s;
+  color:white;
+}
+.share-btn:hover { transform:translateY(-2px); box-shadow: var(--shadow-md); }
+.share-btn.tg { background:#2AABEE; }
+.share-btn.tg:hover { background:#1a9ad9; }
+.share-btn.copy-link {
+  background:var(--green-600); color:white;
+}
+.share-btn.copy-link:hover { background:var(--green-700); }
+.share-btn svg { width:18px; height:18px; fill:currentColor; }
+
 /* MOBILE */
 @media (max-width:768px) {
   .nav-links { display:none; }
+  .nav-social { gap:10px; }
+  .nav-social a { width:34px; height:34px; }
+  .nav-social svg { width:16px; height:16px; }
   .hero { padding:100px 1.5rem 40px; }
   .hero::after { display: none; }
   .hero-inner { text-align: center; }
@@ -940,6 +1033,57 @@ const VIDEOS = [
   { id: '7qATOYRR6Bc', label: 'Zendure SolarFlow — установка та робота' },
 ];
 
+const SOCIAL_ICONS = {
+  ig: <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>,
+  tg: <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>,
+  link: <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>,
+};
+
+function ShareBar({ productName, url }) {
+  const fullUrl = `https://solarbalkon.shop${url}`;
+  const text = `${productName} — балконна сонячна електростанція ⚡ Дізнайся більше:`;
+  const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(fullUrl)}&text=${encodeURIComponent(text)}`;
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="share-bar">
+      <span className="share-bar-label">Поділитися:</span>
+      <a href={tgUrl} target="_blank" rel="noopener noreferrer" className="share-btn tg">
+        {SOCIAL_ICONS.tg} Telegram
+      </a>
+      <button className="share-btn copy-link" onClick={copyLink}>
+        {SOCIAL_ICONS.link} {copied ? 'Скопійовано!' : 'Копіювати'}
+      </button>
+    </div>
+  );
+}
+
+function SocialFooter() {
+  return (
+    <footer className="footer">
+      <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
+      <div className="footer-social">
+        <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">{SOCIAL_ICONS.ig}</a>
+        <a href="https://t.me/solarbalkon_ua" target="_blank" rel="noopener noreferrer" className="tg" title="Telegram">{SOCIAL_ICONS.tg}</a>
+      </div>
+      <div className="footer-contacts">
+        <a href="mailto:manager@solarbalkon.shop">📧 manager@solarbalkon.shop</a>
+        <a href="tel:+380674455669">📞 +380 67 445 5669</a>
+        <a href="https://t.me/solarbalkon_bot" target="_blank" rel="noopener noreferrer">🤖 @solarbalkon_bot</a>
+      </div>
+      <p style={{ marginTop: '0.75rem' }}>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+      <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>📍 Київ, вул. Вікентія Хвойки, 15/15</p>
+    </footer>
+  );
+}
+
 function VideoCarousel() {
   const [idx, setIdx] = useState(0);
   return (
@@ -1073,6 +1217,14 @@ export default function SolarBalkon() {
             <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Обладнання</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
           </ul>
+          <div className="nav-social">
+            <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="https://t.me/solarbalkon_ua" target="_blank" rel="noopener noreferrer" className="tg" title="Telegram">
+              <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -1511,13 +1663,7 @@ export default function SolarBalkon() {
       </section>
 
       {/* FOOTER */}
-      <footer className="footer">
-        <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
-        <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.78rem' }}>
-          Балконні сонячні електростанції в Україні
-        </p>
-      </footer>
+      <SocialFooter />
       </>)}
 
       {/* ═══════ ECOFLOW DETAIL PAGE ═══════ */}
@@ -1666,20 +1812,15 @@ export default function SolarBalkon() {
             </a>
           </div>
 
-          {/* CTA */}
-          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
-            <button
-              className="hero-cta"
-              onClick={() => goToPage('home')}
-            >
+          {/* SHARE & CTA */}
+          <ShareBar productName="EcoFlow STREAM AC Pro" url="/ecoflow" />
+          <div style={{ textAlign: 'center', padding: '1rem 2rem 4rem' }}>
+            <button className="hero-cta" onClick={() => goToPage('home')}>
               ← Повернутися до калькулятора
             </button>
           </div>
 
-          <footer className="footer">
-            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
-            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-          </footer>
+          <SocialFooter />
         </div>
       )}
 
@@ -1864,17 +2005,15 @@ export default function SolarBalkon() {
             </a>
           </div>
 
-          {/* CTA */}
-          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+          {/* SHARE & CTA */}
+          <ShareBar productName="Zendure SolarFlow 2400 AC+" url="/zendure" />
+          <div style={{ textAlign: 'center', padding: '1rem 2rem 4rem' }}>
             <button className="hero-cta" onClick={() => goToPage('home')}>
               ← Повернутися до калькулятора
             </button>
           </div>
 
-          <footer className="footer">
-            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
-            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-          </footer>
+          <SocialFooter />
         </div>
       )}
 
@@ -2029,17 +2168,15 @@ export default function SolarBalkon() {
             </a>
           </div>
 
-          {/* CTA */}
-          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+          {/* SHARE & CTA */}
+          <ShareBar productName="Deye AE-FS2.0-2H2" url="/deye" />
+          <div style={{ textAlign: 'center', padding: '1rem 2rem 4rem' }}>
             <button className="hero-cta" onClick={() => goToPage('home')}>
               ← Повернутися до калькулятора
             </button>
           </div>
 
-          <footer className="footer">
-            <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
-            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-          </footer>
+          <SocialFooter />
         </div>
       )}
     </>
