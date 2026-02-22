@@ -812,6 +812,119 @@ body {
 /* CONFIGURATOR */
 
 /* CREDIT PAGE */
+
+/* ORDER MODAL */
+.order-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5); z-index:200;
+  display:flex; align-items:center; justify-content:center;
+  padding:1rem; animation:fadeIn 0.2s ease-out;
+}
+.order-modal {
+  background:var(--white); border-radius:var(--radius-lg);
+  max-width:500px; width:100%;
+  box-shadow:var(--shadow-xl);
+  animation:fadeUp 0.3s ease-out;
+  max-height:90vh; overflow-y:auto;
+}
+.order-modal-header {
+  padding:1.5rem 2rem 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.order-modal-header h2 {
+  font-family:var(--font-display);
+  font-size:1.4rem; font-weight:700;
+  color:var(--gray-900);
+}
+.order-close {
+  width:36px; height:36px; border-radius:50%;
+  border:none; background:var(--gray-100);
+  font-size:1.2rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gray-500); transition:all 0.2s;
+}
+.order-close:hover { background:var(--gray-200); color:var(--gray-700); }
+.order-modal-body { padding:1.5rem 2rem; }
+.order-summary {
+  background:var(--green-50); border:1px solid var(--green-200);
+  border-radius:var(--radius); padding:1rem;
+  margin-bottom:1.5rem; font-size:0.88rem;
+}
+.order-summary-row {
+  display:flex; justify-content:space-between;
+  padding:0.25rem 0; color:var(--gray-600);
+}
+.order-summary-row.total {
+  border-top:1px solid var(--green-300);
+  margin-top:0.5rem; padding-top:0.5rem;
+  font-weight:700; color:var(--green-700);
+  font-size:1rem;
+}
+.order-field { margin-bottom:1rem; }
+.order-field label {
+  display:block; font-size:0.85rem; font-weight:600;
+  color:var(--gray-700); margin-bottom:0.35rem;
+}
+.order-field label span {
+  color:var(--gray-400); font-weight:400;
+}
+.order-field input {
+  width:100%; padding:12px 16px;
+  border:1px solid var(--gray-300);
+  border-radius:var(--radius);
+  font-family:var(--font-body);
+  font-size:0.95rem; color:var(--gray-800);
+  transition:border-color 0.2s;
+  outline:none;
+}
+.order-field input:focus {
+  border-color:var(--green-400);
+  box-shadow:0 0 0 3px rgba(76,175,80,0.1);
+}
+.order-field input::placeholder { color:var(--gray-400); }
+.order-submit {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg, var(--green-600), var(--green-500));
+  color:white; border:none; border-radius:var(--radius);
+  font-family:var(--font-body);
+  font-size:1rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+  box-shadow:0 4px 16px rgba(76,175,80,0.3);
+}
+.order-submit:hover {
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(76,175,80,0.4);
+}
+.order-submit:disabled {
+  opacity:0.6; cursor:not-allowed;
+  transform:none; box-shadow:none;
+}
+.order-success {
+  text-align:center; padding:2rem;
+}
+.order-success-icon {
+  font-size:3.5rem; margin-bottom:1rem;
+}
+.order-success h3 {
+  font-family:var(--font-display);
+  font-size:1.3rem; font-weight:700;
+  color:var(--green-700); margin-bottom:0.5rem;
+}
+.order-success p {
+  color:var(--gray-600); font-size:0.95rem;
+  line-height:1.6;
+}
+.order-error {
+  text-align:center; padding:1rem;
+  background:var(--yellow-100);
+  border-radius:var(--radius);
+  margin-top:1rem;
+}
+.order-error p {
+  color:var(--gray-700); font-size:0.9rem;
+}
+
+/* CREDIT PAGE */
 .credit-page { padding-top: 64px; }
 .credit-hero-section {
   padding: 4rem 2rem;
@@ -1425,6 +1538,9 @@ export default function SolarBalkon() {
   const [configSystem, setConfigSystem] = useState('zendure');
   const [configPanels, setConfigPanels] = useState(2);
   const [configExtras, setConfigExtras] = useState([]);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderForm, setOrderForm] = useState({ name: '', phone: '', address: '' });
+  const [orderStatus, setOrderStatus] = useState(null); // null | 'sending' | 'sent' | 'error'
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -1523,6 +1639,50 @@ export default function SolarBalkon() {
 
   const toggleExtra = (sku) => {
     setConfigExtras(prev => prev.includes(sku) ? prev.filter(s => s !== sku) : [...prev, sku]);
+  };
+
+  const submitOrder = async () => {
+    if (!orderForm.name.trim() || !orderForm.phone.trim()) return;
+    setOrderStatus('sending');
+
+    const systemProduct = PRODUCTS.find(p => {
+      if (configSystem === 'zendure') return p.name.includes('Zendure');
+      if (configSystem === 'ecoflow') return p.name.includes('EcoFlow');
+      if (configSystem === 'deye') return p.name.includes('Deye');
+      return false;
+    });
+
+    const allComponents = [...panelItems, ...nonPanelRequired].map(c => ({
+      name: c.name, qty: c.qty, price: formatPrice(c.priceUah * c.qty),
+    }));
+    const allExtras = configExtras.map(sku => {
+      const item = optionalComponents.find(c => c.sku === sku);
+      return item ? { name: item.name, qty: item.qty, price: formatPrice(item.priceUah * item.qty) } : null;
+    }).filter(Boolean);
+
+    try {
+      const resp = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: orderForm.name.trim(),
+          phone: orderForm.phone.trim(),
+          address: orderForm.address.trim() || null,
+          system: systemProduct?.name || configSystem,
+          panels: `${configPanels} панелі`,
+          components: allComponents,
+          extras: allExtras,
+          total: formatPrice(configTotal),
+        }),
+      });
+      if (resp.ok) {
+        setOrderStatus('sent');
+      } else {
+        setOrderStatus('error');
+      }
+    } catch {
+      setOrderStatus('error');
+    }
   };
 
   // SEO: dynamic title & meta description per page
@@ -1968,7 +2128,24 @@ export default function SolarBalkon() {
             <div className="config-total-label">Вартість комплекту «під ключ»</div>
             <div className="config-total-credit">🏦 Кредит 0% — від {configTotal > 0 ? formatPrice(Math.round(configTotal / 120)) : '—'} / міс</div>
           </div>
-          <div className="config-total-value">{configTotal > 0 ? formatPrice(configTotal) : '—'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <div className="config-total-value">{configTotal > 0 ? formatPrice(configTotal) : '—'}</div>
+            {configTotal > 0 && (
+              <button
+                onClick={() => { setShowOrderForm(true); setOrderStatus(null); setOrderForm({ name: '', phone: '', address: '' }); }}
+                style={{
+                  padding: '12px 28px', borderRadius: '50px', border: '2px solid white',
+                  background: 'rgba(255,255,255,0.15)', color: 'white',
+                  fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 700,
+                  cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => { e.target.style.background = 'white'; e.target.style.color = 'var(--green-700)'; }}
+                onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.15)'; e.target.style.color = 'white'; }}
+              >
+                Замовити →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* CREDIT */}
@@ -2992,6 +3169,125 @@ export default function SolarBalkon() {
           </div>
 
           <SocialFooter />
+        </div>
+      )}
+
+      {/* ORDER FORM MODAL */}
+      {showOrderForm && (
+        <div className="order-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowOrderForm(false); }}>
+          <div className="order-modal">
+            <div className="order-modal-header">
+              <h2>{orderStatus === 'sent' ? 'Дякуємо!' : 'Оформити замовлення'}</h2>
+              <button className="order-close" onClick={() => setShowOrderForm(false)}>✕</button>
+            </div>
+            <div className="order-modal-body">
+
+              {orderStatus === 'sent' ? (
+                <div className="order-success">
+                  <div className="order-success-icon">✅</div>
+                  <h3>Замовлення відправлено!</h3>
+                  <p>
+                    Ми отримали вашу заявку і зв'яжемося з вами найближчим часом
+                    для уточнення деталей та узгодження доставки.
+                  </p>
+                  <button
+                    className="order-submit"
+                    style={{ marginTop: '1.5rem' }}
+                    onClick={() => setShowOrderForm(false)}
+                  >
+                    Закрити
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* ORDER SUMMARY */}
+                  <div className="order-summary">
+                    <div className="order-summary-row">
+                      <span>Система:</span>
+                      <span style={{ fontWeight: 600 }}>
+                        {PRODUCTS.find(p => {
+                          if (configSystem === 'zendure') return p.name.includes('Zendure');
+                          if (configSystem === 'ecoflow') return p.name.includes('EcoFlow');
+                          if (configSystem === 'deye') return p.name.includes('Deye');
+                          return false;
+                        })?.name}
+                      </span>
+                    </div>
+                    <div className="order-summary-row">
+                      <span>Панелі:</span>
+                      <span>{configPanels} шт</span>
+                    </div>
+                    {nonPanelRequired.length > 0 && nonPanelRequired.map((c, i) => (
+                      <div className="order-summary-row" key={`r-${i}`}>
+                        <span>{c.name}</span>
+                        <span>× {c.qty}</span>
+                      </div>
+                    ))}
+                    {configExtras.length > 0 && configExtras.map((sku, i) => {
+                      const item = optionalComponents.find(c => c.sku === sku);
+                      return item ? (
+                        <div className="order-summary-row" key={`e-${i}`}>
+                          <span>{item.name}</span>
+                          <span>× {item.qty}</span>
+                        </div>
+                      ) : null;
+                    })}
+                    <div className="order-summary-row total">
+                      <span>Разом:</span>
+                      <span>{formatPrice(configTotal)}</span>
+                    </div>
+                  </div>
+
+                  {/* FORM FIELDS */}
+                  <div className="order-field">
+                    <label>Ім'я та прізвище *</label>
+                    <input
+                      type="text"
+                      placeholder="Іван Петренко"
+                      value={orderForm.name}
+                      onChange={e => setOrderForm(p => ({ ...p, name: e.target.value }))}
+                    />
+                  </div>
+                  <div className="order-field">
+                    <label>Телефон *</label>
+                    <input
+                      type="tel"
+                      placeholder="+380 XX XXX XX XX"
+                      value={orderForm.phone}
+                      onChange={e => setOrderForm(p => ({ ...p, phone: e.target.value }))}
+                    />
+                  </div>
+                  <div className="order-field">
+                    <label>Адреса доставки <span>(за бажанням)</span></label>
+                    <input
+                      type="text"
+                      placeholder="Місто, вулиця, будинок"
+                      value={orderForm.address}
+                      onChange={e => setOrderForm(p => ({ ...p, address: e.target.value }))}
+                    />
+                  </div>
+
+                  {orderStatus === 'error' && (
+                    <div className="order-error">
+                      <p>⚠️ Не вдалося відправити. Спробуйте ще раз або зв'яжіться через Telegram.</p>
+                    </div>
+                  )}
+
+                  <button
+                    className="order-submit"
+                    disabled={!orderForm.name.trim() || !orderForm.phone.trim() || orderStatus === 'sending'}
+                    onClick={submitOrder}
+                  >
+                    {orderStatus === 'sending' ? '⏳ Відправляємо...' : '📩 Відправити замовлення'}
+                  </button>
+
+                  <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--gray-400)', marginTop: '1rem' }}>
+                    Або напишіть нам напряму в <a href="https://t.me/solarbalkonshop" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--green-600)' }}>Telegram</a>
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </>
