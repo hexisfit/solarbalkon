@@ -32,10 +32,64 @@ const APPLIANCES = [
   { name: 'Сушильна машина', watts: 2500, hours: 1 },
 ];
 
-const PRODUCTS = [
-  { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: '40,000 грн', color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
-  { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: '50,000 грн', color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
-  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: '40,000 грн', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+/* ───────────────── GOOGLE SHEETS PRICES ─────────────────── */
+const SHEET_ID = '1o4oH8DhuVxyGc9KJHwlF2dxzXLJ_IXTyRJQRfEe0rPM';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS-PgV78c_o0Jf0zJ1jAXtlb7ojQ5OuIFyuM5_xAC6dK0GS2j0I9fEBFVTJzIcXNonVHPRUbmafZsxw/pub?output=csv';
+const PRIVAT_API = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
+
+// SKU → site product name mapping
+const SKU_MAP = {
+  'ZDSF2400AC+': 'Zendure SolarFlow 2400 AC+',
+  'STREAM AC Pro': 'EcoFlow STREAM AC Pro',
+  'AE-FS2.0-2H2': 'Deye AE-FS2.0-2H2',
+};
+
+// Default prices in UAH (fallback)
+const DEFAULT_PRICES = {
+  'EcoFlow STREAM AC Pro': 40000,
+  'Zendure SolarFlow 2400 AC+': 50000,
+  'Deye AE-FS2.0-2H2': 40000,
+};
+
+function parseSheetPrices(csv) {
+  const rows = csv.split('\n').map(row => {
+    const cells = [];
+    let current = '';
+    let inQuotes = false;
+    for (const ch of row) {
+      if (ch === '"') { inQuotes = !inQuotes; }
+      else if (ch === ',' && !inQuotes) { cells.push(current.trim()); current = ''; }
+      else { current += ch; }
+    }
+    cells.push(current.trim());
+    return cells;
+  });
+
+  const pricesEur = {};
+  // Rows 2,3,4 → indices 1,2,3 in CSV
+  // Col B=1 (SKU), G=6 (price EUR)
+  for (let i = 1; i <= 3 && i < rows.length; i++) {
+    const sku = (rows[i][1] || '').replace(/^"|"$/g, '').trim();
+    const rawPrice = (rows[i][6] || '').replace(/^"|"$/g, '').trim();
+    const productName = SKU_MAP[sku];
+    if (productName && rawPrice) {
+      const priceEur = parseFloat(rawPrice.replace(',', '.'));
+      if (!isNaN(priceEur)) {
+        pricesEur[productName] = priceEur;
+      }
+    }
+  }
+  return pricesEur;
+}
+
+function formatPrice(num) {
+  return Math.round(num).toLocaleString('uk-UA') + ' грн';
+}
+
+const PRODUCTS_BASE = [
+  { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: 40000, color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
+  { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: 50000, color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 40000, color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
 ];
 
 const ADVANTAGES = [
@@ -1110,10 +1164,11 @@ function VideoCarousel() {
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
   const [tariffType, setTariffType] = useState('residential');
-  const [selectedAppliances, setSelectedAppliances] = useState([0]); // Газовий котел selected by default
+  const [selectedAppliances, setSelectedAppliances] = useState([0]);
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
+  const [sheetPrices, setSheetPrices] = useState(null);
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -1138,6 +1193,46 @@ export default function SolarBalkon() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // Fetch prices from Google Sheets + PrivatBank EUR rate
+  useEffect(() => {
+    Promise.all([
+      fetch(SHEET_CSV_URL).then(r => r.ok ? r.text() : Promise.reject('Sheet unavailable')),
+      fetch(PRIVAT_API).then(r => r.ok ? r.json() : Promise.reject('PrivatBank unavailable')),
+    ])
+      .then(([csv, rates]) => {
+        // Get EUR sale rate from PrivatBank
+        const eurRate = rates.find(r => r.ccy === 'EUR');
+        const eurUah = eurRate ? parseFloat(eurRate.sale) : 44.0;
+
+        // Parse EUR prices from sheet
+        const pricesEur = parseSheetPrices(csv);
+
+        // Convert to UAH, round to nearest 100
+        const pricesUah = {};
+        for (const [name, eur] of Object.entries(pricesEur)) {
+          pricesUah[name] = Math.round((eur * eurUah) / 100) * 100;
+        }
+
+        if (Object.keys(pricesUah).length > 0) {
+          setSheetPrices(pricesUah);
+          console.log(`✅ Ціни оновлено | EUR/UAH: ${eurUah} (ПриватБанк)`, pricesUah);
+        }
+      })
+      .catch(err => console.log('⚠️ Ціни з таблиці недоступні, базові ціни:', err));
+  }, []);
+
+  // Merge sheet prices into products
+  const PRODUCTS = PRODUCTS_BASE.map(p => ({
+    ...p,
+    price: (sheetPrices && sheetPrices[p.name]) || p.price,
+  }));
+
+  // Helper: get formatted price for detail pages
+  const getPrice = (name) => {
+    const num = (sheetPrices && sheetPrices[name]) || DEFAULT_PRICES[name];
+    return num ? formatPrice(num) : '—';
+  };
 
   // SEO: dynamic title & meta description per page
   useEffect(() => {
@@ -1446,7 +1541,7 @@ export default function SolarBalkon() {
                 <span className="product-spec-value">{p.ip}</span>
               </div>
 
-              <div className="product-price" style={{ color: p.color }}>{p.price}</div>
+              <div className="product-price" style={{ color: p.color }}>{formatPrice(p.price)}</div>
               {i === 0 && (
                 <button
                   className="product-btn"
@@ -1678,7 +1773,7 @@ export default function SolarBalkon() {
             </div>
             <div className="detail-hero-info">
               <h1>EcoFlow STREAM AC Pro</h1>
-              <div className="detail-price">40,000 грн</div>
+              <div className="detail-price">{getPrice('EcoFlow STREAM AC Pro')}</div>
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '1.92 кВт·год'],
@@ -1836,7 +1931,7 @@ export default function SolarBalkon() {
             </div>
             <div className="detail-hero-info">
               <h1>Zendure SolarFlow 2400 AC+</h1>
-              <div className="detail-price">50,000 грн</div>
+              <div className="detail-price">{getPrice('Zendure SolarFlow 2400 AC+')}</div>
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '2.4 кВт·год (до 16.8)'],
@@ -2029,7 +2124,7 @@ export default function SolarBalkon() {
             </div>
             <div className="detail-hero-info">
               <h1>Deye AE-FS2.0-2H2</h1>
-              <div className="detail-price">40,000 грн</div>
+              <div className="detail-price">{getPrice('Deye AE-FS2.0-2H2')}</div>
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '2.0 кВт·год (до 10)'],
