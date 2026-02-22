@@ -32,6 +32,7 @@ const APPLIANCES = [
   { name: 'Сушильна машина', watts: 2500, hours: 1 },
 ];
 
+<<<<<<< HEAD
 /* ───────────────── GOOGLE SHEETS PRICES ─────────────────── */
 const SHEET_ID = '1o4oH8DhuVxyGc9KJHwlF2dxzXLJ_IXTyRJQRfEe0rPM';
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS-PgV78c_o0Jf0zJ1jAXtlb7ojQ5OuIFyuM5_xAC6dK0GS2j0I9fEBFVTJzIcXNonVHPRUbmafZsxw/pub?output=csv';
@@ -90,6 +91,12 @@ const PRODUCTS_BASE = [
   { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: 40000, color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
   { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: 50000, color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
   { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 40000, color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+=======
+const PRODUCTS = [
+  { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: '40,000 грн', color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
+  { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: '50,000 грн', color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: '40,000 грн', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 ];
 
 const ADVANTAGES = [
@@ -849,6 +856,7 @@ body {
   background: var(--green-700); border-color: var(--green-700);
 }
 
+<<<<<<< HEAD
 /* NAV SOCIAL */
 .nav-social {
   display:flex; align-items:center; gap:12px;
@@ -939,6 +947,8 @@ body {
 .share-btn.copy-link:hover { background:var(--green-700); }
 .share-btn svg { width:18px; height:18px; fill:currentColor; }
 
+=======
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 /* MOBILE */
 @media (max-width:768px) {
   .nav-links { display:none; }
@@ -963,7 +973,10 @@ body {
   .detail-feature { grid-template-columns:1fr; gap:1.5rem; }
   .detail-feature.reverse { direction:ltr; }
   .detail-specs-grid { grid-template-columns:1fr; }
+<<<<<<< HEAD
   .chat-window { width:calc(100vw - 2rem) !important; right:1rem !important; bottom:80px !important; max-height:70vh !important; }
+=======
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 }
 
 /* CHAT WIDGET */
@@ -1087,6 +1100,7 @@ const VIDEOS = [
   { id: '7qATOYRR6Bc', label: 'Zendure SolarFlow — установка та робота' },
 ];
 
+<<<<<<< HEAD
 const SOCIAL_ICONS = {
   ig: <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>,
   tg: <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>,
@@ -1138,6 +1152,8 @@ function SocialFooter() {
   );
 }
 
+=======
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 function VideoCarousel() {
   const [idx, setIdx] = useState(0);
   return (
@@ -1168,6 +1184,7 @@ export default function SolarBalkon() {
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
+<<<<<<< HEAD
   const [sheetPrices, setSheetPrices] = useState(null);
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
@@ -1260,6 +1277,14 @@ export default function SolarBalkon() {
     if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
     meta.content = page.desc;
   }, [currentPage]);
+=======
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 
   const tariff = TARIFFS[tariffType];
 
@@ -1304,6 +1329,7 @@ export default function SolarBalkon() {
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-inner">
+<<<<<<< HEAD
           <a href="/" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></a>
           <ul className="nav-links">
             <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a></li>
@@ -1311,6 +1337,15 @@ export default function SolarBalkon() {
             <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
             <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Обладнання</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
+=======
+          <a href="#home" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>☀ Solar<span>Balkon</span></a>
+          <ul className="nav-links">
+            <li><a href="#home" onClick={() => goToPage('home')}>Головна</a></li>
+            <li><a href="#calc" onClick={() => goToPage('home')}>Калькулятор</a></li>
+            <li><a href="#systems" onClick={() => goToPage('home')}>Системи</a></li>
+            <li><a href="#equip" onClick={() => goToPage('home')}>Обладнання</a></li>
+            <li><a href="#savings" onClick={() => goToPage('home')}>Економія</a></li>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
           </ul>
           <div className="nav-social">
             <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
@@ -1541,7 +1576,11 @@ export default function SolarBalkon() {
                 <span className="product-spec-value">{p.ip}</span>
               </div>
 
+<<<<<<< HEAD
               <div className="product-price" style={{ color: p.color }}>{formatPrice(p.price)}</div>
+=======
+              <div className="product-price" style={{ color: p.color }}>{p.price}</div>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
               {i === 0 && (
                 <button
                   className="product-btn"
@@ -1564,6 +1603,7 @@ export default function SolarBalkon() {
                   Детальніше →
                 </button>
               )}
+<<<<<<< HEAD
               {i === 2 && (
                 <button
                   className="product-btn"
@@ -1575,6 +1615,8 @@ export default function SolarBalkon() {
                   Детальніше →
                 </button>
               )}
+=======
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
             </div>
           ))}
         </div>
@@ -1758,13 +1800,27 @@ export default function SolarBalkon() {
       </section>
 
       {/* FOOTER */}
+<<<<<<< HEAD
       <SocialFooter />
+=======
+      <footer className="footer">
+        <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+        <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+        <p style={{ marginTop: '0.5rem', fontSize: '0.78rem' }}>
+          Балконні сонячні електростанції в Україні
+        </p>
+      </footer>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
       </>)}
 
       {/* ═══════ ECOFLOW DETAIL PAGE ═══════ */}
       {currentPage === 'ecoflow' && (
         <div className="detail-page">
+<<<<<<< HEAD
           <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
+=======
+          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 
           {/* HERO */}
           <div className="detail-hero-section">
@@ -1773,7 +1829,11 @@ export default function SolarBalkon() {
             </div>
             <div className="detail-hero-info">
               <h1>EcoFlow STREAM AC Pro</h1>
+<<<<<<< HEAD
               <div className="detail-price">{getPrice('EcoFlow STREAM AC Pro')}</div>
+=======
+              <div className="detail-price">40,000 грн</div>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '1.92 кВт·год'],
@@ -1907,22 +1967,42 @@ export default function SolarBalkon() {
             </a>
           </div>
 
+<<<<<<< HEAD
           {/* SHARE & CTA */}
           <ShareBar productName="EcoFlow STREAM AC Pro" url="/ecoflow" />
           <div style={{ textAlign: 'center', padding: '1rem 2rem 4rem' }}>
             <button className="hero-cta" onClick={() => goToPage('home')}>
+=======
+          {/* CTA */}
+          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+            <button
+              className="hero-cta"
+              onClick={() => goToPage('home')}
+            >
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
               ← Повернутися до калькулятора
             </button>
           </div>
 
+<<<<<<< HEAD
           <SocialFooter />
+=======
+          <footer className="footer">
+            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+          </footer>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
         </div>
       )}
 
       {/* ═══════ ZENDURE DETAIL PAGE ═══════ */}
       {currentPage === 'zendure' && (
         <div className="detail-page">
+<<<<<<< HEAD
           <a href="/" className="detail-back" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>← Назад до головної</a>
+=======
+          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
 
           {/* HERO */}
           <div className="detail-hero-section">
@@ -1931,7 +2011,11 @@ export default function SolarBalkon() {
             </div>
             <div className="detail-hero-info">
               <h1>Zendure SolarFlow 2400 AC+</h1>
+<<<<<<< HEAD
               <div className="detail-price">{getPrice('Zendure SolarFlow 2400 AC+')}</div>
+=======
+              <div className="detail-price">50,000 грн</div>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
               <div className="detail-specs-grid">
                 {[
                   ['Ємність', '2.4 кВт·год (до 16.8)'],
@@ -2100,14 +2184,20 @@ export default function SolarBalkon() {
             </a>
           </div>
 
+<<<<<<< HEAD
           {/* SHARE & CTA */}
           <ShareBar productName="Zendure SolarFlow 2400 AC+" url="/zendure" />
           <div style={{ textAlign: 'center', padding: '1rem 2rem 4rem' }}>
+=======
+          {/* CTA */}
+          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
             <button className="hero-cta" onClick={() => goToPage('home')}>
               ← Повернутися до калькулятора
             </button>
           </div>
 
+<<<<<<< HEAD
           <SocialFooter />
         </div>
       )}
@@ -2272,6 +2362,12 @@ export default function SolarBalkon() {
           </div>
 
           <SocialFooter />
+=======
+          <footer className="footer">
+            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+          </footer>
+>>>>>>> 93a29bf (add URL routing, SEO, logo)
         </div>
       )}
     </>
