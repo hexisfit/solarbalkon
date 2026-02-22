@@ -35,7 +35,7 @@ const APPLIANCES = [
 const PRODUCTS = [
   { name: 'EcoFlow STREAM AC Pro', capacity: 1920, output: 1200, cycles: 6000, warranty: 2, price: '40,000 грн', color: '#4caf50', image: '/ecoflow.png', battery: 'LFP', ip: 'IP65' },
   { name: 'Zendure SolarFlow 2400 AC+', capacity: 2400, output: 2400, cycles: 6000, warranty: 10, price: '50,000 грн', color: '#5c6bc0', image: '/zendure.png', battery: 'LiFePO4', ip: 'IP65' },
-  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: 'від €699', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
+  { name: 'Deye AE-FS2.0-2H2', capacity: 2000, output: 800, cycles: 6000, warranty: 10, price: '40,000 грн', color: '#fbc02d', image: '/deye.png', battery: 'LiFePO4', ip: 'IP65' },
 ];
 
 const ADVANTAGES = [
@@ -182,13 +182,15 @@ body {
   background: radial-gradient(circle, rgba(76,175,80,0.08) 0%, transparent 70%);
 }
 .hero::after {
-  content:''; position:absolute; bottom:-100px; left:-100px;
-  width:400px; height:400px; border-radius:50%;
-  background: radial-gradient(circle, rgba(251,192,45,0.1) 0%, transparent 70%);
+  content:''; position:absolute; right:-2%; top:5%;
+  width:50%; height:65%;
+  background: url('/hero-bg.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.18; pointer-events: none;
 }
 .hero-inner {
   max-width:1200px; margin:0 auto; width:100%;
-  position:relative; z-index:1;
+  position:relative; z-index:1; text-align: left;
 }
 .hero-badge {
   display:inline-flex; align-items:center; gap:8px;
@@ -202,7 +204,7 @@ body {
   font-size:clamp(2.4rem, 5vw, 4rem);
   font-weight:800; line-height:1.15;
   color:var(--gray-900);
-  margin-bottom:1rem;
+  margin-bottom:1rem; max-width: 650px;
 }
 .hero h1 em {
   font-style:normal;
@@ -630,11 +632,167 @@ body {
 .footer-logo span { color:var(--yellow-500); }
 .footer p { font-size:0.85rem; }
 
+/* VIDEO CAROUSEL */
+.video-section {
+  padding: 60px 2rem;
+  background: var(--gray-50);
+}
+.video-carousel {
+  max-width: 900px; margin: 0 auto;
+  position: relative;
+}
+.video-carousel-inner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  aspect-ratio: 16/9;
+}
+.video-carousel-inner iframe {
+  width: 100%; height: 100%; border: none;
+}
+.video-carousel-dots {
+  display: flex; justify-content: center;
+  gap: 10px; margin-top: 1rem;
+}
+.video-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--green-400);
+  background: transparent; cursor: pointer;
+  transition: all 0.2s;
+}
+.video-dot.active {
+  background: var(--green-500);
+  border-color: var(--green-500);
+}
+.video-carousel-label {
+  text-align: center; margin-top: 0.5rem;
+  font-size: 0.85rem; color: var(--gray-500);
+  font-weight: 500;
+}
+
+/* PRODUCT DETAIL BUTTON */
+.product-btn {
+  display: block; width: 100%;
+  margin-top: 1rem; padding: 12px;
+  border: 2px solid; border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; background: transparent;
+  transition: all 0.2s;
+}
+.product-btn:hover {
+  color: white !important;
+}
+
+/* DETAIL PAGE */
+.detail-page {
+  padding-top: 64px;
+}
+.detail-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; margin: 1.5rem 2rem;
+  border: 1px solid var(--gray-300); border-radius: 50px;
+  background: var(--white); color: var(--gray-600);
+  font-family: var(--font-body); font-size: 0.9rem;
+  font-weight: 500; cursor: pointer;
+  transition: all 0.2s; text-decoration: none;
+}
+.detail-back:hover { border-color: var(--green-400); color: var(--green-700); }
+.detail-hero-section {
+  padding: 2rem;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem; align-items: center;
+}
+.detail-hero-img {
+  width: 100%; border-radius: var(--radius-lg);
+  background: var(--gray-50); padding: 2rem;
+}
+.detail-hero-img img { width: 100%; object-fit: contain; }
+.detail-hero-info h1 {
+  font-family: var(--font-display);
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--gray-900); margin-bottom: 0.5rem;
+}
+.detail-hero-info .detail-price {
+  font-family: var(--font-display);
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--green-700); margin-bottom: 1.5rem;
+}
+.detail-specs-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.detail-spec {
+  display: flex; justify-content: space-between;
+  padding: 0.6rem 0; border-bottom: 1px solid var(--gray-100);
+  font-size: 0.9rem;
+}
+.detail-spec-label { color: var(--gray-500); }
+.detail-spec-value { font-weight: 600; color: var(--gray-800); }
+.detail-feature {
+  max-width: 1200px; margin: 0 auto;
+  padding: 4rem 2rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem; align-items: center;
+}
+.detail-feature.reverse { direction: rtl; }
+.detail-feature.reverse > * { direction: ltr; }
+.detail-feature-img {
+  width: 100%; border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.detail-feature-img img { width: 100%; display: block; }
+.detail-feature-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--gray-900); margin-bottom: 1rem;
+}
+.detail-feature-text p {
+  font-size: 1rem; color: var(--gray-600);
+  line-height: 1.7;
+}
+.detail-feature-full {
+  max-width: 1200px; margin: 0 auto;
+  padding: 3rem 2rem; text-align: center;
+}
+.detail-feature-full h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--gray-900); margin-bottom: 1.5rem;
+}
+.detail-feature-full img {
+  width: 100%; max-width: 1000px;
+  border-radius: var(--radius-lg);
+}
+.detail-video-wrap {
+  max-width: 900px; margin: 0 auto;
+  aspect-ratio: 16/9; border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-lg);
+}
+.detail-video-wrap iframe { width: 100%; height: 100%; border: none; }
+.detail-video-wrap video { width: 100%; height: 100%; object-fit: cover; }
+.detail-pdf-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; margin-top: 1rem;
+  border: 2px solid var(--green-500); border-radius: 50px;
+  background: var(--green-500); color: white;
+  font-family: var(--font-body); font-size: 1rem;
+  font-weight: 600; cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.detail-pdf-btn:hover {
+  background: var(--green-700); border-color: var(--green-700);
+}
+
 /* MOBILE */
 @media (max-width:768px) {
   .nav-links { display:none; }
   .hero { padding:100px 1.5rem 40px; }
-  .hero h1 { font-size:2rem; }
+  .hero::after { display: none; }
+  .hero-inner { text-align: center; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero h1 { font-size:2rem; max-width: none; }
   .section { padding:50px 1.5rem; }
   .tariff-cards { grid-template-columns:1fr 1fr; }
   .calc-grid { grid-template-columns:1fr 1fr; }
@@ -644,8 +802,40 @@ body {
   .equip-grid { grid-template-columns:1fr; }
   .pricing-row { grid-template-columns:1.5fr 1fr 1fr; padding:0.75rem 1rem; }
   .credit-details { gap:1rem; }
+  .detail-hero-section { grid-template-columns:1fr; gap:1.5rem; }
+  .detail-feature { grid-template-columns:1fr; gap:1.5rem; }
+  .detail-feature.reverse { direction:ltr; }
+  .detail-specs-grid { grid-template-columns:1fr; }
 }
 `;
+
+const VIDEOS = [
+  { id: 'MiwgNXLpEMU', label: 'EcoFlow STREAM — огляд системи' },
+  { id: '7qATOYRR6Bc', label: 'Zendure SolarFlow — установка та робота' },
+];
+
+function VideoCarousel() {
+  const [idx, setIdx] = useState(0);
+  return (
+    <div className="video-carousel fade-up-d2">
+      <div className="video-carousel-inner">
+        <iframe
+          key={idx}
+          src={`https://www.youtube.com/embed/${VIDEOS[idx].id}`}
+          title={VIDEOS[idx].label}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      <div className="video-carousel-dots">
+        {VIDEOS.map((_, i) => (
+          <button key={i} className={`video-dot ${i === idx ? 'active' : ''}`} onClick={() => setIdx(i)} />
+        ))}
+      </div>
+      <div className="video-carousel-label">{VIDEOS[idx].label}</div>
+    </div>
+  );
+}
 
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
@@ -654,6 +844,12 @@ export default function SolarBalkon() {
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
 
   const tariff = TARIFFS[tariffType];
 
@@ -698,18 +894,19 @@ export default function SolarBalkon() {
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-inner">
-          <a href="#home" className="nav-logo">☀ Solar<span>Balkon</span></a>
+          <a href="#home" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>☀ Solar<span>Balkon</span></a>
           <ul className="nav-links">
-            <li><a href="#home">Головна</a></li>
-            <li><a href="#calc">Калькулятор</a></li>
-            <li><a href="#systems">Системи</a></li>
-            <li><a href="#equip">Обладнання</a></li>
-            <li><a href="#savings">Економія</a></li>
+            <li><a href="#home" onClick={() => goToPage('home')}>Головна</a></li>
+            <li><a href="#calc" onClick={() => goToPage('home')}>Калькулятор</a></li>
+            <li><a href="#systems" onClick={() => goToPage('home')}>Системи</a></li>
+            <li><a href="#equip" onClick={() => goToPage('home')}>Обладнання</a></li>
+            <li><a href="#savings" onClick={() => goToPage('home')}>Економія</a></li>
           </ul>
         </div>
       </nav>
 
       {/* HERO */}
+      {currentPage === 'home' && (<>
       <section className="hero" id="home">
         <div className="hero-inner">
           <div className="hero-badge fade-up">🌿 Відновлювальна енергія для кожного</div>
@@ -768,6 +965,13 @@ export default function SolarBalkon() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* VIDEO CAROUSEL */}
+      <section className="video-section">
+        <div className="section-title fade-up">Як це працює?</div>
+        <div className="section-sub fade-up-d1">Подивіться відео про балконні сонячні електростанції</div>
+        <VideoCarousel />
       </section>
 
       {/* CALCULATOR */}
@@ -920,6 +1124,28 @@ export default function SolarBalkon() {
               </div>
 
               <div className="product-price" style={{ color: p.color }}>{p.price}</div>
+              {i === 0 && (
+                <button
+                  className="product-btn"
+                  style={{ color: p.color, borderColor: p.color }}
+                  onMouseEnter={e => { e.target.style.background = p.color; }}
+                  onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = p.color; }}
+                  onClick={() => goToPage('ecoflow')}
+                >
+                  Детальніше →
+                </button>
+              )}
+              {i === 1 && (
+                <button
+                  className="product-btn"
+                  style={{ color: p.color, borderColor: p.color }}
+                  onMouseEnter={e => { e.target.style.background = p.color; }}
+                  onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = p.color; }}
+                  onClick={() => goToPage('zendure')}
+                >
+                  Детальніше →
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -1110,6 +1336,365 @@ export default function SolarBalkon() {
           Балконні сонячні електростанції в Україні
         </p>
       </footer>
+      </>)}
+
+      {/* ═══════ ECOFLOW DETAIL PAGE ═══════ */}
+      {currentPage === 'ecoflow' && (
+        <div className="detail-page">
+          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+
+          {/* HERO */}
+          <div className="detail-hero-section">
+            <div className="detail-hero-img">
+              <img src="/ecoflow.png" alt="EcoFlow STREAM AC Pro" />
+            </div>
+            <div className="detail-hero-info">
+              <h1>EcoFlow STREAM AC Pro</h1>
+              <div className="detail-price">40,000 грн</div>
+              <div className="detail-specs-grid">
+                {[
+                  ['Ємність', '1.92 кВт·год'],
+                  ['AC Вихід', '1,200 Вт'],
+                  ['AC Вхід', '1,050 Вт'],
+                  ['Цикли', '6,000'],
+                  ['Батарея', 'LFP (LiFePO4)'],
+                  ['Захист', 'IP65'],
+                  ['Шум', '< 30 дБ'],
+                  ['Гарантія', '2 роки'],
+                  ['Вага', '21.5 кг'],
+                  ['Розміри', '255 × 254 × 458 мм'],
+                  ['Підключення', 'Wi-Fi / Bluetooth'],
+                  ['Температура', '-20°C — +55°C'],
+                ].map(([l, v], j) => (
+                  <div className="detail-spec" key={j}>
+                    <span className="detail-spec-label">{l}</span>
+                    <span className="detail-spec-value">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 1: All-in-One */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>🔄 Гібридна система «все в одному»</h2>
+                <p>
+                  EcoFlow STREAM AC Pro легко інтегрується з будь-яким мікроінвертором завдяки
+                  технології AC-зв'язку. Просто підключіть до розетки — система автоматично
+                  зберігає сонячну енергію вдень та забезпечує безперебійне живлення вночі.
+                  100% сумісність з усіма мікроінверторами на ринку.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="https://de.ecoflow.com/cdn/shop/files/PC_046fe521-021d-4db6-8873-a1f9e283c329.png?v=1745849558&width=1200" alt="All-in-One Hybrid System" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 2: Dual-mode 2800W */}
+          <div className="detail-feature reverse">
+            <div className="detail-feature-text">
+              <h2>⚡ Подвійний режим — до 2800 Вт сонячного входу</h2>
+              <p>
+                Масштабуйте свою систему від 1.92 кВт·год до 11.52 кВт·год, підключивши до 6
+                пристроїв разом. Два STREAM AC Pro можна з'єднати для подвоєння ємності,
+                або комбінувати з батареями серії EcoFlow DELTA для ще більшого запасу енергії.
+              </p>
+            </div>
+            <div className="detail-feature-img">
+              <img src="https://de.ecoflow.com/cdn/shop/files/PC_7eedf67f-30cc-4e20-8770-ac3289a0f646.png?v=1753188037&width=1200" alt="Scalable Storage" />
+            </div>
+          </div>
+
+          {/* FEATURE 3: 2300W output */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>🔌 2,300 Вт AC вихід</h2>
+                <p>
+                  Живіть два пристрої одночасно — з потужністю 1,200 Вт на одну батарею
+                  та автоматичним підсиленням до 2,300 Вт. Комбінуйте з іншим STREAM AC Pro
+                  або STREAM Ultra для повної потужності. Вбудована батарея забезпечує роботу
+                  навіть при відключенні електрики.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="https://de.ecoflow.com/cdn/shop/files/PC_b8a21f00-ddcc-43f3-9058-5a8fa2797e03.png?v=1745849568&width=1200" alt="2300W AC Output" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 4: Big or Small */}
+          <div className="detail-feature-full">
+            <h2>💡 Великий чи малий — живить все</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1.5rem', lineHeight: '1.7' }}>
+              Від роутера та освітлення до холодильника та чайника — EcoFlow STREAM забезпечує
+              пристрої потужністю до 2,300 Вт повністю на сонячній енергії.
+            </p>
+            <img src="https://de.ecoflow.com/cdn/shop/files/PC_8ef6414a-2906-4004-8b38-f07dffb40cc2.png?v=1745849578&width=1200" alt="Big or Small Power It All" />
+          </div>
+
+          {/* FEATURE 5: Power flows + VIDEO */}
+          <div style={{ background: 'var(--gray-50)', padding: '4rem 2rem' }}>
+            <div className="detail-feature-full" style={{ padding: 0 }}>
+              <h2>🏠 Енергія там, де ваші пристрої</h2>
+              <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1.5rem', lineHeight: '1.7' }}>
+                ШІ-система моніторить всі підключені пристрої в реальному часі. Коли батарея на кухні
+                розряджається, інтелектуальне управління автоматично перенаправляє енергію від сусідніх
+                пристроїв — ваш холодильник продовжує працювати на сонячній енергії без перебоїв.
+              </p>
+              <div className="detail-video-wrap" style={{ margin: '0 auto' }}>
+                <iframe
+                  src="https://www.youtube.com/embed/MiwgNXLpEMU"
+                  title="EcoFlow STREAM AC Pro"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 6: Ready for any weather */}
+          <div className="detail-feature-full">
+            <h2>🌧 Готовий до будь-якої погоди</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1.5rem', lineHeight: '1.7' }}>
+              Захист IP65, робоча температура від -20°C до +55°C, автоматичний підігрів батареї
+              при низьких температурах. Тихий як шепіт — лише 30 дБ. Технологія LFP забезпечує
+              до 6,000 циклів — це понад 15 років надійної роботи.
+            </p>
+            <img src="https://de.ecoflow.com/cdn/shop/files/02_PC_a6f2a87d-4fa5-4e4e-a726-f800a5ceb282.png?v=1745844265&width=1200" alt="Ready For Any Weather" />
+          </div>
+
+          {/* INSTALLATION MANUAL */}
+          <div className="detail-feature-full" style={{ paddingBottom: '1rem' }}>
+            <h2>📖 Інструкція з встановлення</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1rem', lineHeight: '1.7' }}>
+              Завантажте офіційну інструкцію з встановлення EcoFlow STREAM AC Pro
+              для покрокового керівництва з підключення та налаштування системи.
+            </p>
+            <a
+              className="detail-pdf-btn"
+              href="https://ecoflow-service-us-prod.oss-us-west-1.aliyuncs.com/cms/manual/1758263879628/EcoFlow%20STREAM%20AC%20Pro_User%20Manual.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📄 Завантажити PDF інструкцію
+            </a>
+          </div>
+
+          {/* CTA */}
+          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+            <button
+              className="hero-cta"
+              onClick={() => goToPage('home')}
+            >
+              ← Повернутися до калькулятора
+            </button>
+          </div>
+
+          <footer className="footer">
+            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+          </footer>
+        </div>
+      )}
+
+      {/* ═══════ ZENDURE DETAIL PAGE ═══════ */}
+      {currentPage === 'zendure' && (
+        <div className="detail-page">
+          <button className="detail-back" onClick={() => goToPage('home')}>← Назад до головної</button>
+
+          {/* HERO */}
+          <div className="detail-hero-section">
+            <div className="detail-hero-img">
+              <img src="/zendure.png" alt="Zendure SolarFlow 2400 AC+" />
+            </div>
+            <div className="detail-hero-info">
+              <h1>Zendure SolarFlow 2400 AC+</h1>
+              <div className="detail-price">50,000 грн</div>
+              <div className="detail-specs-grid">
+                {[
+                  ['Ємність', '2.4 кВт·год (до 16.8)'],
+                  ['AC Вихід', '2,400 Вт'],
+                  ['AC Вхід', '3,200 Вт макс.'],
+                  ['Цикли', '6,000'],
+                  ['Батарея', 'LiFePO4 48В'],
+                  ['Захист', 'IP65'],
+                  ['Ефективність', '93% AC'],
+                  ['Гарантія', '10 років'],
+                  ['Вага', '~11 кг (контролер)'],
+                  ['Розміри', '448 × 304 × 88 мм'],
+                  ['Підключення', 'Wi-Fi / Bluetooth'],
+                  ['Температура', '-20°C — +55°C'],
+                ].map(([l, v], j) => (
+                  <div className="detail-spec" key={j}>
+                    <span className="detail-spec-label">{l}</span>
+                    <span className="detail-spec-value">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 1: 2400W Bi-Directional AC + VIDEO */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>⚡ 2400 Вт двонаправлений AC</h2>
+                <p>
+                  Більшість побутових приладів працюють від сонця. Менше залежність від мережі.
+                  SolarFlow 2400 AC+ забезпечує повний цикл: вдень заряджає батарею сонячною
+                  енергією, ввечері — живить ваш дім. ШІ-система HEMS аналізує погоду, тарифи
+                  та ваші звички, щоб економити до 42% на електроенергії щомісяця.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <div className="detail-video-wrap" style={{ maxWidth: '100%', margin: 0, boxShadow: 'none' }}>
+                  <video autoPlay muted loop playsInline>
+                    <source src="https://zendure.com/cdn/shop/videos/c/vp/3b86b4a3ec5a4cfbb75b2e286b29061d/3b86b4a3ec5a4cfbb75b2e286b29061d.HD-1080p-2.5Mbps-73424824.mp4?v=0" type="video/mp4" />
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 2: Scalable 2.4–16.8 kWh */}
+          <div className="detail-feature reverse">
+            <div className="detail-feature-text">
+              <h2>🔋 Від 2.4 до 16.8 кВт·год — масштабуйте під потреби</h2>
+              <p>
+                Починайте з одного модуля на 2.4 кВт·год і нарощуйте ємність до 16.8 кВт·год,
+                додаючи батареї AB3000L. Кожен модуль має незалежну систему управління зарядом —
+                без «ефекту бочки». Ідеально для тих, хто планує поступове розширення
+                сонячної системи або підготовку до зарядки електромобіля.
+              </p>
+            </div>
+            <div className="detail-feature-img">
+              <img src="https://zendure.com/cdn/shop/files/PC_1.png?v=1770270189&width=1200" alt="Scalable Storage" />
+            </div>
+          </div>
+
+          {/* FEATURE 3: Plug & Play */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>🔌 Просте встановлення — Plug & Play</h2>
+                <p>
+                  Три кроки: підключіть батарею до контролера, вставте вилку в розетку,
+                  налаштуйте через додаток Zendure. Жодних спеціальних інструментів чи електриків.
+                  Система автоматично розпізнає підключення та починає працювати.
+                  Вся установка — менше 30 хвилин.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <div className="detail-video-wrap" style={{ maxWidth: '100%', margin: 0, boxShadow: 'none' }}>
+                  <iframe
+                    src="https://www.youtube.com/embed/7qATOYRR6Bc"
+                    title="Zendure SolarFlow 2400 AC+ Installation"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 4: Intelligent Battery Self-Maintenance + VIDEO */}
+          <div className="detail-feature reverse">
+            <div className="detail-feature-text">
+              <h2>🧠 Інтелектуальне самообслуговування батареї</h2>
+              <p>
+                Вбудована BMS моніторить стан батареї в реальному часі, а хмарний аналіз
+                додає періодичну діагностику та прогнозування несправностей. Система автоматично
+                запобігає надмірному розряду через розумне управління SOC, самонагрів при низьких
+                температурах та комбіноване AC + PV заряджання.
+              </p>
+            </div>
+            <div className="detail-feature-img">
+                <img src="/zendure-bms.png" alt="Intelligent Battery Self-Maintenance BMS" />
+              </div>
+          </div>
+
+          {/* FEATURE 5: Metering Accessories */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>📊 Аксесуари для точного контролю енергії</h2>
+                <p>
+                  Підключіть Smart Meter (Zendure 3CT, Shelly Pro 3EM або інший) для точного
+                  моніторингу генерації та споживання в реальному часі. Система автоматично
+                  коригує заряд/розряд відповідно до ваших потреб — нульовий експорт в мережу,
+                  максимальне самоспоживання.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="/zendure-metering.webp" alt="Metering Accessories" />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE 6: All-in-One Design */}
+          <div className="detail-feature-full">
+            <h2>📦 Дизайн «все в одному»</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1.5rem', lineHeight: '1.7' }}>
+              Контролер та інвертор в одному компактному корпусі вагою лише 11 кг.
+              Модульна конструкція дозволяє з'єднувати до 6 батарей без додаткового обладнання.
+              Сумісний з усіма мікроінверторами до 2000 Вт. Підтримка Home Assistant,
+              Homey, Shelly через MQTT.
+            </p>
+            <img src="/zendure-allinone.png" alt="All-in-One Design" />
+          </div>
+
+          {/* FEATURE 7: Weather-proof + Warranty */}
+          <div style={{ background: 'var(--gray-50)' }}>
+            <div className="detail-feature">
+              <div className="detail-feature-text">
+                <h2>🌧 10 років гарантії, до 15 років служби</h2>
+                <p>
+                  IP65 захист для зовнішньої установки. Самонагрів батареї при низьких температурах.
+                  Вбудована аерозольна система пожежогасіння ZenGuard™ активується при аномальному
+                  нагріві. LiFePO4 акумулятори з 6,000 циклами забезпечують понад 15 років
+                  безперервної роботи. Zendure надає 10 років повної гарантії.
+                </p>
+              </div>
+              <div className="detail-feature-img">
+                <img src="/zendure-weather.webp" alt="IP65 Weather Proof" />
+              </div>
+            </div>
+          </div>
+
+          {/* INSTALLATION MANUAL */}
+          <div className="detail-feature-full" style={{ paddingBottom: '1rem' }}>
+            <h2>📖 Інструкція з встановлення</h2>
+            <p style={{ color: 'var(--gray-600)', maxWidth: '700px', margin: '0 auto 1rem', lineHeight: '1.7' }}>
+              Завантажте офіційну інструкцію з встановлення Zendure SolarFlow 2400 AC+
+              для покрокового керівництва з підключення та налаштування системи.
+            </p>
+            <a
+              className="detail-pdf-btn"
+              href="https://cdn.shopify.com/s/files/1/0720/4379/0616/files/SolarFlow_2400_AC__User_Manual_EN_FR_20260122.pdf?v=1770547505"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📄 Завантажити PDF інструкцію
+            </a>
+          </div>
+
+          {/* CTA */}
+          <div style={{ textAlign: 'center', padding: '2rem 2rem 4rem' }}>
+            <button className="hero-cta" onClick={() => goToPage('home')}>
+              ← Повернутися до калькулятора
+            </button>
+          </div>
+
+          <footer className="footer">
+            <div className="footer-logo">☀ Solar<span>Balkon</span></div>
+            <p>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+          </footer>
+        </div>
+      )}
     </>
   );
 }
