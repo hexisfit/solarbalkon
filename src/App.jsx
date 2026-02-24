@@ -2277,7 +2277,7 @@ export default function SolarBalkon() {
               <div className="inv-card fade-up">
                 <div className="inv-card-left">
                   <img
-                    src={`/inverters/${inv.model}.png`}
+                    src={`/inverters/${inv.model.replace(/^Deye\s+/i, '')}.png`}
                     alt={inv.name}
                     onError={e => {
                       // Fallback to placeholder
