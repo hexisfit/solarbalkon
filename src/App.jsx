@@ -63,7 +63,338 @@ const ADVANTAGES = [
   { icon: '🏦', title: 'Кредит 0%', desc: 'Державна програма до 480,000 грн на 10 років' },
 ];
 
-/* ───────────────────────── STYLES ───────────────────────── */
+/* ───────────────────────── ARTICLES / BLOG ───────────────────────── */
+const ARTICLES = [
+  {
+    slug: 'balkonna-soniachna-elektrostantsiia-shcho-tse-i-yak-pratsiuie',
+    title: 'Балконна сонячна електростанція: що це і як працює?',
+    excerpt: 'Усе, що потрібно знати про балконні сонячні електростанції — від принципу роботи до вибору обладнання. Повний гід для початківців.',
+    date: '2026-02-20',
+    author: 'SolarBalkon',
+    category: 'Гід',
+    tags: ['балконна електростанція', 'сонячні панелі', 'як працює', 'для початківців'],
+    image: '/blog/balkonna-ses.jpg',
+    readTime: 8,
+    content: `
+## Що таке балконна сонячна електростанція?
+
+Балконна сонячна електростанція (БСЕ) — це компактна система генерації електроенергії, яку можна встановити на балконі, терасі або фасаді будинку. На відміну від класичних дахових станцій, БСЕ не потребує складного монтажу, дозволів чи значних площ.
+
+### Основні компоненти системи
+
+Типова балконна станція складається з кількох ключових елементів:
+
+**Сонячні панелі** — перетворюють сонячне світло на постійний струм. Сучасні панелі, як Trina TSM-455 з ККД 22.8%, генерують до 455 Вт потужності кожна при площі лише 2 м².
+
+**Мікроінвертор або накопичувач** — перетворює постійний струм на змінний 220В для домашньої мережі. Мікроінвертор Deye SUN-M80G4 має потужність 800 Вт та ККД 96.5%.
+
+**Система накопичення (опційно)** — акумулятор, що зберігає надлишок енергії для використання вночі або під час відключень. Наприклад, EcoFlow STREAM AC Pro (1920 Вт·год) або Zendure SolarFlow 2400 AC+ (2400 Вт·год).
+
+**Smart Meter** — пристрій моніторингу, що відстежує генерацію та споживання в реальному часі.
+
+### Скільки електроенергії генерує балконна станція?
+
+При середніх 3.5 сонячних годинах на день в Україні:
+
+- **2 панелі (910 Вт):** ~84 кВт·год/місяць, ~1,008 кВт·год/рік
+- **4 панелі (1,820 Вт):** ~168 кВт·год/місяць, ~2,016 кВт·год/рік
+
+Цього достатньо для покриття 50-100% потреб типової квартири в електроенергії.
+
+### Переваги балконної електростанції
+
+1. **Простота встановлення** — Plug & Play, монтаж за 30 хвилин без електрика
+2. **Не потрібен дозвіл** — для систем до 10 кВт
+3. **Окупність 3-5 років** — при поточних тарифах на електроенергію
+4. **Автономність** — системи з акумулятором працюють навіть при відключеннях
+5. **Державна підтримка** — кредит 0% до 480,000 грн на 10 років
+
+### Для кого підходить?
+
+Балконна електростанція ідеально підходить для мешканців квартир, власників невеликих будинків та орендарів, які хочуть зменшити рахунки за електроенергію без складного монтажу на даху.
+
+### Висновок
+
+Балконна сонячна електростанція — це доступний, простий та ефективний спосіб перейти на чисту енергію. З державною програмою кредитування під 0% це стало ще вигідніше.
+    `,
+  },
+  {
+    slug: 'derzhavnyi-kredyt-0-na-soniachni-paneli-yak-otrymaty',
+    title: 'Державний кредит 0% на сонячні панелі: як отримати у 2026 році?',
+    excerpt: 'Детальна інструкція з оформлення кредиту за програмою «Джерела енергії» — від підготовки документів до отримання компенсації 30%.',
+    date: '2026-02-18',
+    author: 'SolarBalkon',
+    category: 'Фінанси',
+    tags: ['кредит 0%', 'Джерела енергії', 'державна програма', 'субсидія', 'компенсація'],
+    image: '/blog/kredit-0.jpg',
+    readTime: 6,
+    content: `
+## Програма «Джерела енергії» — кредит 0% на сонячні панелі
+
+Державна програма «Джерела енергії» дозволяє українцям встановити сонячні електростанції з кредитом під 0% річних. Розповідаємо, як скористатися цією можливістю.
+
+### Основні умови програми
+
+- **Сума кредиту:** до 480,000 грн
+- **Термін:** до 10 років
+- **Ставка:** 0% (держава компенсує відсотки банку)
+- **Компенсація:** до 30% тіла кредиту повертається державою
+- **Потужність:** системи до 10 кВт
+- **Площа житла:** до 300 м²
+
+### Хто може отримати?
+
+Кредит доступний для **фізичних осіб** — власників приватних будинків та квартир. Головна вимога — наявність права власності на житло та можливість встановлення сонячної електростанції.
+
+### Список документів
+
+1. Паспорт та ІПН
+2. Документ на право власності на житло
+3. Довідка про доходи або витяг з банку
+4. Акт обстеження житла (видає проектна організація)
+5. Проект електростанції від ліцензованого підрядника
+
+### Банки-партнери програми
+
+Програму підтримують **43 банки**, серед яких:
+
+- ПриватБанк
+- Ощадбанк
+- Укргазбанк
+- Райффайзен Банк
+- Глобус Банк
+- та інші
+
+### Покроковий процес
+
+**Крок 1.** Оберіть обладнання та отримайте комерційну пропозицію від постачальника (наприклад, SolarBalkon).
+
+**Крок 2.** Зверніться до банку-партнера з документами для попереднього схвалення кредиту.
+
+**Крок 3.** Отримайте акт обстеження та проект електростанції.
+
+**Крок 4.** Підпишіть кредитний договір та договір на постачання обладнання.
+
+**Крок 5.** Встановіть систему та введіть в експлуатацію.
+
+**Крок 6.** Подайте документи на компенсацію 30% тіла кредиту.
+
+### Приклад розрахунку
+
+Система на 4 панелі з накопичувачем Deye: **70,200 грн**
+
+- Щомісячний платіж: ~585 грн/місяць (10 років, 0%)
+- Компенсація 30%: -21,060 грн повертається державою
+- Фактична вартість: ~49,140 грн
+- Економія на електриці: ~725 грн/місяць (при 250 кВт·год)
+
+**Кредит окупається вже з першого місяця**, оскільки щомісячна економія перевищує платіж по кредиту.
+
+### Важливі обмеження
+
+- Не можна підключати «зелений тариф» одночасно з програмою
+- Обладнання має бути сертифіковане в Україні
+- Встановлення виконує ліцензований підрядник
+
+### Висновок
+
+Програма «Джерела енергії» робить сонячну енергію доступною для кожного українця. При щомісячній економії, що перевищує платіж по кредиту, це інвестиція, яка окупається з першого дня.
+    `,
+  },
+  {
+    slug: 'yak-obrati-nakopychuvach-ecoflow-zendure-deye',
+    title: 'Як обрати накопичувач: EcoFlow vs Zendure vs Deye — порівняння 2026',
+    excerpt: 'Детальне порівняння трьох найпопулярніших систем накопичення для балконних електростанцій. Що обрати саме для вашого дому?',
+    date: '2026-02-15',
+    author: 'SolarBalkon',
+    category: 'Порівняння',
+    tags: ['EcoFlow', 'Zendure', 'Deye', 'накопичувач', 'порівняння', 'акумулятор'],
+    image: '/blog/porivnyannya.jpg',
+    readTime: 10,
+    content: `
+## Порівняння накопичувачів для балконної електростанції
+
+Вибір системи накопичення — одне з найважливіших рішень при плануванні балконної сонячної електростанції. Порівняємо три лідери ринку: EcoFlow STREAM AC Pro, Zendure SolarFlow 2400 AC+ та Deye AE-FS2.0-2H2.
+
+### Загальне порівняння
+
+| Параметр | EcoFlow STREAM | Zendure 2400 AC+ | Deye AE-FS2.0 |
+|---|---|---|---|
+| Ємність | 1,920 Вт·год | 2,400 Вт·год | 2,000 Вт·год |
+| Вихід AC | 1,200 Вт | 2,400 Вт | 800 Вт |
+| Цикли | 6,000 | 6,000 | 6,000 |
+| Гарантія | 2 роки | 10 років | 10 років |
+| UPS | Ні | Ні | Так (< 4 мс) |
+| Масштабування | до 11.52 кВт·год | до 16.8 кВт·год | до 10 кВт·год |
+| Захист | IP65 | IP65 | IP65 |
+| Ціна | 40,000 грн | 50,000 грн | 40,000 грн |
+
+### EcoFlow STREAM AC Pro — для тих, хто цінує простоту
+
+**Плюси:**
+- Найпростіше встановлення — дійсно Plug & Play
+- Тихий (< 30 дБ) — можна ставити на балконі біля спальні
+- Сумісний з будь-яким мікроінвертором
+- Автопідігрів до -20°C
+
+**Мінуси:**
+- Коротка гарантія — лише 2 роки
+- Менша ємність — 1,920 Вт·год
+- Немає функції UPS
+
+**Ідеально для:** квартир з невеликим споживанням, де важлива простота та тиша.
+
+### Zendure SolarFlow 2400 AC+ — максимум потужності
+
+**Плюси:**
+- Найбільша ємність — 2,400 Вт·год (до 16.8 з модулями)
+- Найпотужніший вихід — 2,400 Вт
+- ШІ-система HEMS для оптимізації
+- 10 років гарантії
+- Пожежогасіння ZenGuard™
+
+**Мінуси:**
+- Найвища ціна — 50,000 грн
+- Немає вбудованого UPS
+
+**Ідеально для:** будинків з високим споживанням, де потрібна масштабованість.
+
+### Deye AE-FS2.0-2H2 — вбудований UPS та інвертор
+
+**Плюси:**
+- Вбудований мікроінвертор — не потрібен окремий
+- UPS з переключенням < 4 мс
+- 10 років гарантії
+- Порти USB-A та Type-C
+- Найкраща ціна за функціональність
+
+**Мінуси:**
+- Найменший вихід — 800 Вт
+- Вужчий діапазон температур (-10°C — +50°C)
+
+**Ідеально для:** тих, кому важливе безперебійне живлення та вбудований інвертор.
+
+### Що обрати?
+
+- **Обмежений бюджет + UPS потрібен** → Deye AE-FS2.0-2H2
+- **Максимум потужності + масштабування** → Zendure SolarFlow 2400 AC+
+- **Простота + тихий + компактний** → EcoFlow STREAM AC Pro
+
+### Висновок
+
+Всі три системи — якісні рішення від провідних виробників. Вибір залежить від ваших пріоритетів: бюджет, потужність, UPS або простота встановлення. Скористайтеся нашим калькулятором на сайті, щоб розрахувати оптимальну конфігурацію для вашого дому.
+    `,
+  },
+  {
+    slug: 'taryfy-na-elektroenergiiu-v-ukraini-2026',
+    title: 'Тарифи на електроенергію в Україні 2026: скільки платимо і що далі?',
+    excerpt: 'Актуальні тарифи на електроенергію для побутових та комерційних споживачів. Прогнози зростання та як зменшити рахунки.',
+    date: '2026-02-10',
+    author: 'SolarBalkon',
+    category: 'Аналітика',
+    tags: ['тарифи', 'електроенергія', 'побутовий тариф', 'комерційний тариф', 'Україна 2026'],
+    image: '/blog/taryfy.jpg',
+    readTime: 5,
+    content: `
+## Тарифи на електроенергію в Україні у 2026 році
+
+Розуміння поточних тарифів та прогнозів їх зростання — ключовий фактор при прийнятті рішення про встановлення сонячної електростанції.
+
+### Побутовий тариф
+
+Станом на 2026 рік побутовий тариф складає **4.32 грн/кВт·год**. За прогнозами НКРЕКП, очікується підвищення до **6.64 грн/кВт·год** протягом наступного року.
+
+Для тих, хто має двозонний лічильник, нічний тариф складає **2.16 грн/кВт·год** (50% від денного).
+
+### Комерційний тариф
+
+Комерційні споживачі платять значно більше. Середній тариф складається з кількох компонентів:
+
+- **РДН (ринок на добу наперед):** ~6.9 грн/кВт·год
+- **Передача (Укренерго):** 0.71 грн/кВт·год
+- **Розподіл:** ~2.7 грн/кВт·год (2-й клас напруги)
+- **Загалом:** ~7.50 грн/кВт·год
+
+Прогноз на найближчий рік — зростання до **~9.00 грн/кВт·год**.
+
+### Як зростання тарифів впливає на окупність сонячних панелей?
+
+Парадоксально, але зростання тарифів — це хороша новина для власників сонячних станцій. Чим вищий тариф — тим швидше окупається система:
+
+- **При 4.32 грн/кВт·год:** окупність ~4.5 року
+- **При 6.64 грн/кВт·год:** окупність ~3 роки
+- **При 9.00 грн/кВт·год (комерц.):** окупність ~2 роки
+
+### Скільки можна зекономити?
+
+При споживанні 250 кВт·год/місяць та системі на 4 панелі:
+
+- Рахунок без панелей: **1,080 грн/місяць**
+- Рахунок з панелями: **354 грн/місяць**
+- Економія: **726 грн/місяць** або **8,712 грн/рік**
+
+За 10 років економія складає **87,120 грн** при вартості системи 70,200 грн.
+
+### Висновок
+
+Зростання тарифів на електроенергію робить інвестицію в сонячні панелі все більш вигідною. Чим раніше ви встановите систему — тим більше зекономите протягом її 25-30 років служби.
+    `,
+  },
+];
+
+/* Helper: format article date */
+function formatArticleDate(dateStr) {
+  const months = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
+  const d = new Date(dateStr + 'T00:00:00');
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/* Helper: set SEO meta tags dynamically */
+function setSEO({ title, description, url, image, type = 'website', article = null }) {
+  document.title = title;
+  const setMeta = (attr, key, val) => {
+    let el = document.querySelector(`meta[${attr}="${key}"]`);
+    if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
+    el.setAttribute('content', val);
+  };
+  setMeta('name', 'description', description);
+  setMeta('property', 'og:title', title);
+  setMeta('property', 'og:description', description);
+  setMeta('property', 'og:url', url);
+  setMeta('property', 'og:type', type);
+  setMeta('property', 'og:site_name', 'SolarBalkon');
+  if (image) setMeta('property', 'og:image', `https://solarbalkon.shop${image}`);
+  setMeta('name', 'twitter:card', 'summary_large_image');
+  setMeta('name', 'twitter:title', title);
+  setMeta('name', 'twitter:description', description);
+
+  // JSON-LD structured data
+  let ldScript = document.getElementById('jsonld-seo');
+  if (!ldScript) { ldScript = document.createElement('script'); ldScript.id = 'jsonld-seo'; ldScript.type = 'application/ld+json'; document.head.appendChild(ldScript); }
+
+  if (article) {
+    ldScript.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      description: article.excerpt,
+      image: image ? `https://solarbalkon.shop${image}` : undefined,
+      datePublished: article.date,
+      author: { '@type': 'Organization', name: 'SolarBalkon', url: 'https://solarbalkon.shop' },
+      publisher: { '@type': 'Organization', name: 'SolarBalkon', url: 'https://solarbalkon.shop', logo: { '@type': 'ImageObject', url: 'https://solarbalkon.shop/logo-bolt.png' } },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    });
+  } else {
+    ldScript.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'SolarBalkon',
+      url: 'https://solarbalkon.shop',
+      description: 'Балконні сонячні електростанції в Україні — сонячні панелі, накопичувачі, інвертори з кредитом 0%',
+      publisher: { '@type': 'Organization', name: 'SolarBalkon', url: 'https://solarbalkon.shop' },
+    });
+  }
+}
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
 
@@ -1452,6 +1783,225 @@ body {
 .share-btn.copy-link:hover { background:var(--green-700); }
 .share-btn svg { width:18px; height:18px; fill:currentColor; }
 
+/* BLOG */
+.blog-page { padding-top: 64px; }
+.blog-header {
+  padding: 3rem 2rem 2rem;
+  max-width: 1200px; margin: 0 auto;
+}
+.blog-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800; color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+.blog-header p {
+  font-size: 1.1rem; color: var(--gray-500);
+  max-width: 600px;
+}
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2rem;
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+.blog-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.blog-card-img {
+  width: 100%; height: 200px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--green-50), var(--yellow-100));
+  display: flex; align-items: center; justify-content: center;
+}
+.blog-card-img-placeholder {
+  width: 100%; height: 200px;
+  background: linear-gradient(135deg, var(--green-50), var(--yellow-100));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+}
+.blog-card-body { padding: 1.5rem; }
+.blog-card-meta {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.blog-card-category {
+  background: var(--green-50); color: var(--green-700);
+  padding: 4px 12px; border-radius: 50px;
+  font-size: 0.78rem; font-weight: 600;
+}
+.blog-card-date {
+  font-size: 0.8rem; color: var(--gray-400);
+}
+.blog-card-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+.blog-card-excerpt {
+  font-size: 0.9rem; color: var(--gray-500);
+  line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.blog-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 1rem; padding-top: 1rem;
+  border-top: 1px solid var(--gray-100);
+}
+.blog-card-read {
+  font-size: 0.8rem; color: var(--gray-400);
+}
+.blog-card-link {
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--green-600);
+}
+
+/* ARTICLE PAGE */
+.article-page { padding-top: 64px; }
+.article-header {
+  max-width: 800px; margin: 0 auto;
+  padding: 2rem 2rem 1rem;
+}
+.article-breadcrumbs {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.85rem; color: var(--gray-400);
+  margin-bottom: 1.5rem;
+}
+.article-breadcrumbs a {
+  color: var(--green-600); text-decoration: none;
+}
+.article-breadcrumbs a:hover { text-decoration: underline; }
+.article-meta {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1rem; flex-wrap: wrap;
+}
+.article-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800; color: var(--gray-900);
+  line-height: 1.25; margin-bottom: 1rem;
+}
+.article-header .article-excerpt {
+  font-size: 1.15rem; color: var(--gray-500);
+  line-height: 1.7;
+}
+.article-content {
+  max-width: 800px; margin: 0 auto;
+  padding: 1rem 2rem 3rem;
+  font-size: 1.05rem; line-height: 1.8;
+  color: var(--gray-700);
+}
+.article-content h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--gray-900);
+  margin: 2.5rem 0 1rem;
+}
+.article-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem; font-weight: 700;
+  color: var(--gray-800);
+  margin: 2rem 0 0.75rem;
+}
+.article-content p { margin-bottom: 1.25rem; }
+.article-content ul, .article-content ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+}
+.article-content li { margin-bottom: 0.5rem; }
+.article-content strong { color: var(--gray-900); }
+.article-content table {
+  width: 100%; border-collapse: collapse;
+  margin: 1.5rem 0; font-size: 0.95rem;
+}
+.article-content table th,
+.article-content table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-200);
+  text-align: left;
+}
+.article-content table th {
+  background: var(--green-50);
+  font-weight: 700; color: var(--gray-900);
+}
+.article-content table td { color: var(--gray-700); }
+.article-tags {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  max-width: 800px; margin: 0 auto;
+  padding: 0 2rem 2rem;
+}
+.article-tag {
+  background: var(--gray-100); color: var(--gray-600);
+  padding: 6px 14px; border-radius: 50px;
+  font-size: 0.8rem; font-weight: 500;
+}
+.article-share {
+  max-width: 800px; margin: 0 auto;
+  padding: 0 2rem 2rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.article-share-label {
+  font-size: 0.9rem; font-weight: 600;
+  color: var(--gray-600);
+}
+.article-share a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--gray-100); color: var(--gray-600);
+  text-decoration: none; font-size: 1.1rem;
+  transition: all 0.2s;
+}
+.article-share a:hover {
+  background: var(--green-500); color: white;
+}
+.article-related {
+  max-width: 800px; margin: 0 auto;
+  padding: 2rem;
+  border-top: 1px solid var(--gray-200);
+}
+.article-related h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--gray-900); margin-bottom: 1.5rem;
+}
+.article-related-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.article-related-card {
+  padding: 1rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.article-related-card:hover {
+  border-color: var(--green-300);
+  box-shadow: var(--shadow-sm);
+}
+.article-related-card-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--gray-800); margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+.article-related-card-date {
+  font-size: 0.78rem; color: var(--gray-400);
+}
+
 /* MOBILE */
 @media (max-width:768px) {
   .nav-links { display:none; }
@@ -1485,6 +2035,10 @@ body {
   .inv-card { grid-template-columns: 1fr; }
   .inv-card-left { min-height: 200px; }
   .inv-card-actions { flex-direction: column; }
+  .blog-grid { grid-template-columns: 1fr; padding: 0 1.5rem 3rem; }
+  .blog-header { padding: 2rem 1.5rem 1rem; }
+  .article-header, .article-content, .article-tags, .article-share, .article-related { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .article-related-grid { grid-template-columns: 1fr; }
 }
 
 /* CHAT WIDGET */
@@ -1709,11 +2263,16 @@ export default function SolarBalkon() {
     if (path === '/deye') return 'deye';
     if (path === '/anker') return 'anker';
     if (path === '/credit') return 'credit';
+    if (path === '/blog') return 'blog';
+    if (path.startsWith('/blog/')) return 'article:' + path.slice(6);
     return 'home';
   });
 
   const goToPage = (page) => {
-    const url = page === 'home' ? '/' : `/${page}`;
+    let url;
+    if (page === 'home') url = '/';
+    else if (page.startsWith('article:')) url = `/blog/${page.slice(8)}`;
+    else url = `/${page}`;
     window.history.pushState({page}, '', url);
     setCurrentPage(page);
     window.scrollTo(0, 0);
@@ -1721,13 +2280,52 @@ export default function SolarBalkon() {
 
   useEffect(() => {
     const onPopState = (e) => {
-      const page = e.state?.page || 'home';
-      setCurrentPage(page);
+      if (e.state?.page) {
+        setCurrentPage(e.state.page);
+      } else {
+        const path = window.location.pathname;
+        if (path === '/blog') setCurrentPage('blog');
+        else if (path.startsWith('/blog/')) setCurrentPage('article:' + path.slice(6));
+        else if (path === '/') setCurrentPage('home');
+        else setCurrentPage(path.slice(1));
+      }
       window.scrollTo(0, 0);
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // SEO — update meta tags on page change
+  useEffect(() => {
+    if (currentPage === 'blog') {
+      setSEO({
+        title: 'Блог — SolarBalkon | Статті про сонячну енергію',
+        description: 'Корисні статті про балконні сонячні електростанції, тарифи на електроенергію, державні програми кредитування та порівняння обладнання.',
+        url: 'https://solarbalkon.shop/blog',
+        type: 'website',
+      });
+    } else if (currentPage.startsWith('article:')) {
+      const slug = currentPage.slice(8);
+      const article = ARTICLES.find(a => a.slug === slug);
+      if (article) {
+        setSEO({
+          title: `${article.title} — SolarBalkon`,
+          description: article.excerpt,
+          url: `https://solarbalkon.shop/blog/${slug}`,
+          image: article.image,
+          type: 'article',
+          article,
+        });
+      }
+    } else {
+      setSEO({
+        title: 'SolarBalkon — Балконні сонячні електростанції в Україні',
+        description: 'Сонячні панелі, накопичувачі EcoFlow, Zendure, Deye для балкону. Кредит 0% до 480,000 грн. Калькулятор економії та конфігуратор системи.',
+        url: 'https://solarbalkon.shop',
+        type: 'website',
+      });
+    }
+  }, [currentPage]);
 
   // Fetch prices + components from API
   useEffect(() => {
@@ -1973,6 +2571,7 @@ export default function SolarBalkon() {
             <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
             <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Конфігуратор</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
+            <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a></li>
           </ul>
           <div className="nav-social">
             <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
@@ -2572,6 +3171,42 @@ export default function SolarBalkon() {
               <div className="savings-stat-label">Вигода за 10 років</div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* BLOG PREVIEW */}
+      <section className="section section-alt">
+        <div className="section-title fade-up">Корисні статті</div>
+        <div className="section-sub fade-up-d1">Дізнайтесь більше про сонячну енергію та як зекономити</div>
+        <div className="blog-grid" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: 0 }}>
+          {ARTICLES.slice(0, 3).map((a) => (
+            <div className="blog-card fade-up-d2" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
+              <div className="blog-card-img-placeholder">
+                {a.category === 'Гід' && '📖'}
+                {a.category === 'Фінанси' && '💰'}
+                {a.category === 'Порівняння' && '⚖️'}
+                {a.category === 'Аналітика' && '📊'}
+              </div>
+              <div className="blog-card-body">
+                <div className="blog-card-meta">
+                  <span className="blog-card-category">{a.category}</span>
+                  <span className="blog-card-date">{formatArticleDate(a.date)}</span>
+                </div>
+                <div className="blog-card-title">{a.title}</div>
+                <div className="blog-card-excerpt">{a.excerpt}</div>
+                <div className="blog-card-footer">
+                  <span className="blog-card-read">🕐 {a.readTime} хв</span>
+                  <span className="blog-card-link">Читати →</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <button onClick={() => goToPage('blog')} style={{ background: 'none', border: '2px solid var(--green-500)', borderRadius: '50px', padding: '12px 32px', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--green-700)', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.target.style.background = 'var(--green-500)'; e.target.style.color = 'white'; }}
+            onMouseLeave={e => { e.target.style.background = 'none'; e.target.style.color = 'var(--green-700)'; }}
+          >Усі статті →</button>
         </div>
       </section>
 
@@ -3720,6 +4355,197 @@ export default function SolarBalkon() {
           <SocialFooter />
         </div>
       )}
+
+      {/* ═══════ BLOG LISTING PAGE ═══════ */}
+      {currentPage === 'blog' && (
+        <div className="blog-page">
+          <div className="blog-header">
+            <a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }} style={{ color: 'var(--green-600)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600, display: 'inline-block', marginBottom: '1rem' }}>← Головна</a>
+            <h1>Блог SolarBalkon</h1>
+            <p>Корисні статті про сонячну енергію, обладнання, тарифи та державні програми</p>
+          </div>
+
+          <div className="blog-grid">
+            {ARTICLES.map((a) => (
+              <div className="blog-card" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
+                <div className="blog-card-img-placeholder">
+                  {a.category === 'Гід' && '📖'}
+                  {a.category === 'Фінанси' && '💰'}
+                  {a.category === 'Порівняння' && '⚖️'}
+                  {a.category === 'Аналітика' && '📊'}
+                </div>
+                <div className="blog-card-body">
+                  <div className="blog-card-meta">
+                    <span className="blog-card-category">{a.category}</span>
+                    <span className="blog-card-date">{formatArticleDate(a.date)}</span>
+                  </div>
+                  <div className="blog-card-title">{a.title}</div>
+                  <div className="blog-card-excerpt">{a.excerpt}</div>
+                  <div className="blog-card-footer">
+                    <span className="blog-card-read">🕐 {a.readTime} хв читання</span>
+                    <span className="blog-card-link">Читати →</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <SocialFooter />
+        </div>
+      )}
+
+      {/* ═══════ ARTICLE DETAIL PAGE ═══════ */}
+      {currentPage.startsWith('article:') && (() => {
+        const slug = currentPage.slice(8);
+        const article = ARTICLES.find(a => a.slug === slug);
+        if (!article) return (
+          <div className="article-page" style={{ textAlign: 'center', padding: '6rem 2rem' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--gray-900)', marginBottom: '1rem' }}>Статтю не знайдено</h1>
+            <a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }} style={{ color: 'var(--green-600)', fontWeight: 600 }}>← Повернутися до блогу</a>
+          </div>
+        );
+
+        // Simple markdown-like rendering
+        const renderContent = (md) => {
+          const lines = md.trim().split('\n');
+          const html = [];
+          let inTable = false;
+          let tableRows = [];
+          let inList = false;
+          let listItems = [];
+          let listType = 'ul';
+
+          const flushList = () => {
+            if (listItems.length > 0) {
+              html.push(`<${listType}>${listItems.join('')}</${listType}>`);
+              listItems = [];
+              inList = false;
+            }
+          };
+
+          const flushTable = () => {
+            if (tableRows.length > 0) {
+              const headerCells = tableRows[0].split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+              const bodyRows = tableRows.slice(2).map(row => {
+                const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+                return `<tr>${cells}</tr>`;
+              }).join('');
+              html.push(`<table><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`);
+              tableRows = [];
+              inTable = false;
+            }
+          };
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+
+            // Table detection
+            if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+              if (!inTable) { flushList(); inTable = true; }
+              tableRows.push(trimmed);
+              continue;
+            } else if (inTable) {
+              flushTable();
+            }
+
+            // Headings
+            if (trimmed.startsWith('## ')) {
+              flushList();
+              html.push(`<h2>${trimmed.slice(3)}</h2>`);
+            } else if (trimmed.startsWith('### ')) {
+              flushList();
+              html.push(`<h3>${trimmed.slice(4)}</h3>`);
+            }
+            // List items
+            else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+              if (!inList) { inList = true; listType = 'ul'; }
+              const content = trimmed.slice(2).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+              listItems.push(`<li>${content}</li>`);
+            }
+            // Numbered list
+            else if (/^\d+\.\s/.test(trimmed)) {
+              if (!inList) { inList = true; listType = 'ol'; }
+              const content = trimmed.replace(/^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+              listItems.push(`<li>${content}</li>`);
+            }
+            // Paragraph
+            else if (trimmed.length > 0) {
+              flushList();
+              const content = trimmed
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--green-600)">$1</a>');
+              html.push(`<p>${content}</p>`);
+            }
+            // Empty line
+            else {
+              flushList();
+            }
+          }
+          flushList();
+          flushTable();
+          return html.join('\n');
+        };
+
+        const related = ARTICLES.filter(a => a.slug !== slug).slice(0, 3);
+        const articleUrl = `https://solarbalkon.shop/blog/${slug}`;
+
+        return (
+          <div className="article-page">
+            <div className="article-header">
+              <div className="article-breadcrumbs">
+                <a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a>
+                <span>/</span>
+                <a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a>
+                <span>/</span>
+                <span>{article.category}</span>
+              </div>
+
+              <div className="article-meta">
+                <span className="blog-card-category">{article.category}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--gray-400)' }}>{formatArticleDate(article.date)}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--gray-400)' }}>🕐 {article.readTime} хв</span>
+              </div>
+
+              <h1>{article.title}</h1>
+              <p className="article-excerpt">{article.excerpt}</p>
+            </div>
+
+            <div className="article-content" dangerouslySetInnerHTML={{ __html: renderContent(article.content) }} />
+
+            {/* Tags */}
+            <div className="article-tags">
+              {article.tags.map((tag, i) => (
+                <span className="article-tag" key={i}>#{tag}</span>
+              ))}
+            </div>
+
+            {/* Share */}
+            <div className="article-share">
+              <span className="article-share-label">Поділитися:</span>
+              <a href={`https://t.me/share/url?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" title="Telegram">📨</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" title="Facebook">📘</a>
+              <a href={`viber://forward?text=${encodeURIComponent(article.title + ' ' + articleUrl)}`} title="Viber">💬</a>
+            </div>
+
+            {/* Related articles */}
+            {related.length > 0 && (
+              <div className="article-related">
+                <h3>Читайте також</h3>
+                <div className="article-related-grid">
+                  {related.map(r => (
+                    <div className="article-related-card" key={r.slug} onClick={() => goToPage('article:' + r.slug)}>
+                      <div className="article-related-card-title">{r.title}</div>
+                      <div className="article-related-card-date">{formatArticleDate(r.date)} · {r.readTime} хв</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <SocialFooter />
+          </div>
+        );
+      })()}
 
       {/* ORDER FORM MODAL */}
       {showOrderForm && (
