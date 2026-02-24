@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://solarbalkon.shop/sitemap.xml
+
+# SolarBalkon — балконні сонячні електростанції в Україні
