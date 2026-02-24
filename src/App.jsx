@@ -3390,11 +3390,15 @@ export default function SolarBalkon() {
         <div className="blog-grid" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: 0 }}>
           {ARTICLES.slice(0, 3).map((a) => (
             <div className="blog-card fade-up-d2" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
-              <div className="blog-card-img-placeholder">
-                {a.category === 'Гід' && '📖'}
-                {a.category === 'Фінанси' && '💰'}
-                {a.category === 'Порівняння' && '⚖️'}
-                {a.category === 'Аналітика' && '📊'}
+              <div className="blog-card-img-placeholder" style={a.image ? { backgroundImage: `url(${a.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                {!a.image && (
+                  <>
+                    {a.category === 'Гід' && '📖'}
+                    {a.category === 'Фінанси' && '💰'}
+                    {a.category === 'Порівняння' && '⚖️'}
+                    {a.category === 'Аналітика' && '📊'}
+                  </>
+                )}
               </div>
               <div className="blog-card-body">
                 <div className="blog-card-meta">
@@ -4577,11 +4581,15 @@ export default function SolarBalkon() {
           <div className="blog-grid">
             {ARTICLES.map((a) => (
               <div className="blog-card" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
-                <div className="blog-card-img-placeholder">
-                  {a.category === 'Гід' && '📖'}
-                  {a.category === 'Фінанси' && '💰'}
-                  {a.category === 'Порівняння' && '⚖️'}
-                  {a.category === 'Аналітика' && '📊'}
+                <div className="blog-card-img-placeholder" style={a.image ? { backgroundImage: `url(${a.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                  {!a.image && (
+                    <>
+                      {a.category === 'Гід' && '📖'}
+                      {a.category === 'Фінанси' && '💰'}
+                      {a.category === 'Порівняння' && '⚖️'}
+                      {a.category === 'Аналітика' && '📊'}
+                    </>
+                  )}
                 </div>
                 <div className="blog-card-body">
                   <div className="blog-card-meta">
