@@ -2145,12 +2145,13 @@ export default function SolarBalkon() {
       </section>
 
       {/* PRODUCTS / SYSTEMS */}
+      {tariffType !== 'commercial' && (
       <section className="section" id="systems">
-        <div className="section-title fade-up">{tariffType === 'commercial' ? 'Балконна система Deye' : 'Системи накопичення'}</div>
-        <div className="section-sub fade-up-d1">{tariffType === 'commercial' ? 'Компактна балконна система для комерційних об\'єктів' : 'Порівняйте рішення для зберігання енергії'}</div>
+        <div className="section-title fade-up">Системи накопичення</div>
+        <div className="section-sub fade-up-d1">Порівняйте рішення для зберігання енергії</div>
 
         <div className="products-grid">
-          {PRODUCTS.filter(p => tariffType === 'commercial' ? p.key === 'deye' : true).map((p, i) => (
+          {PRODUCTS.map((p, i) => (
             <div className={`product-card fade-up-d${Math.min(i + 1, 4)}`} key={i} style={{ borderTop: `4px solid ${p.color}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
                 <div className="product-name" style={{ marginBottom: 0 }}>{p.name}</div>
@@ -2216,6 +2217,7 @@ export default function SolarBalkon() {
           ))}
         </div>
       </section>
+      )}
 
       {/* COMMERCIAL INVERTERS */}
       {tariffType === 'commercial' && commercialInverters.length > 0 && (
