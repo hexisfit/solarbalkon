@@ -2004,7 +2004,7 @@ export default function SolarBalkon() {
               >Побутовий</button>
               <button
                 className={`tariff-btn ${tariffType === 'commercial' ? 'active' : ''}`}
-                onClick={() => setTariffType('commercial')}
+                onClick={() => { setTariffType('commercial'); setConfigSystem('deye'); }}
               >Комерційний</button>
             </div>
             <div className="tariff-cards">
@@ -2060,7 +2060,7 @@ export default function SolarBalkon() {
           >Побутовий</button>
           <button
             className={`tariff-btn ${tariffType === 'commercial' ? 'active' : ''}`}
-            onClick={() => setTariffType('commercial')}
+            onClick={() => { setTariffType('commercial'); setConfigSystem('deye'); }}
           >Комерційний</button>
         </div>
 
@@ -2146,11 +2146,11 @@ export default function SolarBalkon() {
 
       {/* PRODUCTS / SYSTEMS */}
       <section className="section" id="systems">
-        <div className="section-title fade-up">Системи накопичення</div>
-        <div className="section-sub fade-up-d1">Порівняйте рішення для зберігання енергії</div>
+        <div className="section-title fade-up">{tariffType === 'commercial' ? 'Балконна система Deye' : 'Системи накопичення'}</div>
+        <div className="section-sub fade-up-d1">{tariffType === 'commercial' ? 'Компактна балконна система для комерційних об\'єктів' : 'Порівняйте рішення для зберігання енергії'}</div>
 
         <div className="products-grid">
-          {PRODUCTS.map((p, i) => (
+          {PRODUCTS.filter(p => tariffType === 'commercial' ? p.key === 'deye' : true).map((p, i) => (
             <div className={`product-card fade-up-d${Math.min(i + 1, 4)}`} key={i} style={{ borderTop: `4px solid ${p.color}` }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
                 <div className="product-name" style={{ marginBottom: 0 }}>{p.name}</div>
@@ -2218,7 +2218,7 @@ export default function SolarBalkon() {
       </section>
 
       {/* COMMERCIAL INVERTERS */}
-      {commercialInverters.length > 0 && (
+      {tariffType === 'commercial' && commercialInverters.length > 0 && (
         <section className="section section-green" id="commercial">
           <div className="section-title fade-up">Комерційні інвертори Deye</div>
           <div className="section-sub fade-up-d1">Гібридні інвертори для дому та бізнесу — оберіть потужність та кількість фаз</div>
@@ -2274,11 +2274,20 @@ export default function SolarBalkon() {
             return (
               <div className="inv-card fade-up">
                 <div className="inv-card-left">
-                  <div style={{ textAlign: 'center' }}>
+                  <img
+                    src={`/inverters/${inv.model}.png`}
+                    alt={inv.name}
+                    onError={e => {
+                      // Fallback to placeholder
+                      e.target.onerror = null;
+                      e.target.style.display = 'none';
+                      e.target.parentNode.querySelector('.inv-card-placeholder').style.display = 'flex';
+                    }}
+                  />
+                  <div className="inv-card-placeholder" style={{ display: 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>⚡</div>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--gray-700)' }}>Deye</div>
                     <div style={{ fontSize: '1.1rem', color: 'var(--gray-500)', marginTop: '0.25rem' }}>{inv.kw} кВт · {inv.phases === 1 ? '1Ф' : '3Ф'}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--gray-400)', marginTop: '0.5rem', fontFamily: 'monospace' }}>{inv.model}</div>
                   </div>
                 </div>
                 <div className="inv-card-right">
@@ -2370,7 +2379,7 @@ export default function SolarBalkon() {
           <div className="config-section-label">1. Оберіть систему накопичення</div>
         </div>
         <div className="config-systems">
-          {PRODUCTS.map((p) => (
+          {PRODUCTS.filter(p => tariffType === 'commercial' ? p.key === 'deye' : true).map((p) => (
             <button
               key={p.key}
               className={`config-sys-btn ${configSystem === p.key ? 'active' : ''}`}
