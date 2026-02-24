@@ -696,6 +696,12 @@ body {
   max-width: 100%; max-height: 280px;
   object-fit: contain;
 }
+.inv-card-left img[src]::before {
+  content: '';
+}
+.inv-card-left img:not([src]), .inv-card-left img[src=""] {
+  display: none;
+}
 .inv-card-right { padding: 2rem; }
 .inv-card-name {
   font-family: var(--font-display);
@@ -2274,23 +2280,26 @@ export default function SolarBalkon() {
             }).filter(Boolean) : [];
 
             return (
-              <div className="inv-card fade-up">
+              <div className="inv-card fade-up" key={inv.model}>
                 <div className="inv-card-left">
-                  <img
-                    src={`/inverters/${inv.model.replace(/^Deye\s+/i, '')}.png`}
-                    alt={inv.name}
-                    onError={e => {
-                      // Fallback to placeholder
-                      e.target.onerror = null;
-                      e.target.style.display = 'none';
-                      e.target.parentNode.querySelector('.inv-card-placeholder').style.display = 'flex';
-                    }}
-                  />
-                  <div className="inv-card-placeholder" style={{ display: 'none', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>⚡</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: 'var(--gray-700)' }}>Deye</div>
-                    <div style={{ fontSize: '1.1rem', color: 'var(--gray-500)', marginTop: '0.25rem' }}>{inv.kw} кВт · {inv.phases === 1 ? '1Ф' : '3Ф'}</div>
-                  </div>
+                  {(() => {
+                    const imgFile = inv.model.replace(/^Deye\s+/i, '');
+                    const imgUrl = `/inverters/${imgFile}.png`;
+                    return (
+                      <>
+                        <img
+                          key={imgUrl}
+                          src={imgUrl}
+                          alt={inv.name}
+                          style={{ maxWidth: '100%', maxHeight: '280px', objectFit: 'contain' }}
+                        />
+                        <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Deye {inv.kw} кВт</div>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--gray-500)' }}>{inv.phases === 1 ? '1-фаза' : '3-фази'}</div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <div className="inv-card-right">
                   <div className="inv-card-name">{inv.name}</div>
