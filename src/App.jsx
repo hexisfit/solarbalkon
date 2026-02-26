@@ -1,3 +1,9 @@
+import AdminApp from "./admin/AdminApp.jsx";
+const isAdmin =
+  typeof window !== "undefined" &&
+  window.location.pathname.startsWith("/admin");
+
+if (isAdmin) return <AdminApp />;
 import { useState, useEffect, useRef } from 'react';
 
 /* ───────────────────────── CONFIG ───────────────────────── */
