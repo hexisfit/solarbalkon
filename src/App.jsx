@@ -1,9 +1,5 @@
 import AdminApp from "./admin/AdminApp.jsx";
-const isAdmin =
-  typeof window !== "undefined" &&
-  window.location.pathname.startsWith("/admin");
 
-if (isAdmin) return <AdminApp />;
 import { useState, useEffect, useRef } from 'react';
 
 /* ───────────────────────── CONFIG ───────────────────────── */
@@ -2454,6 +2450,13 @@ function VideoCarousel() {
 
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
+  const isAdmin =
+    typeof window !== "undefined" &&
+    window.location.pathname.startsWith("/admin");
+
+  if (isAdmin) return <AdminApp />;
+
+
   const [tariffType, setTariffType] = useState('residential');
   const [selectedAppliances, setSelectedAppliances] = useState([0]);
   const [consumption, setConsumption] = useState(250);
