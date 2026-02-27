@@ -1,5 +1,3 @@
-import AdminApp from "./admin/AdminApp.jsx";
-
 import { useState, useEffect, useRef } from 'react';
 
 /* ───────────────────────── CONFIG ───────────────────────── */
@@ -1101,6 +1099,65 @@ body {
 }
 .credit-detail-label {
   font-size:0.78rem; color:var(--gray-700);
+}
+
+/* AUDIT BANNER */
+.audit-banner {
+  max-width:900px; margin:0 auto 0; padding:2.5rem;
+  background:linear-gradient(135deg, #1a5c2a 0%, #2d7a3a 50%, #388e3c 100%);
+  border-radius:20px; position:relative; overflow:hidden;
+  display:flex; align-items:center; gap:2rem;
+  box-shadow:0 8px 32px rgba(45,122,58,0.25);
+  cursor:pointer; transition:transform 0.3s, box-shadow 0.3s;
+}
+.audit-banner:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(45,122,58,0.35); }
+.audit-banner::before {
+  content:''; position:absolute; top:-50%; right:-20%;
+  width:300px; height:300px; border-radius:50%;
+  background:rgba(251,192,45,0.12);
+}
+.audit-banner::after {
+  content:''; position:absolute; bottom:-30%; left:-10%;
+  width:200px; height:200px; border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.audit-banner-content { flex:1; position:relative; z-index:1; }
+.audit-banner-badge {
+  display:inline-block; padding:4px 14px; border-radius:20px;
+  background:rgba(251,192,45,0.2); color:#fdd835;
+  font-size:0.75rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:1px; margin-bottom:0.75rem;
+}
+.audit-banner h3 {
+  font-family:var(--font-display); font-size:clamp(1.3rem,3vw,1.8rem);
+  font-weight:800; color:white; margin-bottom:0.5rem; line-height:1.3;
+}
+.audit-banner p { color:rgba(255,255,255,0.8); font-size:0.95rem; line-height:1.6; margin-bottom:1rem; }
+.audit-banner-cta {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 28px; border-radius:50px;
+  background:linear-gradient(135deg, #fbc02d, #f9a825);
+  color:#1a5c2a; font-weight:700; font-size:0.95rem;
+  text-decoration:none; transition:all 0.25s;
+  box-shadow:0 4px 16px rgba(251,192,45,0.3);
+}
+.audit-banner-cta:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(251,192,45,0.4); }
+.audit-banner-icon {
+  font-size:3.5rem; position:relative; z-index:1;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+}
+.audit-banner-features {
+  display:flex; gap:1.5rem; margin-top:1rem;
+}
+.audit-banner-feat {
+  display:flex; align-items:center; gap:6px;
+  font-size:0.82rem; color:rgba(255,255,255,0.7);
+}
+.audit-banner-feat span { font-size:1rem; }
+@media(max-width:768px) {
+  .audit-banner { flex-direction:column; text-align:center; padding:2rem 1.5rem; }
+  .audit-banner-icon { font-size:2.5rem; }
+  .audit-banner-features { justify-content:center; flex-wrap:wrap; gap:1rem; }
 }
 
 /* SAVINGS */
@@ -2450,13 +2507,6 @@ function VideoCarousel() {
 
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
-  const isAdmin =
-    typeof window !== "undefined" &&
-    window.location.pathname.startsWith("/admin");
-
-  if (isAdmin) return <AdminApp />;
-
-
   const [tariffType, setTariffType] = useState('residential');
   const [selectedAppliances, setSelectedAppliances] = useState([0]);
   const [consumption, setConsumption] = useState(250);
@@ -2481,6 +2531,7 @@ export default function SolarBalkon() {
     if (path === '/deye') return 'deye';
     if (path === '/anker') return 'anker';
     if (path === '/credit') return 'credit';
+    if (path === '/audit') return 'audit';
     if (path === '/blog') return 'blog';
     if (path.startsWith('/blog/')) return 'article:' + path.slice(6);
     return 'home';
@@ -2503,6 +2554,7 @@ export default function SolarBalkon() {
       } else {
         const path = window.location.pathname;
         if (path === '/blog') setCurrentPage('blog');
+        else if (path === '/audit') setCurrentPage('audit');
         else if (path.startsWith('/blog/')) setCurrentPage('article:' + path.slice(6));
         else if (path === '/') setCurrentPage('home');
         else setCurrentPage(path.slice(1));
@@ -2731,6 +2783,10 @@ export default function SolarBalkon() {
         title: 'Кредит 0% на сонячну станцію — Програма «Джерела енергії» | SolarBalkon',
         desc: 'Державний кредит 0% на сонячні панелі до 480,000 грн на 10 років. Повний пакет документів від SolarBalkon. ПриватБанк, Ощадбанк, Укргазбанк.',
       },
+      audit: {
+        title: 'Аудит об\'єкта — Розрахунок СЕС | SolarBalkon',
+        desc: 'Безкоштовний онлайн-калькулятор сонячної електростанції. Розрахунок потужності, генерації, окупності та специфікації обладнання для вашого об\'єкта в Україні.',
+      },
     };
     const page = seo[currentPage] || seo.home;
     document.title = page.title;
@@ -2789,6 +2845,7 @@ export default function SolarBalkon() {
             <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
             <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Конфігуратор</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
+            <li><a href="/audit" onClick={(e) => { e.preventDefault(); goToPage('audit'); }} style={{ color: 'var(--yellow-600)', fontWeight: 700 }}>⚡ Аудит СЕС</a></li>
             <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a></li>
           </ul>
           <div className="nav-social">
@@ -3335,6 +3392,30 @@ export default function SolarBalkon() {
             </div>
           </div>
           <p style={{ marginTop: '1rem', fontWeight: 600, color: 'var(--gray-900)' }}>Дізнатися більше →</p>
+        </div>
+      </section>
+
+      {/* AUDIT BANNER */}
+      <section className="section" style={{ paddingBottom: 0 }}>
+        <div className="audit-banner fade-up" onClick={() => goToPage('audit')}>
+          <div className="audit-banner-content">
+            <div className="audit-banner-badge">🆕 Новий інструмент</div>
+            <h3>Аудит об'єкта — Розрахунок СЕС</h3>
+            <p>
+              Не знаєте з чого почати? Наш покроковий калькулятор розрахує оптимальну 
+              систему для вашого об'єкта: потужність, генерацію, обладнання та окупність.
+            </p>
+            <div className="audit-banner-features">
+              <div className="audit-banner-feat"><span>📊</span> Детальний BOM</div>
+              <div className="audit-banner-feat"><span>💰</span> Розрахунок окупності</div>
+              <div className="audit-banner-feat"><span>🔋</span> Підбір батареї</div>
+              <div className="audit-banner-feat"><span>📍</span> 22 області України</div>
+            </div>
+            <div style={{ marginTop: '1.25rem' }}>
+              <span className="audit-banner-cta">🔍 Розрахувати систему →</span>
+            </div>
+          </div>
+          <div className="audit-banner-icon">🏗️</div>
         </div>
       </section>
 
@@ -4772,6 +4853,182 @@ export default function SolarBalkon() {
           </div>
         );
       })()}
+
+      {/* ═══════ AUDIT PAGE ═══════ */}
+      {currentPage === 'audit' && (() => {
+        const auEffTariff = auTariff > 0 ? auTariff : (auMode === 'residential' ? AUDIT_DEFAULTS.resTariff : AUDIT_DEFAULTS.comTariff);
+        const auBasicSteps = ['Тип', "Об'єкт", 'Споживання', 'Результат'];
+        const auAdvSteps = ['Тип', "Об'єкт", 'Орієнтація', 'Мережа', 'Параметри', 'Результат'];
+        const auLabels = auCalcMode === 'basic' ? auBasicSteps : auAdvSteps;
+        const auTotal = auLabels.length;
+        const auIsResult = auStep === auTotal - 1;
+        const auSwitchMode = (m) => { setAuCalcMode(m); setAuStep(0); };
+        const auCanNext = () => {
+          if (auCalcMode === 'basic') { if(auStep===0)return!!auMode;if(auStep===1)return!!auRegion&&!!auInstall;if(auStep===2)return auConsumption>0;return true; }
+          else { if(auStep===0)return!!auMode;if(auStep===1)return!!auRegion&&!!auInstall;if(auStep===2)return!!auOrient&&auConsumption>0;if(auStep===3)return!!auBlackout;return true; }
+        };
+
+        // ── Calculate ──
+        let auResults = null;
+        if (auIsResult) {
+          const rd = AUDIT_REGIONS.find(r=>r.id===auRegion)||AUDIT_REGIONS[0];
+          const id = AUDIT_INSTALLS.find(t=>t.id===auInstall)||AUDIT_INSTALLS[0];
+          const od = AUDIT_ORIENTATIONS.find(o=>o.id===auOrient)||AUDIT_ORIENTATIONS[0];
+          const pv = rd.pvout;
+          const oC = auCalcMode==='basic'?1.0:od.coeff;
+          const iC = id.coeff;
+          const nC = auCalcMode==='basic'?1.0:auditInclCoeff(auIncl);
+          const ef = auCalcMode==='basic'?AUDIT_DEFAULTS.sysEff:auSysEff;
+          const dd = auCalcMode==='basic'?AUDIT_DEFAULTS.dod:auDoD;
+          const be = auCalcMode==='basic'?AUDIT_DEFAULTS.battEff:auBattEff;
+          const dg = auCalcMode==='basic'?AUDIT_DEFAULTS.deg:auDeg;
+          const yC = auConsumption*12;
+          const tC = ef*oC*iC*nC;
+          const rP = yC/(pv*tC);
+          const eG = rP*pv*tC;
+          const nB = auBlackout!=='none';
+          const bCL = auCalcMode==='basic'?1.0:auCritLoad;
+          const bAH = auCalcMode==='basic'?(auBlackout==='often'?6:3):auAutoHours;
+          const bCap = nB?(bCL*bAH)/(dd*be):0;
+          const pPow = AUDIT_PANELS[0].power/1000;
+          const pCnt = Math.max(1,Math.ceil(rP/pPow));
+          const tPW = pCnt*AUDIT_PANELS[0].power;
+          let sInv=[];
+          if(tPW<=1600&&auInstall==='balcony'){sInv=[{...AUDIT_INV.micro[0],qty:Math.ceil(pCnt/2)}];}
+          else{const ph=auCalcMode==='basic'?1:auPhases;const cands=AUDIT_INV.string.filter(i=>ph===3?i.ph===3:true).filter(i=>i.power>=tPW*0.8);const pk=cands.length>0?cands[0]:AUDIT_INV.string[AUDIT_INV.string.length-1];sInv=[{...pk,qty:1}];}
+          let sBatt=null;
+          if(nB&&bCap>0){const sr=[...AUDIT_BATT].sort((a,b)=>a.cap-b.cap);sBatt=sr.find(b=>b.cap>=bCap)||sr[sr.length-1];sBatt={...sBatt,qty:Math.ceil(bCap/sBatt.cap)};}
+          const bom=[];
+          bom.push({cat:'Панелі',name:AUDIT_PANELS[0].name,qty:pCnt,up:AUDIT_PANELS[0].price,tot:pCnt*AUDIT_PANELS[0].price});
+          sInv.forEach(inv=>bom.push({cat:'Інвертор',name:inv.name,qty:inv.qty,up:inv.price,tot:inv.qty*inv.price}));
+          bom.push({cat:'Лічильник',name:AUDIT_METER.name,qty:1,up:AUDIT_METER.price,tot:AUDIT_METER.price});
+          if(sBatt)bom.push({cat:'Акумулятор',name:sBatt.name,qty:sBatt.qty,up:sBatt.price,tot:sBatt.qty*sBatt.price});
+          bom.push({cat:'Монтаж',name:'Кріплення ('+id.label+')',qty:pCnt,up:1500,tot:pCnt*1500});
+          bom.push({cat:'Кабелі',name:'DC + AC кабелі',qty:1,up:3000+pCnt*500,tot:3000+pCnt*500});
+          bom.push({cat:'Захист DC',name:'Автомати DC',qty:1,up:2500,tot:2500});
+          bom.push({cat:'Захист AC',name:'Автомати AC, ДІФ',qty:1,up:2000,tot:2000});
+          const totCost=bom.reduce((s,i)=>s+i.tot,0);
+          const aSav=eG*auEffTariff;
+          const pY=aSav>0?totCost/aSav:0;
+          const roi=aSav>0?((aSav*25-totCost)/totCost)*100:0;
+          const cOff=yC>0?(eG/yC)*100:0;
+          const mGen=AUDIT_MONTHLY_F.map(f=>Math.round(eG*f));
+          const degT=[];
+          for(let y=1;y<=25;y++){const fc=Math.pow(1-dg,y);const yg=eG*fc;const ys=yg*auEffTariff;const cm=degT.length>0?degT[degT.length-1].cm+ys:ys;degT.push({y,gen:Math.round(yg),sav:Math.round(ys),cm:Math.round(cm),np:Math.round(cm-totCost)});}
+          auResults={rP:rP.toFixed(2),eG:Math.round(eG),eGm:Math.round(eG/12),pCnt,bCap:bCap.toFixed(1),totCost,aSav:Math.round(aSav),mSav:Math.round(aSav/12),pY:pY.toFixed(1),roi:roi.toFixed(0),cOff:Math.min(100,cOff).toFixed(0),bom,mGen,degT,rL:rd.label,iL:id.label,oL:od.label,nB,tU:auEffTariff};
+        }
+
+        return (
+          <div className="audit-page">
+            <div className="audit-header">
+              <h1 className="audit-page-title">Аудит об'єкта — <em>розрахунок СЕС</em></h1>
+              <p className="audit-page-sub">Покроковий калькулятор сонячної електростанції для вашого об'єкта</p>
+              <div className="audit-mode-switch">
+                <button className={`audit-mode-btn ${auCalcMode==='basic'?'active':''}`} onClick={()=>auSwitchMode('basic')}>Простий<span className="audit-mode-badge basic">BASIC</span></button>
+                <button className={`audit-mode-btn ${auCalcMode==='advanced'?'active':''}`} onClick={()=>auSwitchMode('advanced')}>Розширений<span className="audit-mode-badge adv">PRO</span></button>
+              </div>
+            </div>
+
+            <div className="audit-progress-wrap">
+              <div className="audit-progress-steps">
+                {auLabels.map((l,i)=>(<div className="audit-progress-step" key={i}><div className={`audit-dot ${i===auStep?'active':''} ${i<auStep?'done':''}`}>{i<auStep?'✓':i+1}</div><span className={`audit-plabel ${i===auStep?'active':''}`}>{l}</span></div>))}
+              </div>
+              <div className="audit-track"><div className="audit-fill" style={{width:`${(auStep/(auTotal-1))*100}%`}}/></div>
+            </div>
+
+            <div className="audit-card" key={`${auCalcMode}-${auStep}`}>
+              {/* STEP 0: Client Type */}
+              {auStep===0&&(<div><div className="audit-step-title">Оберіть тип клієнта <AuditTip text={AUDIT_TOOLTIPS.clientType}/></div><div className="audit-step-desc">Тарифи та програми фінансування відрізняються</div><div className="audit-opt-grid audit-opt-2"><div className={`audit-opt ${auMode==='residential'?'sel':''}`} onClick={()=>setAuMode('residential')}><div className="audit-opt-icon">🏠</div><div className="audit-opt-label">Побутовий</div><div className="audit-opt-desc">Домогосподарство, квартира</div><div className="audit-opt-coeff">Тариф: {AUDIT_DEFAULTS.resTariff} грн/кВт·год</div></div><div className={`audit-opt ${auMode==='commercial'?'sel':''}`} onClick={()=>setAuMode('commercial')}><div className="audit-opt-icon">🏢</div><div className="audit-opt-label">Комерційний</div><div className="audit-opt-desc">Бізнес, ФОП, ОСББ</div><div className="audit-opt-coeff">Тариф: {AUDIT_DEFAULTS.comTariff} грн/кВт·год</div></div></div></div>)}
+
+              {/* STEP 1: Region + Install */}
+              {auStep===1&&(<div><div className="audit-step-title">Розташування та монтаж</div><div className="audit-step-desc">Регіон визначає сонячний ресурс, тип монтажу — ефективність</div>
+                <div style={{marginBottom:'2rem'}}><label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.5rem',display:'block'}}>Область <AuditTip text={AUDIT_TOOLTIPS.region}/></label>
+                <select value={auRegion} onChange={e=>setAuRegion(e.target.value)} style={{width:'100%',padding:'12px 16px',border:'2px solid var(--gray-200)',borderRadius:12,fontFamily:'var(--font-body)',fontSize:'1rem',color:auRegion?'var(--green-700)':'var(--gray-400)',fontWeight:auRegion?600:400,outline:'none',background:'#fff',cursor:'pointer'}}><option value="">— Оберіть область —</option>{AUDIT_REGIONS.map(r=><option key={r.id} value={r.id}>{r.label} ({r.pvout} кВт·год/кВт·пік)</option>)}</select></div>
+                <label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.75rem',display:'block'}}>Тип монтажу <AuditTip text={AUDIT_TOOLTIPS.installationType}/></label>
+                <div className="audit-opt-grid audit-opt-3">{(auCalcMode==='basic'?AUDIT_INSTALLS.filter(t=>['roof','ground','balcony'].includes(t.id)):AUDIT_INSTALLS).map(t=><div key={t.id} className={`audit-opt ${auInstall===t.id?'sel':''}`} onClick={()=>setAuInstall(t.id)}><div className="audit-opt-icon">{t.icon}</div><div className="audit-opt-label">{t.label}</div><div className="audit-opt-desc">{t.desc}</div><div className="audit-opt-coeff">Ефективність: {(t.coeff*100).toFixed(0)}%</div></div>)}</div>
+              </div>)}
+
+              {/* BASIC step 2: Consumption + Blackout */}
+              {auCalcMode==='basic'&&auStep===2&&(<div><div className="audit-step-title">Споживання та блекаути</div><div className="audit-step-desc">Базова інформація для розрахунку</div>
+                <div className="audit-slider-group"><div className="audit-slider-top"><span className="audit-slider-text">Місячне споживання <AuditTip text={AUDIT_TOOLTIPS.monthlyConsumption}/></span><span className="audit-slider-val">{auConsumption} <small>кВт·год</small></span></div><input type="range" className="audit-range" min={auMode==='commercial'?200:50} max={auMode==='commercial'?10000:1500} step={auMode==='commercial'?100:25} value={auConsumption} onChange={e=>setAuConsumption(+e.target.value)}/><div className="audit-marks"><span>{auMode==='commercial'?'200':'50'}</span><span>{auMode==='commercial'?'10,000 кВт·год':'1,500 кВт·год'}</span></div></div>
+                <label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.75rem',display:'block'}}>Відключення? <AuditTip text={AUDIT_TOOLTIPS.blackout}/></label>
+                <div className="audit-opt-grid audit-opt-3">{AUDIT_BLACKOUTS.map(b=><div key={b.id} className={`audit-opt ${auBlackout===b.id?'sel':''}`} onClick={()=>setAuBlackout(b.id)} style={{alignItems:'center',textAlign:'center'}}><div className="audit-opt-icon">{b.icon}</div><div className="audit-opt-label">{b.label}</div></div>)}</div>
+                <div className="audit-tip" style={{marginTop:'1.5rem'}}><span className="audit-tip-icon">ℹ️</span><div>Режим <strong>BASIC</strong>: орієнтація — південь, кут — 33°, ефективність — 80%.</div></div>
+              </div>)}
+
+              {/* ADVANCED step 2: Orientation + Inclination + Consumption */}
+              {auCalcMode==='advanced'&&auStep===2&&(<div><div className="audit-step-title">Орієнтація, кут нахилу та споживання</div><div className="audit-step-desc">Точні параметри для розрахунку генерації</div>
+                <label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.75rem',display:'block'}}>Орієнтація <AuditTip text={AUDIT_TOOLTIPS.orientation}/></label>
+                <div className="audit-opt-grid audit-opt-6" style={{marginBottom:'2rem'}}>{AUDIT_ORIENTATIONS.map(o=><div key={o.id} className={`audit-opt ${auOrient===o.id?'sel':''}`} onClick={()=>setAuOrient(o.id)} style={{alignItems:'center',textAlign:'center'}}><div className="audit-opt-icon">{o.icon}</div><div className="audit-opt-label">{o.label}</div><div className="audit-opt-coeff">{(o.coeff*100).toFixed(0)}%</div></div>)}</div>
+                <div className="audit-slider-group"><div className="audit-slider-top"><span className="audit-slider-text">Кут нахилу <AuditTip text={AUDIT_TOOLTIPS.inclinationAngle}/></span><span className="audit-slider-val">{auIncl}° <small>({(auditInclCoeff(auIncl)*100).toFixed(0)}%)</small></span></div><input type="range" className="audit-range" min={0} max={90} step={1} value={auIncl} onChange={e=>setAuIncl(+e.target.value)}/><div className="audit-marks"><span>0° горизонт</span><span>33° оптимум</span><span>90° вертикаль</span></div></div>
+                <div className="audit-slider-group"><div className="audit-slider-top"><span className="audit-slider-text">Місячне споживання <AuditTip text={AUDIT_TOOLTIPS.monthlyConsumption}/></span><span className="audit-slider-val">{auConsumption} <small>кВт·год</small></span></div><input type="range" className="audit-range" min={auMode==='commercial'?200:50} max={auMode==='commercial'?10000:1500} step={auMode==='commercial'?100:25} value={auConsumption} onChange={e=>setAuConsumption(+e.target.value)}/><div className="audit-marks"><span>{auMode==='commercial'?'200':'50'}</span><span>{auMode==='commercial'?'10,000':'1,500'} кВт·год</span></div></div>
+              </div>)}
+
+              {/* ADVANCED step 3: Grid + Blackout */}
+              {auCalcMode==='advanced'&&auStep===3&&(<div><div className="audit-step-title">Мережа та автономність</div><div className="audit-step-desc">Параметри для інвертора та акумулятора</div>
+                <label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.75rem',display:'block'}}>Фази <AuditTip text={AUDIT_TOOLTIPS.phases}/></label>
+                <div className="audit-toggle"><button className={`audit-toggle-btn ${auPhases===1?'active':''}`} onClick={()=>setAuPhases(1)}>1 фаза (220В)</button><button className={`audit-toggle-btn ${auPhases===3?'active':''}`} onClick={()=>setAuPhases(3)}>3 фази (380В)</button></div>
+                <label style={{fontSize:'0.9rem',fontWeight:600,color:'var(--gray-700)',marginBottom:'0.75rem',display:'block'}}>Відключення <AuditTip text={AUDIT_TOOLTIPS.blackout}/></label>
+                <div className="audit-opt-grid audit-opt-3" style={{marginBottom:'2rem'}}>{AUDIT_BLACKOUTS.map(b=><div key={b.id} className={`audit-opt ${auBlackout===b.id?'sel':''}`} onClick={()=>setAuBlackout(b.id)} style={{alignItems:'center',textAlign:'center'}}><div className="audit-opt-icon">{b.icon}</div><div className="audit-opt-label">{b.label}</div></div>)}</div>
+                {auBlackout!=='none'&&(<div className="audit-slider-group" style={{animation:'auditFadeUp 0.4s ease-out'}}><div className="audit-slider-top"><span className="audit-slider-text">Автономність <AuditTip text={AUDIT_TOOLTIPS.autonomyHours}/></span><span className="audit-slider-val">{auAutoHours} <small>год</small></span></div><input type="range" className="audit-range" min={1} max={24} step={1} value={auAutoHours} onChange={e=>setAuAutoHours(+e.target.value)}/><div className="audit-marks"><span>1</span><span>12</span><span>24 год</span></div></div>)}
+              </div>)}
+
+              {/* ADVANCED step 4: Coefficients */}
+              {auCalcMode==='advanced'&&auStep===4&&(<div><div className="audit-step-title">Параметри та коефіцієнти</div><div className="audit-step-desc">Професійне налаштування</div>
+                {auBlackout!=='none'&&(<div className="audit-slider-group"><div className="audit-slider-top"><span className="audit-slider-text">Критичне навантаження <AuditTip text={AUDIT_TOOLTIPS.criticalLoad}/></span><span className="audit-slider-val">{auCritLoad} <small>кВт</small></span></div><input type="range" className="audit-range" min={0.3} max={10} step={0.1} value={auCritLoad} onChange={e=>setAuCritLoad(+e.target.value)}/><div className="audit-marks"><span>0.3</span><span>5</span><span>10 кВт</span></div></div>)}
+                <div style={{fontSize:'0.95rem',fontWeight:700,color:'var(--gray-800)',marginBottom:'1rem',marginTop:auBlackout!=='none'?'1rem':0}}>⚙️ Системні коефіцієнти</div>
+                <div className="audit-param-grid">
+                  <div className="audit-param"><div className="audit-param-label">Ефективність <AuditTip text={AUDIT_TOOLTIPS.systemEfficiency}/></div><input className="audit-param-input" type="number" step={0.01} min={0.5} max={1} value={auSysEff} onChange={e=>setAuSysEff(+e.target.value||AUDIT_DEFAULTS.sysEff)}/></div>
+                  <div className="audit-param"><div className="audit-param-label">DoD батареї <AuditTip text={AUDIT_TOOLTIPS.batteryDoD}/></div><input className="audit-param-input" type="number" step={0.01} min={0.5} max={1} value={auDoD} onChange={e=>setAuDoD(+e.target.value||AUDIT_DEFAULTS.dod)}/></div>
+                  <div className="audit-param"><div className="audit-param-label">ККД батареї <AuditTip text={AUDIT_TOOLTIPS.batteryEfficiency}/></div><input className="audit-param-input" type="number" step={0.01} min={0.5} max={1} value={auBattEff} onChange={e=>setAuBattEff(+e.target.value||AUDIT_DEFAULTS.battEff)}/></div>
+                  <div className="audit-param"><div className="audit-param-label">Деградація/рік <AuditTip text={AUDIT_TOOLTIPS.degradation}/></div><input className="audit-param-input" type="number" step={0.001} min={0} max={0.02} value={auDeg} onChange={e=>setAuDeg(+e.target.value||AUDIT_DEFAULTS.deg)}/></div>
+                  <div className="audit-param"><div className="audit-param-label">Тариф грн/кВт·год <AuditTip text={AUDIT_TOOLTIPS.tariff}/></div><input className="audit-param-input" type="number" step={0.01} min={0} value={auTariff||auEffTariff} onChange={e=>setAuTariff(+e.target.value)}/></div>
+                </div>
+              </div>)}
+
+              {/* RESULTS */}
+              {auIsResult&&auResults&&(<div className="audit-results">
+                <div className="audit-hero"><h2>🌞 Ваша сонячна електростанція</h2><p>{auResults.rL} · {auResults.iL}{auCalcMode==='advanced'?` · ${auResults.oL} · ${auIncl}°`:''} · {auMode==='residential'?'Побутовий':'Комерційний'} · {auResults.tU} грн/кВт·год</p></div>
+                <div className="audit-kpi-grid">
+                  <div className="audit-kpi"><div className="audit-kpi-val">{auResults.rP}</div><div className="audit-kpi-lbl">кВт рекомендовано</div></div>
+                  <div className="audit-kpi"><div className="audit-kpi-val">{auResults.pCnt} шт</div><div className="audit-kpi-lbl">Панелей 455 Вт</div></div>
+                  <div className="audit-kpi"><div className="audit-kpi-val">{auResults.eG.toLocaleString()}</div><div className="audit-kpi-lbl">кВт·год / рік</div></div>
+                  {auCalcMode==='advanced'&&<div className="audit-kpi"><div className="audit-kpi-val">{auResults.eGm.toLocaleString()}</div><div className="audit-kpi-lbl">кВт·год / місяць</div></div>}
+                  {auResults.nB&&<div className="audit-kpi"><div className="audit-kpi-val">{auResults.bCap}</div><div className="audit-kpi-lbl">кВт·год батарея</div></div>}
+                  <div className="audit-kpi"><div className="audit-kpi-val">{auResults.totCost.toLocaleString()}</div><div className="audit-kpi-lbl">грн вартість</div></div>
+                </div>
+                <div className="audit-fin-grid">
+                  <div className="audit-fin sav"><div className="audit-fin-val">{auResults.aSav.toLocaleString()} грн</div><div className="audit-fin-lbl">Річна економія</div><div className="audit-fin-sub">~{auResults.mSav.toLocaleString()} грн/міс</div></div>
+                  <div className="audit-fin pay"><div className="audit-fin-val">{auResults.pY} р.</div><div className="audit-fin-lbl">Окупність</div></div>
+                  {auCalcMode==='advanced'&&<><div className="audit-fin roi"><div className="audit-fin-val">{auResults.roi}%</div><div className="audit-fin-lbl">ROI (25 років)</div></div><div className="audit-fin off"><div className="audit-fin-val">{auResults.cOff}%</div><div className="audit-fin-lbl">Компенсація витрат</div></div></>}
+                </div>
+
+                <div className="audit-bom"><div className="audit-bom-title">📦 Специфікація (BOM)</div><div style={{overflowX:'auto'}}><table className="audit-bom-table"><thead><tr><th>Категорія</th><th>Компонент</th><th style={{textAlign:'center'}}>К-сть</th><th style={{textAlign:'right'}}>Ціна/шт</th><th style={{textAlign:'right'}}>Сума</th></tr></thead><tbody>{auResults.bom.map((it,i)=><tr key={i}><td><span className="audit-bom-cat">{it.cat}</span></td><td>{it.name}</td><td style={{textAlign:'center'}}>{it.qty}</td><td style={{textAlign:'right'}}>{it.up.toLocaleString()}</td><td style={{textAlign:'right',fontWeight:600}}>{it.tot.toLocaleString()} грн</td></tr>)}<tr className="bom-total"><td colSpan={4}>РАЗОМ</td><td style={{textAlign:'right'}}>{auResults.totCost.toLocaleString()} грн</td></tr></tbody></table></div></div>
+
+                {auCalcMode==='advanced'&&(<div className="audit-season"><div className="audit-bom-title">📊 Сезонна генерація (кВт·год/міс)</div><div className="audit-chart">{auResults.mGen.map((v,i)=>{const mx=Math.max(...auResults.mGen);const h=mx>0?(v/mx)*100:0;return<div className="audit-bar-w" key={i}><div className="audit-bar-val">{v}</div><div className="audit-bar" style={{height:`${h}%`}}/><div className="audit-bar-lbl">{AUDIT_MONTHS[i]}</div></div>;})}</div></div>)}
+
+                {auCalcMode==='advanced'&&(<div className="audit-deg"><div className="audit-bom-title">📉 25-річна симуляція</div><div style={{overflowX:'auto'}}><table className="audit-deg-table"><thead><tr><th>Рік</th><th>Генерація</th><th>Економія/рік</th><th>Накопичено</th><th>Чистий прибуток</th></tr></thead><tbody>{auResults.degT.filter((_,i)=>i<5||(i+1)%5===0).map((d,i)=><tr key={i} style={d.np>=0&&(i===0||auResults.degT[d.y-2]?.np<0)?{background:'var(--green-50)'}:{}}><td style={{fontWeight:600}}>{d.y}</td><td>{d.gen.toLocaleString()} кВт·год</td><td>{d.sav.toLocaleString()} грн</td><td>{d.cm.toLocaleString()} грн</td><td style={{fontWeight:600,color:d.np>=0?'var(--green-700)':'var(--gray-500)'}}>{d.np>=0?'+':''}{d.np.toLocaleString()} грн</td></tr>)}</tbody></table></div></div>)}
+
+                {auMode==='residential'&&<div className="audit-credit"><h3>🏦 Кредит 0% — «Джерела енергії»</h3><p>До 480,000 грн на 10 років. Компенсація до 30%.{auResults.totCost<=480000?` Ваша система (${auResults.totCost.toLocaleString()} грн) покривається!`:''}</p></div>}
+                {auMode==='commercial'&&<div className="audit-credit"><h3>🏢 «Доступні кредити 5-7-9%»</h3><p>До 5 млн грн на 10 років під 5-9% для юр. осіб та ФОП.</p></div>}
+                <div className="audit-tip" style={{marginTop:'2rem'}}><span className="audit-tip-icon">⚠️</span><div>Попередній розрахунок. Для точної оцінки потрібен виїзний аудит. Зв'яжіться для безкоштовної консультації.</div></div>
+              </div>)}
+
+              {/* NAV */}
+              <div className="audit-nav">
+                {auStep>0?<button className="audit-btn audit-btn-back" onClick={()=>setAuStep(s=>s-1)}>← Назад</button>:<button className="audit-btn audit-btn-back" onClick={()=>goToPage('home')}>← На головну</button>}
+                {!auIsResult?<button className="audit-btn audit-btn-next" disabled={!auCanNext()} onClick={()=>{setAuStep(s=>s+1);window.scrollTo(0,0);}}>{auStep===auTotal-2?'🔍 Розрахувати':'Далі →'}</button>
+                :<button className="audit-btn audit-btn-next" onClick={()=>{setAuStep(0);window.scrollTo(0,0);}}>🔄 Розрахувати знову</button>}
+              </div>
+            </div>
+
+            <SocialFooter />
+          </div>
+        );
+      })()}
+
+      {/* AUDIT PAGE */}
+      {currentPage === 'audit' && <AuditWizard goToPage={goToPage} />}
 
       {/* ORDER FORM MODAL */}
       {showOrderForm && (
