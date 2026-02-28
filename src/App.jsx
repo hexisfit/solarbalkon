@@ -2470,17 +2470,17 @@ function ShareBar({ productName, url }) {
    BASIC + ADVANCED modes
    ═══════════════════════════════════════════════════════════════ */
 const AUDIT_REGIONS = [
-  { id:'kyiv',label:'Київська обл.',pvout:1150 },{ id:'odesa',label:'Одеська обл.',pvout:1350 },
-  { id:'dnipro',label:'Дніпропетровська обл.',pvout:1280 },{ id:'kharkiv',label:'Харківська обл.',pvout:1200 },
-  { id:'lviv',label:'Львівська обл.',pvout:1050 },{ id:'zaporizhzhia',label:'Запорізька обл.',pvout:1320 },
-  { id:'poltava',label:'Полтавська обл.',pvout:1220 },{ id:'vinnytsia',label:'Вінницька обл.',pvout:1180 },
-  { id:'cherkasy',label:'Черкаська обл.',pvout:1210 },{ id:'mykolaiv',label:'Миколаївська обл.',pvout:1340 },
-  { id:'kherson',label:'Херсонська обл.',pvout:1370 },{ id:'khmelnytskyi',label:'Хмельницька обл.',pvout:1120 },
-  { id:'zhytomyr',label:'Житомирська обл.',pvout:1100 },{ id:'sumy',label:'Сумська обл.',pvout:1150 },
-  { id:'rivne',label:'Рівненська обл.',pvout:1070 },{ id:'ternopil',label:'Тернопільська обл.',pvout:1090 },
-  { id:'ivano-frankivsk',label:'Івано-Франківська обл.',pvout:1060 },{ id:'volyn',label:'Волинська обл.',pvout:1050 },
-  { id:'zakarpattia',label:'Закарпатська обл.',pvout:1080 },{ id:'chernivtsi',label:'Чернівецька обл.',pvout:1100 },
-  { id:'chernihiv',label:'Чернігівська обл.',pvout:1120 },{ id:'kirovohrad',label:'Кіровоградська обл.',pvout:1250 },
+  { id:'kyiv',label:'Київська обл.',pvout:1150,avgT:21 },{ id:'odesa',label:'Одеська обл.',pvout:1350,avgT:24 },
+  { id:'dnipro',label:'Дніпропетровська обл.',pvout:1280,avgT:23 },{ id:'kharkiv',label:'Харківська обл.',pvout:1200,avgT:22 },
+  { id:'lviv',label:'Львівська обл.',pvout:1050,avgT:19 },{ id:'zaporizhzhia',label:'Запорізька обл.',pvout:1320,avgT:24 },
+  { id:'poltava',label:'Полтавська обл.',pvout:1220,avgT:22 },{ id:'vinnytsia',label:'Вінницька обл.',pvout:1180,avgT:20 },
+  { id:'cherkasy',label:'Черкаська обл.',pvout:1210,avgT:22 },{ id:'mykolaiv',label:'Миколаївська обл.',pvout:1340,avgT:24 },
+  { id:'kherson',label:'Херсонська обл.',pvout:1370,avgT:25 },{ id:'khmelnytskyi',label:'Хмельницька обл.',pvout:1120,avgT:20 },
+  { id:'zhytomyr',label:'Житомирська обл.',pvout:1100,avgT:20 },{ id:'sumy',label:'Сумська обл.',pvout:1150,avgT:21 },
+  { id:'rivne',label:'Рівненська обл.',pvout:1070,avgT:19 },{ id:'ternopil',label:'Тернопільська обл.',pvout:1090,avgT:19 },
+  { id:'ivano-frankivsk',label:'Івано-Франківська обл.',pvout:1060,avgT:18 },{ id:'volyn',label:'Волинська обл.',pvout:1050,avgT:19 },
+  { id:'zakarpattia',label:'Закарпатська обл.',pvout:1080,avgT:20 },{ id:'chernivtsi',label:'Чернівецька обл.',pvout:1100,avgT:19 },
+  { id:'chernihiv',label:'Чернігівська обл.',pvout:1120,avgT:20 },{ id:'kirovohrad',label:'Кіровоградська обл.',pvout:1250,avgT:23 },
 ];
 const AUDIT_INSTALLS = [
   { id:'balcony',label:'Балкон',icon:'🏠',coeff:0.85,desc:'На перилах або стіні' },
@@ -2497,13 +2497,20 @@ const AUDIT_ORIENTS = [
 const INCL_COEFF = {0:0.87,10:0.94,15:0.97,20:0.99,25:1.00,30:1.00,35:0.99,40:0.97,45:0.94,50:0.90,60:0.82,70:0.71,80:0.59,90:0.45};
 function getInclCoeff(a){const k=Object.keys(INCL_COEFF).map(Number).sort((x,y)=>x-y);if(a<=k[0])return INCL_COEFF[k[0]];if(a>=k[k.length-1])return INCL_COEFF[k[k.length-1]];let lo=k[0],hi=k[k.length-1];for(let i=0;i<k.length-1;i++){if(a>=k[i]&&a<=k[i+1]){lo=k[i];hi=k[i+1];break;}}const t=(a-lo)/(hi-lo);return INCL_COEFF[lo]+t*(INCL_COEFF[hi]-INCL_COEFF[lo]);}
 const AUDIT_BLACKOUTS = [{id:'none',label:'Немає',icon:'✅'},{id:'rare',label:'Рідко',icon:'⚡'},{id:'often',label:'Часто',icon:'🔴'}];
-const AUDIT_DEF = {sysEff:0.80,battDoD:0.90,battEff:0.90,deg:0.005,resTariff:4.32,comTariff:7.50,incl:33};
+const AUDIT_PROFILES = [
+  {id:'residential',label:'Житловий',icon:'🏠',desc:'Пік ранок/вечір',evening:0.35,morning:0.20,weekend:1.0},
+  {id:'office',label:'Офіс',icon:'🏢',desc:'Пік вдень',evening:0.10,morning:0.10,weekend:0.15},
+  {id:'industrial',label:'Виробництво',icon:'🏭',desc:'Рівномірно 24/7',evening:0.25,morning:0.25,weekend:0.80},
+  {id:'shop',label:'Магазин/Сервіс',icon:'🛒',desc:'Пік вдень, без ночі',evening:0.15,morning:0.05,weekend:0.70},
+];
+const AUDIT_TARIFF_TYPES = [{id:'single',label:'Однозонний'},{id:'dayNight',label:'Двозонний (день/ніч)'}];
+const AUDIT_DEF = {sysEff:0.80,battDoD:0.90,battEff:0.90,deg:0.005,resTariff:4.32,comTariff:7.50,resNightTariff:2.16,comNightTariff:5.25,tempCoeff:0.004,incl:33};
 const AUDIT_PANELS = [{name:'Trina TSM-455 NEG9R.28',power:455,price:3450}];
-const AUDIT_INV = {micro:[{name:'Deye SUN-M80G4-EU-Q0',power:800,price:6200,inputs:2}],string:[{name:'Deye SUN-3.6K-SG04LP3-EU',power:3600,price:28000,phases:1},{name:'Deye SUN-5K-SG04LP3-EU',power:5000,price:32000,phases:1},{name:'Deye SUN-8K-SG04LP3-EU',power:8000,price:42000,phases:3},{name:'Deye SUN-12K-SG04LP3-EU',power:12000,price:55000,phases:3}]};
+const AUDIT_INV = {micro:[{name:'Deye SUN-M80G4-EU-Q0',power:800,price:6200,inputs:2}],string:[{name:'Deye SUN-3.6K-SG04LP3-EU',power:3600,price:28000,ph:1},{name:'Deye SUN-5K-SG04LP3-EU',power:5000,price:32000,ph:1},{name:'Deye SUN-8K-SG04LP3-EU',power:8000,price:42000,ph:3},{name:'Deye SUN-12K-SG04LP3-EU',power:12000,price:55000,ph:3}]};
 const AUDIT_BATT = [{name:'Zendure SolarFlow 2400 AC+',cap:2.4,price:50000},{name:'EcoFlow STREAM AC Pro',cap:1.92,price:40000},{name:'Deye AE-FS2.0-2H2',cap:2.0,price:40000},{name:'Deye SE-G5.3 Pro',cap:5.3,price:45000},{name:'Deye SE-G5.3 Pro ×2',cap:10.6,price:90000}];
 const AUDIT_MO_FAC = [0.04,0.05,0.08,0.10,0.12,0.13,0.13,0.12,0.09,0.07,0.04,0.03];
 const AUDIT_MO_NAMES = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
-const AUDIT_TIPS = {clientType:'Побутовий — домогосподарства. Комерційний — бізнес, ФОП, ОСББ.',region:'Область визначає кількість сонячних годин (PVOUT).',consumption:'Середнє місячне споживання. Подивіться в рахунку.',install:'Тип монтажу впливає на ефективність системи.',orient:'Напрямок панелей. Південь — найкраще.',incl:'Кут нахилу. Оптимум для України: 30-35°.',blackout:'Якщо є відключення — потрібен акумулятор.',phases:'1 фаза (220В) або 3 фази (380В).',autonomy:'Години автономної роботи при блекауті.',critLoad:'Потужність приладів при блекауті (кВт).',sysEff:'Загальна ефективність з урахуванням втрат.',battDoD:'Глибина розряду. LiFePO4 = 90%.',battEff:'ККД батареї. LiFePO4 = 90-95%.',deg:'Деградація панелей/рік. Якісні: 0.4-0.55%.',tariff:'Побутовий: 4.32 грн. Комерційний: 5-9 грн.'};
+const AUDIT_TIPS = {clientType:'Побутовий — домогосподарства. Комерційний — бізнес, ФОП, ОСББ.',region:'Область визначає кількість сонячних годин (PVOUT) та середню температуру.',consumption:'Середнє місячне споживання. Подивіться в рахунку.',install:'Тип монтажу впливає на ефективність системи.',orient:'Напрямок панелей. Південь — найкраще.',incl:'Кут нахилу. Оптимум для України: 30-35°.',blackout:'Якщо є відключення — потрібен акумулятор.',phases:'1 фаза (220В) або 3 фази (380В).',autonomy:'Години автономної роботи при блекауті.',critLoad:'Потужність приладів при блекауті (кВт).',sysEff:'Загальна ефективність з урахуванням втрат (без температури).',battDoD:'Глибина розряду. LiFePO4 = 90%.',battEff:'ККД батареї. LiFePO4 = 90-95%.',deg:'Деградація панелей/рік. Якісні: 0.4-0.55%.',tariff:'Побутовий: 4.32 грн. Комерційний: 5-9 грн.',profile:'Профіль визначає розподіл споживання протягом доби. Впливає на розмір батареї.',tariffType:'Однозонний — єдиний тариф. Двозонний — різні тарифи вдень та вночі.',nightTariff:'Нічний тариф (23:00-7:00). Побутовий: 2.16 грн, комерційний: ~5.25 грн.'};
 
 function AuditTip({text}){const[s,setS]=useState(false);return(<span style={{position:'relative',display:'inline-flex',marginLeft:6,cursor:'help'}} onMouseEnter={()=>setS(true)} onMouseLeave={()=>setS(false)} onClick={()=>setS(v=>!v)}><span style={{width:18,height:18,borderRadius:'50%',background:'#eee',color:'#9e9e9e',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:700}}>?</span>{s&&(<span style={{position:'absolute',bottom:'calc(100% + 8px)',left:'50%',transform:'translateX(-50%)',background:'#212121',color:'white',padding:'10px 14px',borderRadius:8,fontSize:'0.78rem',lineHeight:1.5,width:260,boxShadow:'0 8px 24px rgba(0,0,0,0.2)',zIndex:100}}>{text}<span style={{position:'absolute',bottom:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'6px solid transparent',borderRight:'6px solid transparent',borderTop:'6px solid #212121'}}/></span>)}</span>);}
 
@@ -2525,8 +2532,12 @@ function AuditWizard({ goToPage }) {
   const [battEff, setBattEff] = useState(AUDIT_DEF.battEff);
   const [degradation, setDegradation] = useState(AUDIT_DEF.deg);
   const [customTariff, setCustomTariff] = useState(0);
+  const [consumptionProfile, setConsumptionProfile] = useState('residential');
+  const [tariffType, setTariffType] = useState('single');
+  const [nightTariff, setNightTariff] = useState(0);
 
   const effectiveTariff = customTariff > 0 ? customTariff : (mode === 'residential' ? AUDIT_DEF.resTariff : AUDIT_DEF.comTariff);
+  const effectiveNightTariff = nightTariff > 0 ? nightTariff : (mode === 'residential' ? AUDIT_DEF.resNightTariff : AUDIT_DEF.comNightTariff);
   const BASIC_STEPS = ['Тип', "Об'єкт", 'Споживання', 'Результат'];
   const ADV_STEPS = ['Тип', "Об'єкт", 'Орієнтація', 'Мережа', 'Параметри', 'Результат'];
   const stepLabels = calcMode === 'basic' ? BASIC_STEPS : ADV_STEPS;
@@ -2545,6 +2556,7 @@ function AuditWizard({ goToPage }) {
     const rd = AUDIT_REGIONS.find(r => r.id === region) || AUDIT_REGIONS[0];
     const id = AUDIT_INSTALLS.find(t => t.id === installType) || AUDIT_INSTALLS[0];
     const od = AUDIT_ORIENTS.find(o => o.id === orientation) || AUDIT_ORIENTS[0];
+    const pf = AUDIT_PROFILES.find(p => p.id === consumptionProfile) || AUDIT_PROFILES[0];
     const pvout = rd.pvout;
     const oC = calcMode === 'basic' ? 1.0 : od.coeff;
     const iC = id.coeff;
@@ -2554,25 +2566,83 @@ function AuditWizard({ goToPage }) {
     const bE = calcMode === 'basic' ? AUDIT_DEF.battEff : battEff;
     const dg = calcMode === 'basic' ? AUDIT_DEF.deg : degradation;
 
+    // #4 Температурний коефіцієнт
+    const avgT = rd.avgT || 22;
+    const tempLoss = avgT > 25 ? AUDIT_DEF.tempCoeff * (avgT - 25) : 0;
+    const actualEff = eff * (1 - tempLoss);
+
     const yC = monthlyConsumption * 12;
-    const tC = eff * oC * iC * inC;
+    const tC = actualEff * oC * iC * inC;
     const recP = yC / (pvout * tC);
     const expGen = recP * pvout * tC;
+
+    // #1 Формула батарей: emergency + self-consumption + limit
     const needBatt = blackout !== 'none';
     const bCL = calcMode === 'basic' ? 1.0 : criticalLoad;
     const bAH = calcMode === 'basic' ? (blackout === 'often' ? 6 : 3) : autonomyHours;
-    const battCap = needBatt ? (bCL * bAH) / (dod * bE) : 0;
+
+    // Emergency battery
+    const battEmergency = needBatt ? (bCL * bAH) / (dod * bE) : 0;
+
+    // #2 Self-consumption battery (shift solar to evening)
+    const dailyC = yC / 365;
+    const eveningPct = calcMode === 'basic' ? 0.30 : pf.evening;
+    const dailyEvening = dailyC * eveningPct;
+    const battSelfConsumption = dailyEvening / (dod * bE);
+
+    // Battery limit by daily generation
+    const maxDailyGen = expGen / 365;
+    const maxBattLimit = maxDailyGen * 1.5;
+
+    // Final battery: max(emergency, selfConsumption) capped by limit
+    let battCap = 0;
+    let battMode = 'none';
+    if (needBatt) {
+      if (battEmergency >= battSelfConsumption) {
+        battCap = Math.min(battEmergency, maxBattLimit);
+        battMode = 'emergency';
+      } else {
+        battCap = Math.min(battSelfConsumption, maxBattLimit);
+        battMode = 'selfconsumption';
+      }
+    } else if (calcMode === 'advanced' && eveningPct > 0.15) {
+      // Even without blackouts, suggest battery for self-consumption optimization
+      const optBatt = Math.min(battSelfConsumption, maxBattLimit);
+      if (optBatt >= 1.5) { battCap = optBatt; battMode = 'optimization'; }
+    }
 
     const pP = AUDIT_PANELS[0].power / 1000;
     const pC = Math.max(1, Math.ceil(recP / pP));
     const tPW = pC * AUDIT_PANELS[0].power;
 
+    // #8 Inverter sizing: ratio 0.8-1.0, phase logic
     let selInv = [];
-    if (tPW <= 1600 && installType === 'balcony') { selInv = [{ ...AUDIT_INV.micro[0], qty: Math.ceil(pC / 2) }]; }
-    else { const ph = calcMode === 'basic' ? 1 : phases; const cands = AUDIT_INV.string.filter(v => ph === 3 ? v.phases === 3 : true).filter(v => v.power >= tPW * 0.8); selInv = [{ ...(cands[0] || AUDIT_INV.string[AUDIT_INV.string.length - 1]), qty: 1 }]; }
+    if (tPW <= 1600 && installType === 'balcony') {
+      selInv = [{ ...AUDIT_INV.micro[0], qty: Math.ceil(pC / 2) }];
+    } else {
+      const ph = calcMode === 'basic' ? (recP > 10 ? 3 : 1) : phases;
+      const invTargetW = tPW * 0.9;
+      const cands = AUDIT_INV.string.filter(v => ph === 3 ? v.ph === 3 : true).filter(v => v.power >= invTargetW * 0.7);
+      if (cands.length > 0) {
+        // Pick smallest that covers, or use multiple
+        const best = cands[0];
+        if (best.power >= invTargetW) {
+          selInv = [{ ...best, qty: 1 }];
+        } else {
+          selInv = [{ ...best, qty: Math.ceil(invTargetW / best.power) }];
+        }
+      } else {
+        const biggest = AUDIT_INV.string[AUDIT_INV.string.length - 1];
+        selInv = [{ ...biggest, qty: Math.ceil(invTargetW / biggest.power) }];
+      }
+    }
 
     let selBatt = null;
-    if (needBatt && battCap > 0) { const sorted = [...AUDIT_BATT].sort((a, b) => a.cap - b.cap); selBatt = sorted.find(b => b.cap >= battCap) || sorted[sorted.length - 1]; selBatt = { ...selBatt, qty: Math.ceil(battCap / selBatt.cap) }; }
+    if (battCap > 0) {
+      const sorted = [...AUDIT_BATT].sort((a, b) => a.cap - b.cap);
+      selBatt = sorted.find(b => b.cap >= battCap) || sorted[sorted.length - 1];
+      selBatt = { ...selBatt, qty: Math.ceil(battCap / selBatt.cap) };
+    }
 
     const bom = [];
     bom.push({ cat: 'Панелі', name: AUDIT_PANELS[0].name, qty: pC, up: AUDIT_PANELS[0].price, tot: pC * AUDIT_PANELS[0].price });
@@ -2585,16 +2655,49 @@ function AuditWizard({ goToPage }) {
     bom.push({ cat: 'Захист AC', name: 'Автомати AC, ДІФ', qty: 1, up: 2000, tot: 2000 });
 
     const totCost = bom.reduce((s, i) => s + i.tot, 0);
-    const annSav = expGen * effectiveTariff;
-    const payback = annSav > 0 ? totCost / annSav : 0;
-    const roi = annSav > 0 ? ((annSav * 25 - totCost) / totCost) * 100 : 0;
-    const costOff = yC > 0 ? (expGen / yC) * 100 : 0;
+
+    // #5 Двозонний тариф — середньозважений
+    let avgTariff = effectiveTariff;
+    if (calcMode === 'advanced' && tariffType === 'dayNight') {
+      const dayPct = 1 - eveningPct - (calcMode === 'basic' ? 0.15 : pf.morning);
+      const nightPct = calcMode === 'basic' ? 0.15 : pf.morning;
+      // Solar covers daytime → savings at day tariff; battery covers evening → savings at day tariff too
+      // Night consumption stays on grid at night tariff
+      // Weighted: solar+battery offset day tariff, remaining night at night tariff
+      const solarOffsetPct = Math.min(1, expGen / yC);
+      avgTariff = effectiveTariff * (1 - nightPct) + effectiveNightTariff * nightPct;
+      // But savings are mostly at day tariff (solar generates during day)
+      avgTariff = effectiveTariff * 0.85 + effectiveNightTariff * 0.15;
+    }
+
+    // #7 ROI з деградацією (не лінійний!)
     const moGen = AUDIT_MO_FAC.map(f => Math.round(expGen * f));
-
     const degTable = [];
-    for (let y = 1; y <= 25; y++) { const f = Math.pow(1 - dg, y); const yG = expGen * f; const yS = yG * effectiveTariff; const cum = degTable.length > 0 ? degTable[degTable.length - 1].cum + yS : yS; degTable.push({ year: y, gen: Math.round(yG), sav: Math.round(yS), cum: Math.round(cum), net: Math.round(cum - totCost) }); }
+    let totalGen25 = 0;
+    for (let y = 1; y <= 25; y++) {
+      const f = Math.pow(1 - dg, y - 1);
+      const yG = expGen * f;
+      totalGen25 += yG;
+      const yS = yG * avgTariff;
+      const cum = degTable.length > 0 ? degTable[degTable.length - 1].cum + yS : yS;
+      degTable.push({ year: y, gen: Math.round(yG), sav: Math.round(yS), cum: Math.round(cum), net: Math.round(cum - totCost) });
+    }
+    const totalSav25 = degTable[24].cum;
+    const annSavAvg = totalSav25 / 25;
+    const annSav = expGen * avgTariff; // first year
+    const payback = annSavAvg > 0 ? totCost / annSavAvg : 0; // adjusted payback
+    const roi = totalSav25 > 0 ? ((totalSav25 - totCost) / totCost) * 100 : 0;
+    const costOff = yC > 0 ? (expGen / yC) * 100 : 0;
 
-    return { recP: recP.toFixed(2), expGen: Math.round(expGen), expGenMo: Math.round(expGen / 12), pC, battCap: battCap.toFixed(1), totCost, annSav: Math.round(annSav), moSav: Math.round(annSav / 12), payback: payback.toFixed(1), roi: roi.toFixed(0), costOff: Math.min(100, costOff).toFixed(0), bom, moGen, degTable, regLbl: rd.label, instLbl: id.label, oriLbl: od.label, needBatt, tarUsed: effectiveTariff };
+    return {
+      recP: recP.toFixed(2), expGen: Math.round(expGen), expGenMo: Math.round(expGen / 12),
+      pC, battCap: battCap.toFixed(1), battMode, battEmergency: battEmergency.toFixed(1), battSelf: battSelfConsumption.toFixed(1),
+      totCost, annSav: Math.round(annSav), moSav: Math.round(annSav / 12),
+      payback: payback.toFixed(1), roi: roi.toFixed(0), costOff: Math.min(100, costOff).toFixed(0),
+      bom, moGen, degTable, regLbl: rd.label, instLbl: id.label, oriLbl: od.label,
+      needBatt: battCap > 0, tarUsed: avgTariff.toFixed(2), tempLoss: (tempLoss * 100).toFixed(1),
+      profileLbl: pf.label, avgTariff, tariffType: calcMode === 'advanced' ? tariffType : 'single'
+    };
   };
 
   const res = isResult ? calculate() : null;
@@ -2727,18 +2830,35 @@ function AuditWizard({ goToPage }) {
           {blackout !== 'none' && <Slider label="Автономність" tip={AUDIT_TIPS.autonomy} value={autonomyHours} onChange={setAutonomyHours} min={1} max={24} step={1} unit="год" marks={['1', '12', '24 год']} />}
         </div>)}
 
-        {/* ADVANCED STEP 4: Coefficients */}
+        {/* ADVANCED STEP 4: Profile + Tariff + Coefficients */}
         {calcMode === 'advanced' && step === 4 && (<div>
           <div style={wS.title}>Параметри та коефіцієнти</div>
           <div style={wS.desc}>Професійне налаштування для точного розрахунку</div>
+
+          {/* Consumption Profile */}
+          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Профіль споживання <AuditTip text={AUDIT_TIPS.profile} /></label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(170px,1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
+            {AUDIT_PROFILES.map(p => <OptionCard key={p.id} selected={consumptionProfile === p.id} onClick={() => setConsumptionProfile(p.id)} icon={p.icon} label={p.label} desc={p.desc} coeff={`Вечір: ${(p.evening * 100).toFixed(0)}%`} />)}
+          </div>
+
+          {/* Tariff type */}
+          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Тип тарифу <AuditTip text={AUDIT_TIPS.tariffType} /></label>
+          <div style={{ display: 'flex', gap: 0, background: '#f5f5f5', borderRadius: 50, padding: 4, width: 'fit-content', marginBottom: '1.5rem' }}>
+            {AUDIT_TARIFF_TYPES.map(tt => (
+              <button key={tt.id} onClick={() => setTariffType(tt.id)} style={{ padding: '10px 24px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.3s', background: tariffType === tt.id ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: tariffType === tt.id ? 'white' : '#9e9e9e' }}>{tt.label}</button>
+            ))}
+          </div>
+
           {blackout !== 'none' && <Slider label="Критичне навантаження" tip={AUDIT_TIPS.critLoad} value={criticalLoad} onChange={setCriticalLoad} min={0.3} max={10} step={0.1} unit="кВт" marks={['0.3', '5', '10 кВт']} />}
-          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#424242', marginBottom: '1rem' }}>⚙️ Системні коефіцієнти</div>
+
+          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#424242', marginBottom: '1rem', marginTop: '0.5rem' }}>⚙️ Системні коефіцієнти</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
             {[{ l: 'Ефективність', t: AUDIT_TIPS.sysEff, v: sysEff, s: setSysEff, st: 0.01, d: AUDIT_DEF.sysEff },
               { l: 'DoD батареї', t: AUDIT_TIPS.battDoD, v: battDoD, s: setBattDoD, st: 0.01, d: AUDIT_DEF.battDoD },
               { l: 'ККД батареї', t: AUDIT_TIPS.battEff, v: battEff, s: setBattEff, st: 0.01, d: AUDIT_DEF.battEff },
               { l: 'Деградація/рік', t: AUDIT_TIPS.deg, v: degradation, s: setDegradation, st: 0.001, d: AUDIT_DEF.deg },
-              { l: 'Тариф грн/кВт·год', t: AUDIT_TIPS.tariff, v: customTariff || effectiveTariff, s: setCustomTariff, st: 0.01, d: effectiveTariff },
+              { l: 'Денний тариф грн', t: AUDIT_TIPS.tariff, v: customTariff || effectiveTariff, s: setCustomTariff, st: 0.01, d: effectiveTariff },
+              ...(tariffType === 'dayNight' ? [{ l: 'Нічний тариф грн', t: AUDIT_TIPS.nightTariff, v: nightTariff || effectiveNightTariff, s: setNightTariff, st: 0.01, d: effectiveNightTariff }] : []),
             ].map((p, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ fontSize: '0.82rem', color: '#757575', fontWeight: 500, display: 'flex', alignItems: 'center' }}>{p.l} <AuditTip text={p.t} /></div>
@@ -2752,14 +2872,15 @@ function AuditWizard({ goToPage }) {
         {isResult && res && (<div>
           <div style={{ textAlign: 'center', padding: '2rem', background: 'linear-gradient(135deg,#388e3c,#2d7a3a)', borderRadius: 20, color: 'white', marginBottom: '2rem' }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>🌞 Ваша сонячна електростанція</h2>
-            <p style={{ opacity: 0.85, fontSize: '0.95rem' }}>{res.regLbl} · {res.instLbl}{calcMode === 'advanced' ? ` · ${res.oriLbl} · ${inclinationAngle}°` : ''} · {mode === 'residential' ? 'Побутовий' : 'Комерційний'} · {res.tarUsed} грн/кВт·год</p>
+            <p style={{ opacity: 0.85, fontSize: '0.95rem' }}>{res.regLbl} · {res.instLbl}{calcMode === 'advanced' ? ` · ${res.oriLbl} · ${inclinationAngle}°` : ''} · {mode === 'residential' ? 'Побутовий' : 'Комерційний'} · {res.tarUsed} грн/кВт·год{calcMode === 'advanced' && res.tariffType === 'dayNight' ? ' (двозонний)' : ''}</p>
+            {calcMode === 'advanced' && <p style={{ opacity: 0.65, fontSize: '0.8rem', marginTop: 6 }}>{res.profileLbl} профіль{res.tempLoss !== '0.0' ? ` · Температурні втрати: −${res.tempLoss}%` : ''}{res.needBatt ? ` · Батарея: ${res.battMode === 'emergency' ? 'аварійна' : res.battMode === 'selfconsumption' ? 'самоспоживання' : 'оптимізація'}` : ''}</p>}
           </div>
 
           {/* KPI */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '1rem', margin: '2rem 0' }}>
             {[{ v: res.recP, l: 'кВт рекомендовано' }, { v: res.pC + ' шт', l: 'Панелей 455 Вт' }, { v: res.expGen.toLocaleString(), l: 'кВт·год / рік' },
               ...(calcMode === 'advanced' ? [{ v: res.expGenMo.toLocaleString(), l: 'кВт·год / місяць' }] : []),
-              ...(res.needBatt ? [{ v: res.battCap, l: 'кВт·год батарея' }] : []),
+              ...(res.needBatt ? [{ v: res.battCap, l: `кВт·год батарея${calcMode === 'advanced' ? (res.battMode === 'emergency' ? ' (аварійна)' : res.battMode === 'selfconsumption' ? ' (самоспож.)' : ' (оптимізація)') : ''}` }] : []),
               { v: res.totCost.toLocaleString(), l: 'грн вартість' }
             ].map((k, i) => (
               <div key={i} style={{ textAlign: 'center', padding: '1.25rem', background: 'white', border: '1px solid #eee', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
