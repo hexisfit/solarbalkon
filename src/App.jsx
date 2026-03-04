@@ -722,8 +722,6 @@ body {
   position:relative;
 }
 .nav-links a:hover { color:var(--green-700); }
-.nav-links a.nav-audit { color:var(--yellow-600) !important; font-weight:700; }
-.nav-links a.nav-audit:hover { color:var(--green-700) !important; }
 .nav-links a::after {
   content:''; position:absolute; bottom:-4px; left:0;
   width:0; height:2px; background:var(--green-500);
@@ -1101,65 +1099,6 @@ body {
 }
 .credit-detail-label {
   font-size:0.78rem; color:var(--gray-700);
-}
-
-/* AUDIT BANNER */
-.audit-banner {
-  max-width:900px; margin:0 auto 0; padding:2.5rem;
-  background:linear-gradient(135deg, #1a5c2a 0%, #2d7a3a 50%, #388e3c 100%);
-  border-radius:20px; position:relative; overflow:hidden;
-  display:flex; align-items:center; gap:2rem;
-  box-shadow:0 8px 32px rgba(45,122,58,0.25);
-  cursor:pointer; transition:transform 0.3s, box-shadow 0.3s;
-}
-.audit-banner:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(45,122,58,0.35); }
-.audit-banner::before {
-  content:''; position:absolute; top:-50%; right:-20%;
-  width:300px; height:300px; border-radius:50%;
-  background:rgba(251,192,45,0.12);
-}
-.audit-banner::after {
-  content:''; position:absolute; bottom:-30%; left:-10%;
-  width:200px; height:200px; border-radius:50%;
-  background:rgba(255,255,255,0.05);
-}
-.audit-banner-content { flex:1; position:relative; z-index:1; }
-.audit-banner-badge {
-  display:inline-block; padding:4px 14px; border-radius:20px;
-  background:rgba(251,192,45,0.2); color:#fdd835;
-  font-size:0.75rem; font-weight:700; text-transform:uppercase;
-  letter-spacing:1px; margin-bottom:0.75rem;
-}
-.audit-banner h3 {
-  font-family:var(--font-display); font-size:clamp(1.3rem,3vw,1.8rem);
-  font-weight:800; color:white; margin-bottom:0.5rem; line-height:1.3;
-}
-.audit-banner p { color:rgba(255,255,255,0.8); font-size:0.95rem; line-height:1.6; margin-bottom:1rem; }
-.audit-banner-cta {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:12px 28px; border-radius:50px;
-  background:linear-gradient(135deg, #fbc02d, #f9a825);
-  color:#1a5c2a; font-weight:700; font-size:0.95rem;
-  text-decoration:none; transition:all 0.25s;
-  box-shadow:0 4px 16px rgba(251,192,45,0.3);
-}
-.audit-banner-cta:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(251,192,45,0.4); }
-.audit-banner-icon {
-  font-size:3.5rem; position:relative; z-index:1;
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-}
-.audit-banner-features {
-  display:flex; gap:1.5rem; margin-top:1rem;
-}
-.audit-banner-feat {
-  display:flex; align-items:center; gap:6px;
-  font-size:0.82rem; color:rgba(255,255,255,0.7);
-}
-.audit-banner-feat span { font-size:1rem; }
-@media(max-width:768px) {
-  .audit-banner { flex-direction:column; text-align:center; padding:2rem 1.5rem; }
-  .audit-banner-icon { font-size:2.5rem; }
-  .audit-banner-features { justify-content:center; flex-wrap:wrap; gap:1rem; }
 }
 
 /* SAVINGS */
@@ -2053,6 +1992,118 @@ body {
 .share-btn.copy-link:hover { background:var(--green-700); }
 .share-btn svg { width:18px; height:18px; fill:currentColor; }
 
+/* AUDIT FORM (commercial) */
+.audit-container { max-width:700px; margin:0 auto; }
+.audit-intro {
+  text-align:center; padding:1.5rem 1rem;
+  background:var(--green-50); border-radius:var(--radius-lg);
+  margin-bottom:2rem; border:1px solid var(--green-200);
+}
+.audit-intro-icon { font-size:2.5rem; margin-bottom:0.5rem; }
+.audit-intro p { color:var(--gray-600); font-size:0.95rem; line-height:1.6; max-width:540px; margin:0 auto; }
+.audit-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+  margin-bottom:1.5rem;
+}
+@media(max-width:600px){ .audit-grid { grid-template-columns:1fr; } }
+.audit-field { display:flex; flex-direction:column; gap:6px; }
+.audit-field.full { grid-column:1/-1; }
+.audit-field label {
+  font-size:0.85rem; font-weight:600; color:var(--gray-700);
+}
+.audit-field label span { font-weight:400; color:var(--gray-400); }
+.audit-field input,
+.audit-field select,
+.audit-field textarea {
+  padding:12px 16px; border:1px solid var(--gray-300);
+  border-radius:var(--radius); font-family:var(--font-body);
+  font-size:0.95rem; color:var(--gray-800);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline:none; background:white;
+}
+.audit-field input:focus,
+.audit-field select:focus,
+.audit-field textarea:focus {
+  border-color:var(--green-500);
+  box-shadow:0 0 0 3px rgba(34,197,94,0.15);
+}
+.audit-field textarea { resize:vertical; min-height:80px; }
+.audit-type-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+  gap:8px; grid-column:1/-1;
+}
+.audit-type-btn {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:14px 8px; border:2px solid var(--gray-200);
+  border-radius:var(--radius); background:white;
+  cursor:pointer; transition:all 0.2s;
+  font-family:var(--font-body); font-size:0.82rem;
+  font-weight:500; color:var(--gray-600);
+}
+.audit-type-btn:hover { border-color:var(--green-300); color:var(--green-700); }
+.audit-type-btn.active {
+  border-color:var(--green-500); background:var(--green-50);
+  color:var(--green-700); font-weight:700;
+}
+.audit-type-btn .audit-type-icon { font-size:1.5rem; }
+.audit-submit-bar {
+  display:flex; flex-direction:column; align-items:center; gap:1rem;
+  padding-top:1.5rem; border-top:1px solid var(--gray-200);
+}
+.audit-submit-btn {
+  padding:14px 48px; border-radius:50px; border:none;
+  background:var(--green-600); color:white;
+  font-family:var(--font-body); font-size:1rem; font-weight:700;
+  cursor:pointer; transition:all 0.25s;
+}
+.audit-submit-btn:hover { background:var(--green-700); transform:translateY(-1px); box-shadow:var(--shadow-md); }
+.audit-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.audit-note { font-size:0.8rem; color:var(--gray-400); text-align:center; }
+.audit-success {
+  text-align:center; padding:2rem 1rem;
+}
+.audit-success-icon { font-size:3rem; margin-bottom:1rem; }
+.audit-success h3 { font-family:var(--font-display); font-size:1.5rem; color:var(--green-700); margin-bottom:0.5rem; }
+.audit-success p { color:var(--gray-600); max-width:400px; margin:0 auto; line-height:1.6; }
+
+/* PDF / SHARE BAR in Savings */
+.savings-actions {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; flex-wrap:wrap;
+  margin-top:2rem; padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,0.15);
+}
+.savings-action-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 28px; border-radius:50px;
+  font-family:var(--font-body); font-size:0.9rem;
+  font-weight:600; text-decoration:none;
+  border:none; cursor:pointer;
+  transition: all 0.25s;
+  color:white;
+}
+.savings-action-btn:hover { transform:translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.savings-action-btn.pdf-btn {
+  background:var(--green-700);
+}
+.savings-action-btn.pdf-btn:hover { background:var(--green-800,#145a32); }
+.savings-action-btn.pdf-btn:disabled {
+  opacity:0.6; cursor:wait; transform:none;
+}
+.savings-action-btn.tg-share {
+  background:#2AABEE;
+}
+.savings-action-btn.tg-share:hover { background:#1a9ad9; }
+.savings-action-btn.wa-share {
+  background:#25D366;
+}
+.savings-action-btn.wa-share:hover { background:#1da851; }
+.savings-action-btn.copy-result {
+  background:var(--gray-700); color:white;
+}
+.savings-action-btn.copy-result:hover { background:var(--gray-800,#333); }
+.savings-action-btn svg { width:18px; height:18px; fill:currentColor; }
+
 /* BLOG */
 .blog-page { padding-top: 64px; }
 .blog-header {
@@ -2465,544 +2516,6 @@ function ShareBar({ productName, url }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   AUDIT WIZARD — Аудит об'єкта та Калькулятор СЕС v3
-   BASIC + ADVANCED modes
-   ═══════════════════════════════════════════════════════════════ */
-const AUDIT_REGIONS = [
-  { id:'kyiv',label:'Київська обл.',pvout:1150,avgT:21 },{ id:'odesa',label:'Одеська обл.',pvout:1350,avgT:24 },
-  { id:'dnipro',label:'Дніпропетровська обл.',pvout:1280,avgT:23 },{ id:'kharkiv',label:'Харківська обл.',pvout:1200,avgT:22 },
-  { id:'lviv',label:'Львівська обл.',pvout:1050,avgT:19 },{ id:'zaporizhzhia',label:'Запорізька обл.',pvout:1320,avgT:24 },
-  { id:'poltava',label:'Полтавська обл.',pvout:1220,avgT:22 },{ id:'vinnytsia',label:'Вінницька обл.',pvout:1180,avgT:20 },
-  { id:'cherkasy',label:'Черкаська обл.',pvout:1210,avgT:22 },{ id:'mykolaiv',label:'Миколаївська обл.',pvout:1340,avgT:24 },
-  { id:'kherson',label:'Херсонська обл.',pvout:1370,avgT:25 },{ id:'khmelnytskyi',label:'Хмельницька обл.',pvout:1120,avgT:20 },
-  { id:'zhytomyr',label:'Житомирська обл.',pvout:1100,avgT:20 },{ id:'sumy',label:'Сумська обл.',pvout:1150,avgT:21 },
-  { id:'rivne',label:'Рівненська обл.',pvout:1070,avgT:19 },{ id:'ternopil',label:'Тернопільська обл.',pvout:1090,avgT:19 },
-  { id:'ivano-frankivsk',label:'Івано-Франківська обл.',pvout:1060,avgT:18 },{ id:'volyn',label:'Волинська обл.',pvout:1050,avgT:19 },
-  { id:'zakarpattia',label:'Закарпатська обл.',pvout:1080,avgT:20 },{ id:'chernivtsi',label:'Чернівецька обл.',pvout:1100,avgT:19 },
-  { id:'chernihiv',label:'Чернігівська обл.',pvout:1120,avgT:20 },{ id:'kirovohrad',label:'Кіровоградська обл.',pvout:1250,avgT:23 },
-];
-const AUDIT_INSTALLS = [
-  { id:'balcony',label:'Балкон',icon:'🏠',coeff:0.85,desc:'На перилах або стіні' },
-  { id:'roof',label:'Дах',icon:'🏗️',coeff:1.0,desc:'Оптимальний кут на даху' },
-  { id:'ground',label:'Земля',icon:'🌿',coeff:0.95,desc:'Наземний монтаж' },
-  { id:'wall',label:'Стіна',icon:'🧱',coeff:0.70,desc:'Вертикальний монтаж' },
-  { id:'fence',label:'Паркан',icon:'🔲',coeff:0.65,desc:'На паркані' },
-];
-const AUDIT_ORIENTS = [
-  { id:'south',label:'Південь',icon:'⬇️',coeff:1.00 },{ id:'south_east',label:'Пд-Схід',icon:'↙️',coeff:0.95 },
-  { id:'south_west',label:'Пд-Захід',icon:'↘️',coeff:0.95 },{ id:'east',label:'Схід',icon:'⬅️',coeff:0.80 },
-  { id:'west',label:'Захід',icon:'➡️',coeff:0.80 },{ id:'north',label:'Північ',icon:'⬆️',coeff:0.55 },
-];
-const INCL_COEFF = {0:0.87,10:0.94,15:0.97,20:0.99,25:1.00,30:1.00,35:0.99,40:0.97,45:0.94,50:0.90,60:0.82,70:0.71,80:0.59,90:0.45};
-function getInclCoeff(a){const k=Object.keys(INCL_COEFF).map(Number).sort((x,y)=>x-y);if(a<=k[0])return INCL_COEFF[k[0]];if(a>=k[k.length-1])return INCL_COEFF[k[k.length-1]];let lo=k[0],hi=k[k.length-1];for(let i=0;i<k.length-1;i++){if(a>=k[i]&&a<=k[i+1]){lo=k[i];hi=k[i+1];break;}}const t=(a-lo)/(hi-lo);return INCL_COEFF[lo]+t*(INCL_COEFF[hi]-INCL_COEFF[lo]);}
-const AUDIT_BLACKOUTS = [{id:'none',label:'Немає',icon:'✅'},{id:'rare',label:'Рідко',icon:'⚡'},{id:'often',label:'Часто',icon:'🔴'}];
-const AUDIT_PROFILES = [
-  {id:'residential',label:'Житловий',icon:'🏠',desc:'Пік ранок/вечір',evening:0.35,morning:0.20,weekend:1.0},
-  {id:'office',label:'Офіс',icon:'🏢',desc:'Пік вдень',evening:0.10,morning:0.10,weekend:0.15},
-  {id:'industrial',label:'Виробництво',icon:'🏭',desc:'Рівномірно 24/7',evening:0.25,morning:0.25,weekend:0.80},
-  {id:'shop',label:'Магазин/Сервіс',icon:'🛒',desc:'Пік вдень, без ночі',evening:0.15,morning:0.05,weekend:0.70},
-];
-const AUDIT_TARIFF_TYPES = [{id:'single',label:'Однозонний'},{id:'dayNight',label:'Двозонний (день/ніч)'}];
-const AUDIT_DEF = {sysEff:0.80,battDoD:0.90,battEff:0.90,deg:0.005,resTariff:4.32,comTariff:7.50,resNightTariff:2.16,comNightTariff:5.25,tempCoeff:0.004,incl:33};
-const AUDIT_PANELS = [{name:'Trina TSM-455 NEG9R.28',power:455,price:3450}];
-const AUDIT_INV = {micro:[{name:'Deye SUN-M80G4-EU-Q0',power:800,price:6200,inputs:2}],string:[{name:'Deye SUN-3.6K-SG04LP3-EU',power:3600,price:28000,ph:1},{name:'Deye SUN-5K-SG04LP3-EU',power:5000,price:32000,ph:1},{name:'Deye SUN-8K-SG04LP3-EU',power:8000,price:42000,ph:3},{name:'Deye SUN-12K-SG04LP3-EU',power:12000,price:55000,ph:3}]};
-const AUDIT_BATT = [{name:'Zendure SolarFlow 2400 AC+',cap:2.4,price:50000},{name:'EcoFlow STREAM AC Pro',cap:1.92,price:40000},{name:'Deye AE-FS2.0-2H2',cap:2.0,price:40000},{name:'Deye SE-G5.3 Pro',cap:5.3,price:45000},{name:'Deye SE-G5.3 Pro ×2',cap:10.6,price:90000}];
-const AUDIT_MO_FAC = [0.04,0.05,0.08,0.10,0.12,0.13,0.13,0.12,0.09,0.07,0.04,0.03];
-const AUDIT_MO_NAMES = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
-const AUDIT_TIPS = {clientType:'Побутовий — домогосподарства. Комерційний — бізнес, ФОП, ОСББ.',region:'Область визначає кількість сонячних годин (PVOUT) та середню температуру.',consumption:'Середнє місячне споживання. Подивіться в рахунку.',install:'Тип монтажу впливає на ефективність системи.',orient:'Напрямок панелей. Південь — найкраще.',incl:'Кут нахилу. Оптимум для України: 30-35°.',blackout:'Якщо є відключення — потрібен акумулятор.',phases:'1 фаза (220В) або 3 фази (380В).',autonomy:'Години автономної роботи при блекауті.',critLoad:'Потужність приладів при блекауті (кВт).',sysEff:'Загальна ефективність з урахуванням втрат (без температури).',battDoD:'Глибина розряду. LiFePO4 = 90%.',battEff:'ККД батареї. LiFePO4 = 90-95%.',deg:'Деградація панелей/рік. Якісні: 0.4-0.55%.',tariff:'Побутовий: 4.32 грн. Комерційний: 5-9 грн.',profile:'Профіль визначає розподіл споживання протягом доби. Впливає на розмір батареї.',tariffType:'Однозонний — єдиний тариф. Двозонний — різні тарифи вдень та вночі.',nightTariff:'Нічний тариф (23:00-7:00). Побутовий: 2.16 грн, комерційний: ~5.25 грн.'};
-
-function AuditTip({text}){const[s,setS]=useState(false);return(<span style={{position:'relative',display:'inline-flex',marginLeft:6,cursor:'help'}} onMouseEnter={()=>setS(true)} onMouseLeave={()=>setS(false)} onClick={()=>setS(v=>!v)}><span style={{width:18,height:18,borderRadius:'50%',background:'#eee',color:'#9e9e9e',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:700}}>?</span>{s&&(<span style={{position:'absolute',bottom:'calc(100% + 8px)',left:'50%',transform:'translateX(-50%)',background:'#212121',color:'white',padding:'10px 14px',borderRadius:8,fontSize:'0.78rem',lineHeight:1.5,width:260,boxShadow:'0 8px 24px rgba(0,0,0,0.2)',zIndex:100}}>{text}<span style={{position:'absolute',bottom:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'6px solid transparent',borderRight:'6px solid transparent',borderTop:'6px solid #212121'}}/></span>)}</span>);}
-
-function AuditWizard({ goToPage }) {
-  const [calcMode, setCalcMode] = useState('basic');
-  const [step, setStep] = useState(0);
-  const [mode, setMode] = useState('residential');
-  const [region, setRegion] = useState('');
-  const [installType, setInstallType] = useState('');
-  const [orientation, setOrientation] = useState('south');
-  const [inclinationAngle, setInclinationAngle] = useState(AUDIT_DEF.incl);
-  const [monthlyConsumption, setMonthlyConsumption] = useState(250);
-  const [phases, setPhases] = useState(1);
-  const [blackout, setBlackout] = useState('none');
-  const [autonomyHours, setAutonomyHours] = useState(4);
-  const [criticalLoad, setCriticalLoad] = useState(1.5);
-  const [sysEff, setSysEff] = useState(AUDIT_DEF.sysEff);
-  const [battDoD, setBattDoD] = useState(AUDIT_DEF.battDoD);
-  const [battEff, setBattEff] = useState(AUDIT_DEF.battEff);
-  const [degradation, setDegradation] = useState(AUDIT_DEF.deg);
-  const [customTariff, setCustomTariff] = useState(0);
-  const [consumptionProfile, setConsumptionProfile] = useState('residential');
-  const [tariffType, setTariffType] = useState('single');
-  const [nightTariff, setNightTariff] = useState(0);
-
-  const effectiveTariff = customTariff > 0 ? customTariff : (mode === 'residential' ? AUDIT_DEF.resTariff : AUDIT_DEF.comTariff);
-  const effectiveNightTariff = nightTariff > 0 ? nightTariff : (mode === 'residential' ? AUDIT_DEF.resNightTariff : AUDIT_DEF.comNightTariff);
-  const BASIC_STEPS = ['Тип', "Об'єкт", 'Споживання', 'Результат'];
-  const ADV_STEPS = ['Тип', "Об'єкт", 'Орієнтація', 'Мережа', 'Параметри', 'Результат'];
-  const stepLabels = calcMode === 'basic' ? BASIC_STEPS : ADV_STEPS;
-  const totalSteps = stepLabels.length;
-  const isResult = step === totalSteps - 1;
-
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
-  const switchMode = (m) => { setCalcMode(m); setStep(0); };
-
-  const canProceed = () => {
-    if (calcMode === 'basic') { return step === 0 ? !!mode : step === 1 ? !!region && !!installType : step === 2 ? monthlyConsumption > 0 : true; }
-    return step === 0 ? !!mode : step === 1 ? !!region && !!installType : step === 2 ? !!orientation && monthlyConsumption > 0 : step === 3 ? !!blackout : true;
-  };
-
-  const calculate = () => {
-    const rd = AUDIT_REGIONS.find(r => r.id === region) || AUDIT_REGIONS[0];
-    const id = AUDIT_INSTALLS.find(t => t.id === installType) || AUDIT_INSTALLS[0];
-    const od = AUDIT_ORIENTS.find(o => o.id === orientation) || AUDIT_ORIENTS[0];
-    const pf = AUDIT_PROFILES.find(p => p.id === consumptionProfile) || AUDIT_PROFILES[0];
-    const pvout = rd.pvout;
-    const oC = calcMode === 'basic' ? 1.0 : od.coeff;
-    const iC = id.coeff;
-    const inC = calcMode === 'basic' ? 1.0 : getInclCoeff(inclinationAngle);
-    const eff = calcMode === 'basic' ? AUDIT_DEF.sysEff : sysEff;
-    const dod = calcMode === 'basic' ? AUDIT_DEF.battDoD : battDoD;
-    const bE = calcMode === 'basic' ? AUDIT_DEF.battEff : battEff;
-    const dg = calcMode === 'basic' ? AUDIT_DEF.deg : degradation;
-
-    // #4 Температурний коефіцієнт
-    const avgT = rd.avgT || 22;
-    const tempLoss = avgT > 25 ? AUDIT_DEF.tempCoeff * (avgT - 25) : 0;
-    const actualEff = eff * (1 - tempLoss);
-
-    const yC = monthlyConsumption * 12;
-    const tC = actualEff * oC * iC * inC;
-    const recP = yC / (pvout * tC);
-    const expGen = recP * pvout * tC;
-
-    // #1 Формула батарей: emergency + self-consumption + limit
-    const needBatt = blackout !== 'none';
-    const bCL = calcMode === 'basic' ? 1.0 : criticalLoad;
-    const bAH = calcMode === 'basic' ? (blackout === 'often' ? 6 : 3) : autonomyHours;
-
-    // Emergency battery
-    const battEmergency = needBatt ? (bCL * bAH) / (dod * bE) : 0;
-
-    // #2 Self-consumption battery (shift solar to evening)
-    const dailyC = yC / 365;
-    const eveningPct = calcMode === 'basic' ? 0.30 : pf.evening;
-    const dailyEvening = dailyC * eveningPct;
-    const battSelfConsumption = dailyEvening / (dod * bE);
-
-    // Battery limit by daily generation
-    const maxDailyGen = expGen / 365;
-    const maxBattLimit = maxDailyGen * 1.5;
-
-    // Final battery: max(emergency, selfConsumption) capped by limit
-    let battCap = 0;
-    let battMode = 'none';
-    if (needBatt) {
-      if (battEmergency >= battSelfConsumption) {
-        battCap = Math.min(battEmergency, maxBattLimit);
-        battMode = 'emergency';
-      } else {
-        battCap = Math.min(battSelfConsumption, maxBattLimit);
-        battMode = 'selfconsumption';
-      }
-    } else if (calcMode === 'advanced' && eveningPct > 0.15) {
-      // Even without blackouts, suggest battery for self-consumption optimization
-      const optBatt = Math.min(battSelfConsumption, maxBattLimit);
-      if (optBatt >= 1.5) { battCap = optBatt; battMode = 'optimization'; }
-    }
-
-    const pP = AUDIT_PANELS[0].power / 1000;
-    const pC = Math.max(1, Math.ceil(recP / pP));
-    const tPW = pC * AUDIT_PANELS[0].power;
-
-    // #8 Inverter sizing: ratio 0.8-1.0, phase logic
-    let selInv = [];
-    if (tPW <= 1600 && installType === 'balcony') {
-      selInv = [{ ...AUDIT_INV.micro[0], qty: Math.ceil(pC / 2) }];
-    } else {
-      const ph = calcMode === 'basic' ? (recP > 10 ? 3 : 1) : phases;
-      const invTargetW = tPW * 0.9;
-      const cands = AUDIT_INV.string.filter(v => ph === 3 ? v.ph === 3 : true).filter(v => v.power >= invTargetW * 0.7);
-      if (cands.length > 0) {
-        // Pick smallest that covers, or use multiple
-        const best = cands[0];
-        if (best.power >= invTargetW) {
-          selInv = [{ ...best, qty: 1 }];
-        } else {
-          selInv = [{ ...best, qty: Math.ceil(invTargetW / best.power) }];
-        }
-      } else {
-        const biggest = AUDIT_INV.string[AUDIT_INV.string.length - 1];
-        selInv = [{ ...biggest, qty: Math.ceil(invTargetW / biggest.power) }];
-      }
-    }
-
-    let selBatt = null;
-    if (battCap > 0) {
-      const sorted = [...AUDIT_BATT].sort((a, b) => a.cap - b.cap);
-      selBatt = sorted.find(b => b.cap >= battCap) || sorted[sorted.length - 1];
-      selBatt = { ...selBatt, qty: Math.ceil(battCap / selBatt.cap) };
-    }
-
-    const bom = [];
-    bom.push({ cat: 'Панелі', name: AUDIT_PANELS[0].name, qty: pC, up: AUDIT_PANELS[0].price, tot: pC * AUDIT_PANELS[0].price });
-    selInv.forEach(v => bom.push({ cat: 'Інвертор', name: v.name, qty: v.qty, up: v.price, tot: v.qty * v.price }));
-    bom.push({ cat: 'Лічильник', name: 'Deye SUN-SMART-CT01', qty: 1, up: 4000, tot: 4000 });
-    if (selBatt) bom.push({ cat: 'Акумулятор', name: selBatt.name, qty: selBatt.qty, up: selBatt.price, tot: selBatt.qty * selBatt.price });
-    bom.push({ cat: 'Монтаж', name: 'Кріплення (' + id.label + ')', qty: pC, up: 1500, tot: pC * 1500 });
-    bom.push({ cat: 'Кабелі', name: 'DC + AC кабелі', qty: 1, up: 3000 + pC * 500, tot: 3000 + pC * 500 });
-    bom.push({ cat: 'Захист DC', name: 'Автомати DC', qty: 1, up: 2500, tot: 2500 });
-    bom.push({ cat: 'Захист AC', name: 'Автомати AC, ДІФ', qty: 1, up: 2000, tot: 2000 });
-
-    const totCost = bom.reduce((s, i) => s + i.tot, 0);
-
-    // #5 Двозонний тариф — середньозважений
-    let avgTariff = effectiveTariff;
-    if (calcMode === 'advanced' && tariffType === 'dayNight') {
-      const dayPct = 1 - eveningPct - (calcMode === 'basic' ? 0.15 : pf.morning);
-      const nightPct = calcMode === 'basic' ? 0.15 : pf.morning;
-      // Solar covers daytime → savings at day tariff; battery covers evening → savings at day tariff too
-      // Night consumption stays on grid at night tariff
-      // Weighted: solar+battery offset day tariff, remaining night at night tariff
-      const solarOffsetPct = Math.min(1, expGen / yC);
-      avgTariff = effectiveTariff * (1 - nightPct) + effectiveNightTariff * nightPct;
-      // But savings are mostly at day tariff (solar generates during day)
-      avgTariff = effectiveTariff * 0.85 + effectiveNightTariff * 0.15;
-    }
-
-    // #7 ROI з деградацією (не лінійний!)
-    const moGen = AUDIT_MO_FAC.map(f => Math.round(expGen * f));
-    const degTable = [];
-    let totalGen25 = 0;
-    for (let y = 1; y <= 25; y++) {
-      const f = Math.pow(1 - dg, y - 1);
-      const yG = expGen * f;
-      totalGen25 += yG;
-      const yS = yG * avgTariff;
-      const cum = degTable.length > 0 ? degTable[degTable.length - 1].cum + yS : yS;
-      degTable.push({ year: y, gen: Math.round(yG), sav: Math.round(yS), cum: Math.round(cum), net: Math.round(cum - totCost) });
-    }
-    const totalSav25 = degTable[24].cum;
-    const annSavAvg = totalSav25 / 25;
-    const annSav = expGen * avgTariff; // first year
-    const payback = annSavAvg > 0 ? totCost / annSavAvg : 0; // adjusted payback
-    const roi = totalSav25 > 0 ? ((totalSav25 - totCost) / totCost) * 100 : 0;
-    const costOff = yC > 0 ? (expGen / yC) * 100 : 0;
-
-    return {
-      recP: recP.toFixed(2), expGen: Math.round(expGen), expGenMo: Math.round(expGen / 12),
-      pC, battCap: battCap.toFixed(1), battMode, battEmergency: battEmergency.toFixed(1), battSelf: battSelfConsumption.toFixed(1),
-      totCost, annSav: Math.round(annSav), moSav: Math.round(annSav / 12),
-      payback: payback.toFixed(1), roi: roi.toFixed(0), costOff: Math.min(100, costOff).toFixed(0),
-      bom, moGen, degTable, regLbl: rd.label, instLbl: id.label, oriLbl: od.label,
-      needBatt: battCap > 0, tarUsed: avgTariff.toFixed(2), tempLoss: (tempLoss * 100).toFixed(1),
-      profileLbl: pf.label, avgTariff, tariffType: calcMode === 'advanced' ? tariffType : 'single'
-    };
-  };
-
-  const res = isResult ? calculate() : null;
-
-  const wS = { card: { width: '100%', maxWidth: 830, background: 'white', border: '1px solid #eee', borderRadius: 20, padding: '2.5rem', boxShadow: '0 8px 30px rgba(0,0,0,0.12)', position: 'relative', overflow: 'hidden' }, cardBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg,#4caf50,#fbc02d)' }, title: { fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: '#212121', marginBottom: '0.5rem' }, desc: { color: '#9e9e9e', fontSize: '0.95rem', marginBottom: '2rem' } };
-
-  const OptionCard = ({ selected, onClick, icon, label, desc, coeff }) => (
-    <div onClick={onClick} style={{ padding: '1.25rem', border: `2px solid ${selected ? '#4caf50' : '#eee'}`, borderRadius: 12, cursor: 'pointer', background: selected ? '#e8f5e9' : 'white', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', transition: 'all 0.25s' }}>
-      {selected && <div style={{ position: 'absolute', top: 10, right: 12, width: 24, height: 24, borderRadius: '50%', background: '#4caf50', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>✓</div>}
-      {icon && <div style={{ fontSize: '1.8rem' }}>{icon}</div>}
-      <div style={{ fontWeight: 600, color: '#424242', fontSize: '0.95rem' }}>{label}</div>
-      {desc && <div style={{ fontSize: '0.8rem', color: '#9e9e9e' }}>{desc}</div>}
-      {coeff && <div style={{ fontSize: '0.75rem', color: '#388e3c', fontWeight: 600, marginTop: 'auto', paddingTop: 8 }}>{coeff}</div>}
-    </div>
-  );
-
-  const Slider = ({ label, tip, value, onChange, min, max, step: st, unit, marks }) => (
-    <div style={{ marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.75rem' }}>
-        <span style={{ fontSize: '0.9rem', color: '#757575', fontWeight: 500, display: 'flex', alignItems: 'center' }}>{label} {tip && <AuditTip text={tip} />}</span>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: '#2d7a3a' }}>{value} <small style={{ fontSize: '0.7rem', color: '#bdbdbd', fontWeight: 400 }}>{unit}</small></span>
-      </div>
-      <input type="range" className="savings-slider" min={min} max={max} step={st} value={value} onChange={e => onChange(+e.target.value)} style={{ width: '100%' }} />
-      {marks && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#bdbdbd', marginTop: '0.3rem' }}>{marks.map((m, i) => <span key={i}>{m}</span>)}</div>}
-    </div>
-  );
-
-  const InfoTip = ({ icon, children }) => (
-    <div style={{ display: 'flex', gap: '0.75rem', padding: '1rem', background: '#fff9c4', border: '1px solid #ffee58', borderRadius: 12, marginBottom: '1.5rem', fontSize: '0.85rem', color: '#616161', lineHeight: 1.5 }}>
-      <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{icon}</span><div>{children}</div>
-    </div>
-  );
-
-  return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#e8f5e9 0%,white 35%,#fff9c4 100%)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {/* HEADER */}
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }} style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: '#2d7a3a', textDecoration: 'none' }}>☀ Solar<span style={{ color: '#f9a825' }}>Balkon</span></a>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,3.5vw,2.4rem)', fontWeight: 800, color: '#212121', marginBottom: '0.5rem', marginTop: '0.5rem' }}>Аудит об'єкта — <span style={{ background: 'linear-gradient(135deg,#388e3c,#f9a825)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>розрахунок СЕС</span></h1>
-        <p style={{ color: '#9e9e9e', fontSize: '1.05rem', maxWidth: 600, margin: '0 auto' }}>Покроковий калькулятор сонячної електростанції для вашого об'єкта</p>
-        <div style={{ display: 'flex', gap: 0, background: '#f5f5f5', borderRadius: 50, padding: 4, width: 'fit-content', margin: '1.5rem auto 0' }}>
-          <button onClick={() => switchMode('basic')} style={{ padding: '10px 28px', borderRadius: 50, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.3s', background: calcMode === 'basic' ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: calcMode === 'basic' ? 'white' : '#9e9e9e' }}>Простий <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, marginLeft: 6, background: '#c8e6c9', color: '#2d7a3a' }}>BASIC</span></button>
-          <button onClick={() => switchMode('advanced')} style={{ padding: '10px 28px', borderRadius: 50, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.3s', background: calcMode === 'advanced' ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: calcMode === 'advanced' ? 'white' : '#9e9e9e' }}>Розширений <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 20, marginLeft: 6, background: '#fff59d', color: '#f9a825' }}>PRO</span></button>
-        </div>
-      </div>
-
-      {/* PROGRESS */}
-      <div style={{ width: '100%', maxWidth: 780, marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-          {stepLabels.map((l, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, border: `2px solid ${i < step ? '#4caf50' : i === step ? '#4caf50' : '#e0e0e0'}`, background: i < step ? '#4caf50' : i === step ? '#e8f5e9' : 'white', color: i < step ? 'white' : i === step ? '#2d7a3a' : '#bdbdbd' }}>{i < step ? '✓' : i + 1}</div>
-              <span style={{ fontSize: '0.7rem', color: i === step ? '#2d7a3a' : '#bdbdbd', fontWeight: i === step ? 600 : 400 }}>{l}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ height: 4, background: '#eee', borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', borderRadius: 2, background: 'linear-gradient(90deg,#4caf50,#fbc02d)', transition: 'width 0.6s', width: `${(step / (totalSteps - 1)) * 100}%` }} /></div>
-      </div>
-
-      {/* CARD */}
-      <div style={wS.card} key={`${calcMode}-${step}`}>
-        <div style={wS.cardBar} />
-
-        {/* STEP 0: Client Type */}
-        {step === 0 && (<div>
-          <div style={wS.title}>Оберіть тип клієнта <AuditTip text={AUDIT_TIPS.clientType} /></div>
-          <div style={wS.desc}>Тарифи та програми фінансування відрізняються</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '0.75rem' }}>
-            <OptionCard selected={mode === 'residential'} onClick={() => setMode('residential')} icon="🏠" label="Побутовий" desc="Домогосподарство, квартира" coeff={`Тариф: ${AUDIT_DEF.resTariff} грн/кВт·год`} />
-            <OptionCard selected={mode === 'commercial'} onClick={() => setMode('commercial')} icon="🏢" label="Комерційний" desc="Бізнес, ФОП, ОСББ" coeff={`Тариф: ${AUDIT_DEF.comTariff} грн/кВт·год`} />
-          </div>
-        </div>)}
-
-        {/* STEP 1: Region + Install */}
-        {step === 1 && (<div>
-          <div style={wS.title}>Розташування та монтаж</div>
-          <div style={wS.desc}>Регіон визначає сонячний ресурс, тип монтажу — ефективність</div>
-          <div style={{ marginBottom: '2rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.5rem', display: 'block' }}>Область <AuditTip text={AUDIT_TIPS.region} /></label>
-            <select value={region} onChange={e => setRegion(e.target.value)} style={{ width: '100%', padding: '12px 16px', border: '2px solid #eee', borderRadius: 12, fontFamily: 'var(--font-body)', fontSize: '1rem', color: region ? '#2d7a3a' : '#bdbdbd', fontWeight: region ? 600 : 400, outline: 'none' }}>
-              <option value="">— Оберіть область —</option>
-              {AUDIT_REGIONS.map(r => <option key={r.id} value={r.id}>{r.label} ({r.pvout} кВт·год/кВт·пік)</option>)}
-            </select>
-          </div>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Тип монтажу <AuditTip text={AUDIT_TIPS.install} /></label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: '0.75rem' }}>
-            {(calcMode === 'basic' ? AUDIT_INSTALLS.filter(t => ['roof', 'ground', 'balcony'].includes(t.id)) : AUDIT_INSTALLS).map(t => (
-              <OptionCard key={t.id} selected={installType === t.id} onClick={() => setInstallType(t.id)} icon={t.icon} label={t.label} desc={t.desc} coeff={`Ефективність: ${(t.coeff * 100).toFixed(0)}%`} />
-            ))}
-          </div>
-        </div>)}
-
-        {/* BASIC STEP 2: Consumption + Blackout */}
-        {calcMode === 'basic' && step === 2 && (<div>
-          <div style={wS.title}>Споживання та блекаути</div>
-          <div style={wS.desc}>Базова інформація для розрахунку</div>
-          <Slider label="Місячне споживання" tip={AUDIT_TIPS.consumption} value={monthlyConsumption} onChange={setMonthlyConsumption} min={mode === 'commercial' ? 200 : 50} max={mode === 'commercial' ? 10000 : 1500} step={mode === 'commercial' ? 100 : 25} unit="кВт·год" marks={[mode === 'commercial' ? '200' : '50', mode === 'commercial' ? '10,000' : '1,500']} />
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Відключення? <AuditTip text={AUDIT_TIPS.blackout} /></label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            {AUDIT_BLACKOUTS.map(b => <OptionCard key={b.id} selected={blackout === b.id} onClick={() => setBlackout(b.id)} icon={b.icon} label={b.label} />)}
-          </div>
-          <InfoTip icon="ℹ️"><strong>BASIC</strong>: орієнтація — південь, кут — 33°, ефективність — 80%.</InfoTip>
-        </div>)}
-
-        {/* ADVANCED STEP 2: Orientation + Inclination + Consumption */}
-        {calcMode === 'advanced' && step === 2 && (<div>
-          <div style={wS.title}>Орієнтація, кут нахилу та споживання</div>
-          <div style={wS.desc}>Точні параметри для реальної генерації</div>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Орієнтація <AuditTip text={AUDIT_TIPS.orient} /></label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
-            {AUDIT_ORIENTS.map(o => <OptionCard key={o.id} selected={orientation === o.id} onClick={() => setOrientation(o.id)} icon={o.icon} label={o.label} coeff={`${(o.coeff * 100).toFixed(0)}%`} />)}
-          </div>
-          <Slider label="Кут нахилу" tip={AUDIT_TIPS.incl} value={inclinationAngle} onChange={setInclinationAngle} min={0} max={90} step={1} unit={`° (${(getInclCoeff(inclinationAngle) * 100).toFixed(0)}%)`} marks={['0° горизонт', '33° оптимум', '90° вертикаль']} />
-          <Slider label="Місячне споживання" tip={AUDIT_TIPS.consumption} value={monthlyConsumption} onChange={setMonthlyConsumption} min={mode === 'commercial' ? 200 : 50} max={mode === 'commercial' ? 10000 : 1500} step={mode === 'commercial' ? 100 : 25} unit="кВт·год" marks={[mode === 'commercial' ? '200' : '50', mode === 'commercial' ? '10,000' : '1,500']} />
-        </div>)}
-
-        {/* ADVANCED STEP 3: Grid + Blackout */}
-        {calcMode === 'advanced' && step === 3 && (<div>
-          <div style={wS.title}>Мережа та автономність</div>
-          <div style={wS.desc}>Параметри для підбору інвертора та акумулятора</div>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Фази <AuditTip text={AUDIT_TIPS.phases} /></label>
-          <div style={{ display: 'flex', gap: 0, background: '#f5f5f5', borderRadius: 50, padding: 4, width: 'fit-content', marginBottom: '2rem' }}>
-            <button onClick={() => setPhases(1)} style={{ padding: '10px 24px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', background: phases === 1 ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: phases === 1 ? 'white' : '#9e9e9e' }}>1 фаза (220В)</button>
-            <button onClick={() => setPhases(3)} style={{ padding: '10px 24px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', background: phases === 3 ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: phases === 3 ? 'white' : '#9e9e9e' }}>3 фази (380В)</button>
-          </div>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Відключення <AuditTip text={AUDIT_TIPS.blackout} /></label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.75rem', marginBottom: '2rem' }}>
-            {AUDIT_BLACKOUTS.map(b => <OptionCard key={b.id} selected={blackout === b.id} onClick={() => setBlackout(b.id)} icon={b.icon} label={b.label} />)}
-          </div>
-          {blackout !== 'none' && <Slider label="Автономність" tip={AUDIT_TIPS.autonomy} value={autonomyHours} onChange={setAutonomyHours} min={1} max={24} step={1} unit="год" marks={['1', '12', '24 год']} />}
-        </div>)}
-
-        {/* ADVANCED STEP 4: Profile + Tariff + Coefficients */}
-        {calcMode === 'advanced' && step === 4 && (<div>
-          <div style={wS.title}>Параметри та коефіцієнти</div>
-          <div style={wS.desc}>Професійне налаштування для точного розрахунку</div>
-
-          {/* Consumption Profile */}
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Профіль споживання <AuditTip text={AUDIT_TIPS.profile} /></label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(170px,1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
-            {AUDIT_PROFILES.map(p => <OptionCard key={p.id} selected={consumptionProfile === p.id} onClick={() => setConsumptionProfile(p.id)} icon={p.icon} label={p.label} desc={p.desc} coeff={`Вечір: ${(p.evening * 100).toFixed(0)}%`} />)}
-          </div>
-
-          {/* Tariff type */}
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: '#616161', marginBottom: '0.75rem', display: 'block' }}>Тип тарифу <AuditTip text={AUDIT_TIPS.tariffType} /></label>
-          <div style={{ display: 'flex', gap: 0, background: '#f5f5f5', borderRadius: 50, padding: 4, width: 'fit-content', marginBottom: '1.5rem' }}>
-            {AUDIT_TARIFF_TYPES.map(tt => (
-              <button key={tt.id} onClick={() => setTariffType(tt.id)} style={{ padding: '10px 24px', borderRadius: 50, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.3s', background: tariffType === tt.id ? 'linear-gradient(135deg,#388e3c,#4caf50)' : 'transparent', color: tariffType === tt.id ? 'white' : '#9e9e9e' }}>{tt.label}</button>
-            ))}
-          </div>
-
-          {blackout !== 'none' && <Slider label="Критичне навантаження" tip={AUDIT_TIPS.critLoad} value={criticalLoad} onChange={setCriticalLoad} min={0.3} max={10} step={0.1} unit="кВт" marks={['0.3', '5', '10 кВт']} />}
-
-          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#424242', marginBottom: '1rem', marginTop: '0.5rem' }}>⚙️ Системні коефіцієнти</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-            {[{ l: 'Ефективність', t: AUDIT_TIPS.sysEff, v: sysEff, s: setSysEff, st: 0.01, d: AUDIT_DEF.sysEff },
-              { l: 'DoD батареї', t: AUDIT_TIPS.battDoD, v: battDoD, s: setBattDoD, st: 0.01, d: AUDIT_DEF.battDoD },
-              { l: 'ККД батареї', t: AUDIT_TIPS.battEff, v: battEff, s: setBattEff, st: 0.01, d: AUDIT_DEF.battEff },
-              { l: 'Деградація/рік', t: AUDIT_TIPS.deg, v: degradation, s: setDegradation, st: 0.001, d: AUDIT_DEF.deg },
-              { l: 'Денний тариф грн', t: AUDIT_TIPS.tariff, v: customTariff || effectiveTariff, s: setCustomTariff, st: 0.01, d: effectiveTariff },
-              ...(tariffType === 'dayNight' ? [{ l: 'Нічний тариф грн', t: AUDIT_TIPS.nightTariff, v: nightTariff || effectiveNightTariff, s: setNightTariff, st: 0.01, d: effectiveNightTariff }] : []),
-            ].map((p, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ fontSize: '0.82rem', color: '#757575', fontWeight: 500, display: 'flex', alignItems: 'center' }}>{p.l} <AuditTip text={p.t} /></div>
-                <input type="number" step={p.st} value={p.v} onChange={e => p.s(+e.target.value || p.d)} style={{ padding: '10px 14px', border: '2px solid #eee', borderRadius: 12, fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 600, color: '#2d7a3a', outline: 'none', textAlign: 'center', width: '100%' }} />
-              </div>
-            ))}
-          </div>
-        </div>)}
-
-        {/* RESULTS */}
-        {isResult && res && (<div>
-          <div style={{ textAlign: 'center', padding: '2rem', background: 'linear-gradient(135deg,#388e3c,#2d7a3a)', borderRadius: 20, color: 'white', marginBottom: '2rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem' }}>🌞 Ваша сонячна електростанція</h2>
-            <p style={{ opacity: 0.85, fontSize: '0.95rem' }}>{res.regLbl} · {res.instLbl}{calcMode === 'advanced' ? ` · ${res.oriLbl} · ${inclinationAngle}°` : ''} · {mode === 'residential' ? 'Побутовий' : 'Комерційний'} · {res.tarUsed} грн/кВт·год{calcMode === 'advanced' && res.tariffType === 'dayNight' ? ' (двозонний)' : ''}</p>
-            {calcMode === 'advanced' && <p style={{ opacity: 0.65, fontSize: '0.8rem', marginTop: 6 }}>{res.profileLbl} профіль{res.tempLoss !== '0.0' ? ` · Температурні втрати: −${res.tempLoss}%` : ''}{res.needBatt ? ` · Батарея: ${res.battMode === 'emergency' ? 'аварійна' : res.battMode === 'selfconsumption' ? 'самоспоживання' : 'оптимізація'}` : ''}</p>}
-          </div>
-
-          {/* KPI */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '1rem', margin: '2rem 0' }}>
-            {[{ v: res.recP, l: 'кВт рекомендовано' }, { v: res.pC + ' шт', l: 'Панелей 455 Вт' }, { v: res.expGen.toLocaleString(), l: 'кВт·год / рік' },
-              ...(calcMode === 'advanced' ? [{ v: res.expGenMo.toLocaleString(), l: 'кВт·год / місяць' }] : []),
-              ...(res.needBatt ? [{ v: res.battCap, l: `кВт·год батарея${calcMode === 'advanced' ? (res.battMode === 'emergency' ? ' (аварійна)' : res.battMode === 'selfconsumption' ? ' (самоспож.)' : ' (оптимізація)') : ''}` }] : []),
-              { v: res.totCost.toLocaleString(), l: 'грн вартість' }
-            ].map((k, i) => (
-              <div key={i} style={{ textAlign: 'center', padding: '1.25rem', background: 'white', border: '1px solid #eee', borderRadius: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', fontWeight: 700, color: '#2d7a3a' }}>{k.v}</div>
-                <div style={{ fontSize: '0.72rem', color: '#9e9e9e', marginTop: '0.25rem', textTransform: 'uppercase', letterSpacing: 0.5 }}>{k.l}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* FINANCE */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '1rem', marginTop: '2rem' }}>
-            <div style={{ padding: '1.25rem', borderRadius: 20, textAlign: 'center', background: '#e8f5e9', border: '1px solid #a5d6a7' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700, color: '#2d7a3a' }}>{res.annSav.toLocaleString()} грн</div>
-              <div style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>Річна економія</div>
-              <div style={{ fontSize: '0.8rem', color: '#388e3c', marginTop: 6 }}>~{res.moSav.toLocaleString()} грн/міс</div>
-            </div>
-            <div style={{ padding: '1.25rem', borderRadius: 20, textAlign: 'center', background: '#fff9c4', border: '1px solid #ffee58' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700, color: '#f9a825' }}>{res.payback} р.</div>
-              <div style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>Окупність</div>
-            </div>
-            {calcMode === 'advanced' && <>
-              <div style={{ padding: '1.25rem', borderRadius: 20, textAlign: 'center', background: 'linear-gradient(135deg,#e8f5e9,#fff9c4)', border: '1px solid #a5d6a7' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700, color: '#388e3c' }}>{res.roi}%</div>
-                <div style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>ROI (25 років)</div>
-              </div>
-              <div style={{ padding: '1.25rem', borderRadius: 20, textAlign: 'center', background: '#fafafa', border: '1px solid #eee' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 700, color: '#424242' }}>{res.costOff}%</div>
-                <div style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>Компенсація</div>
-              </div>
-            </>}
-          </div>
-
-          {/* BOM */}
-          <div style={{ marginTop: '2rem' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: '#212121', marginBottom: '1rem' }}>📦 Специфікація (BOM)</div>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
-                <thead><tr>{['Категорія', 'Компонент', 'К-сть', 'Ціна/шт', 'Сума'].map((h, i) => <th key={i} style={{ background: 'linear-gradient(135deg,#388e3c,#2d7a3a)', color: 'white', padding: '0.85rem 1rem', fontSize: '0.78rem', fontWeight: 600, textAlign: i > 1 ? 'right' : 'left', textTransform: 'uppercase', letterSpacing: 0.5 }}>{h}</th>)}</tr></thead>
-                <tbody>
-                  {res.bom.map((item, i) => (
-                    <tr key={i}><td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #f5f5f5', fontSize: '0.68rem', color: '#bdbdbd', textTransform: 'uppercase' }}>{item.cat}</td><td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #f5f5f5', fontSize: '0.88rem', color: '#616161' }}>{item.name}</td><td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #f5f5f5', textAlign: 'right' }}>{item.qty}</td><td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #f5f5f5', textAlign: 'right' }}>{item.up.toLocaleString()}</td><td style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #f5f5f5', textAlign: 'right', fontWeight: 600 }}>{item.tot.toLocaleString()} грн</td></tr>
-                  ))}
-                  <tr><td colSpan={4} style={{ padding: '0.75rem 1rem', background: '#e8f5e9', fontWeight: 700, color: '#2d7a3a', fontSize: '1rem' }}>РАЗОМ</td><td style={{ padding: '0.75rem 1rem', background: '#e8f5e9', textAlign: 'right', fontWeight: 700, color: '#2d7a3a', fontSize: '1rem' }}>{res.totCost.toLocaleString()} грн</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* SEASONAL (advanced) */}
-          {calcMode === 'advanced' && (
-            <div style={{ marginTop: '2rem' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: '#212121', marginBottom: '1rem' }}>📊 Сезонна генерація</div>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 160 }}>
-                {res.moGen.map((v, i) => { const mx = Math.max(...res.moGen); return (
-                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ fontSize: '0.6rem', color: '#bdbdbd' }}>{v}</div>
-                    <div style={{ width: '100%', borderRadius: '4px 4px 0 0', background: 'linear-gradient(180deg,#fdd835,#66bb6a)', height: `${mx > 0 ? (v / mx) * 100 : 0}%`, minWidth: 20, transition: 'height 0.6s' }} />
-                    <div style={{ fontSize: '0.65rem', color: '#9e9e9e', fontWeight: 600 }}>{AUDIT_MO_NAMES[i]}</div>
-                  </div>
-                ); })}
-              </div>
-            </div>
-          )}
-
-          {/* 25y DEGRADATION (advanced) */}
-          {calcMode === 'advanced' && (
-            <div style={{ marginTop: '2rem' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, color: '#212121', marginBottom: '1rem' }}>📉 25-річна симуляція</div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
-                  <thead><tr>{['Рік', 'Генерація', 'Економія/рік', 'Накопичено', 'Чистий прибуток'].map((h, i) => <th key={i} style={{ background: '#f5f5f5', padding: '0.6rem 0.8rem', fontSize: '0.72rem', fontWeight: 600, color: '#757575', textAlign: 'center' }}>{h}</th>)}</tr></thead>
-                  <tbody>
-                    {res.degTable.filter((_, i) => i < 5 || (i + 1) % 5 === 0).map((d, i) => (
-                      <tr key={i} style={d.net >= 0 && (i === 0 || res.degTable[d.year - 2]?.net < 0) ? { background: '#e8f5e9' } : {}}>
-                        <td style={{ padding: '0.6rem', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #f5f5f5' }}>{d.year}</td>
-                        <td style={{ padding: '0.6rem', textAlign: 'center', borderBottom: '1px solid #f5f5f5' }}>{d.gen.toLocaleString()}</td>
-                        <td style={{ padding: '0.6rem', textAlign: 'center', borderBottom: '1px solid #f5f5f5' }}>{d.sav.toLocaleString()}</td>
-                        <td style={{ padding: '0.6rem', textAlign: 'center', borderBottom: '1px solid #f5f5f5' }}>{d.cum.toLocaleString()}</td>
-                        <td style={{ padding: '0.6rem', textAlign: 'center', fontWeight: 600, color: d.net >= 0 ? '#2d7a3a' : '#9e9e9e', borderBottom: '1px solid #f5f5f5' }}>{d.net >= 0 ? '+' : ''}{d.net.toLocaleString()} грн</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* CREDIT */}
-          {mode === 'residential' && (
-            <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg,#fbc02d,#f9a825)', borderRadius: 20, textAlign: 'center' }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: '#212121', marginBottom: 4 }}>🏦 Кредит 0% — «Джерела енергії»</h3>
-              <p style={{ color: '#424242', fontSize: '0.9rem' }}>До 480,000 грн на 10 років. Компенсація до 30%.{res.totCost <= 480000 ? ` Ваша система (${res.totCost.toLocaleString()} грн) покривається!` : ''}</p>
-            </div>
-          )}
-          {mode === 'commercial' && (
-            <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg,#fbc02d,#f9a825)', borderRadius: 20, textAlign: 'center' }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', fontWeight: 700, color: '#212121', marginBottom: 4 }}>🏢 «Доступні кредити 5-7-9%»</h3>
-              <p style={{ color: '#424242', fontSize: '0.9rem' }}>До 5 млн грн на 10 років під 5-9% для юр. осіб та ФОП.</p>
-            </div>
-          )}
-
-          <InfoTip icon="⚠️">Попередній розрахунок. Для точної оцінки потрібен виїзний аудит. Зв'яжіться для безкоштовної консультації.</InfoTip>
-        </div>)}
-
-        {/* NAV */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #f5f5f5' }}>
-          {step > 0 ? <button onClick={() => setStep(s => s - 1)} style={{ padding: '12px 28px', borderRadius: 50, background: 'white', border: '1px solid #e0e0e0', color: '#757575', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}>← Назад</button>
-            : <button onClick={() => goToPage('home')} style={{ padding: '12px 28px', borderRadius: 50, background: 'white', border: '1px solid #e0e0e0', color: '#757575', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}>← На головну</button>}
-          {!isResult ? (
-            <button disabled={!canProceed()} onClick={() => setStep(s => s + 1)} style={{ padding: '12px 28px', borderRadius: 50, background: canProceed() ? 'linear-gradient(135deg,#388e3c,#4caf50)' : '#e0e0e0', color: 'white', fontWeight: 600, cursor: canProceed() ? 'pointer' : 'not-allowed', fontSize: '0.95rem', border: 'none', boxShadow: canProceed() ? '0 4px 16px rgba(76,175,80,0.3)' : 'none' }}>
-              {step === totalSteps - 2 ? '🔍 Розрахувати' : 'Далі →'}
-            </button>
-          ) : (
-            <button onClick={() => { setStep(0); window.scrollTo(0, 0); }} style={{ padding: '12px 28px', borderRadius: 50, background: 'linear-gradient(135deg,#388e3c,#4caf50)', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', border: 'none', boxShadow: '0 4px 16px rgba(76,175,80,0.3)' }}>🔄 Знову</button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-/* ═══════════ END AUDIT WIZARD ═══════════ */
-
 function SocialFooter() {
   return (
     <footer className="footer">
@@ -3064,6 +2577,13 @@ export default function SolarBalkon() {
   const [commercialInverters, setCommercialInverters] = useState([]);
   const [invPhaseFilter, setInvPhaseFilter] = useState(1);
   const [invSelectedKw, setInvSelectedKw] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [resultCopied, setResultCopied] = useState(false);
+  const [auditForm, setAuditForm] = useState({
+    objectType: '', area: '', consumption: '', power: '',
+    roofType: '', name: '', phone: '', email: '', comment: '',
+  });
+  const [auditStatus, setAuditStatus] = useState(null); // null | 'sending' | 'sent' | 'error'
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -3071,7 +2591,6 @@ export default function SolarBalkon() {
     if (path === '/deye') return 'deye';
     if (path === '/anker') return 'anker';
     if (path === '/credit') return 'credit';
-    if (path === '/audit') return 'audit';
     if (path === '/blog') return 'blog';
     if (path.startsWith('/blog/')) return 'article:' + path.slice(6);
     return 'home';
@@ -3094,7 +2613,6 @@ export default function SolarBalkon() {
       } else {
         const path = window.location.pathname;
         if (path === '/blog') setCurrentPage('blog');
-        else if (path === '/audit') setCurrentPage('audit');
         else if (path.startsWith('/blog/')) setCurrentPage('article:' + path.slice(6));
         else if (path === '/') setCurrentPage('home');
         else setCurrentPage(path.slice(1));
@@ -3296,7 +2814,52 @@ export default function SolarBalkon() {
     }
   };
 
-  // SEO: dynamic title & meta description per page
+  // ─── Audit form submit ───
+  const submitAudit = async () => {
+    if (!auditForm.name.trim() || !auditForm.phone.trim()) return;
+    setAuditStatus('sending');
+
+    const OBJECT_LABELS = {
+      warehouse: 'Склад / Логістичний центр',
+      office: 'Офісна будівля',
+      factory: 'Виробництво / Завод',
+      shop: 'Магазин / ТРЦ',
+      farm: 'Агро / Ферма',
+      hotel: 'Готель / Ресторан',
+      other: 'Інший',
+    };
+
+    const orderData = {
+      name: auditForm.name.trim(),
+      phone: auditForm.phone.trim(),
+      address: auditForm.email.trim() || null,
+      system: '🏢 КОМЕРЦІЙНИЙ АУДИТ СЕС',
+      panels: `Тип об\'єкта: ${OBJECT_LABELS[auditForm.objectType] || auditForm.objectType || 'Не вказано'}`,
+      components: [
+        { name: 'Площа даху / території', qty: 1, price: `${auditForm.area || '—'} м²` },
+        { name: 'Місячне споживання', qty: 1, price: `${auditForm.consumption || '—'} кВт·год` },
+        { name: 'Необхідна потужність СЕС', qty: 1, price: `${auditForm.power || '—'} кВт` },
+        { name: 'Тип даху', qty: 1, price: auditForm.roofType || '—' },
+      ].filter(c => c.price !== '— м²' && c.price !== '— кВт·год'),
+      extras: auditForm.comment ? [{ name: 'Коментар', qty: 1, price: auditForm.comment }] : [],
+      total: 'Аудит — безкоштовно',
+    };
+
+    try {
+      const resp = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+      if (resp.ok) {
+        setAuditStatus('sent');
+      } else {
+        setAuditStatus('error');
+      }
+    } catch {
+      setAuditStatus('error');
+    }
+  };
   useEffect(() => {
     const seo = {
       home: {
@@ -3322,10 +2885,6 @@ export default function SolarBalkon() {
       credit: {
         title: 'Кредит 0% на сонячну станцію — Програма «Джерела енергії» | SolarBalkon',
         desc: 'Державний кредит 0% на сонячні панелі до 480,000 грн на 10 років. Повний пакет документів від SolarBalkon. ПриватБанк, Ощадбанк, Укргазбанк.',
-      },
-      audit: {
-        title: 'Аудит об\'єкта — Розрахунок СЕС | SolarBalkon',
-        desc: 'Безкоштовний онлайн-калькулятор сонячної електростанції. Розрахунок потужності, генерації, окупності та специфікації обладнання для вашого об\'єкта в Україні.',
       },
     };
     const page = seo[currentPage] || seo.home;
@@ -3371,6 +2930,274 @@ export default function SolarBalkon() {
   const paybackMonths = monthlySaving > 0 ? Math.ceil(systemCost / monthlySaving) : 0;
   const saving10y = yearlySaving * 10 - systemCost;
 
+  // ─── PDF Generation ───
+  const loadJsPDF = () => {
+    return new Promise((resolve, reject) => {
+      if (window.jspdf) return resolve(window.jspdf);
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
+      script.onload = () => resolve(window.jspdf);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  };
+
+  const generatePDF = async () => {
+    setPdfLoading(true);
+    try {
+      const { jsPDF } = await loadJsPDF();
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const w = doc.internal.pageSize.getWidth();
+      const dateStr = new Date().toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+      // Colors
+      const green = [45, 122, 58];
+      const darkGreen = [20, 90, 30];
+      const gold = [251, 192, 45];
+      const gray = [100, 100, 100];
+      const darkText = [30, 30, 30];
+
+      // ── HEADER BAR ──
+      doc.setFillColor(...green);
+      doc.rect(0, 0, w, 32, 'F');
+      doc.setFillColor(...gold);
+      doc.rect(0, 32, w, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(255, 255, 255);
+      doc.text('SolarBalkon', 15, 18);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('solarbalkon.shop', 15, 26);
+
+      doc.setFontSize(10);
+      doc.text(dateStr, w - 15, 18, { align: 'right' });
+      doc.setFontSize(8);
+      doc.text('Kalkulyator rozrakhunku', w - 15, 24, { align: 'right' });
+
+      let y = 44;
+
+      // ── TITLE ──
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(...darkText);
+      doc.text('Rozrakhunok sonyachnoyi systemy', 15, y);
+      y += 10;
+
+      // ── TARIFF INFO ──
+      doc.setFillColor(245, 248, 245);
+      doc.roundedRect(12, y - 4, w - 24, 14, 3, 3, 'F');
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...gray);
+      const tariffLabel = tariffType === 'residential' ? 'Pobutovyi' : 'Komertsiynyy';
+      doc.text(`Taryf: ${tariffLabel} — ${tariff.now} grn/kVt·god`, 18, y + 4);
+      y += 20;
+
+      // ── SELECTED APPLIANCES TABLE ──
+      if (selectedAppliances.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(...darkGreen);
+        doc.text('Obrani prylady', 15, y);
+        y += 8;
+
+        // Table header
+        doc.setFillColor(...green);
+        doc.rect(15, y - 4, w - 30, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(255, 255, 255);
+        doc.text('Prylad', 18, y + 1);
+        doc.text('Vt', 110, y + 1);
+        doc.text('God/den', 140, y + 1);
+        doc.text('kVt·god/den', 165, y + 1);
+        y += 8;
+
+        // Table rows
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        selectedAppliances.forEach((idx, i) => {
+          const a = APPLIANCES[idx];
+          const dailyKwh = (a.watts * a.hours / 1000).toFixed(2);
+          if (i % 2 === 0) {
+            doc.setFillColor(248, 250, 248);
+            doc.rect(15, y - 4, w - 30, 7, 'F');
+          }
+          doc.setTextColor(...darkText);
+          doc.text(a.name, 18, y);
+          doc.text(String(a.watts), 110, y);
+          doc.text(String(a.hours), 140, y);
+          doc.text(dailyKwh, 165, y);
+          y += 7;
+
+          // New page if needed
+          if (y > 260) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+
+        // Total row
+        y += 2;
+        doc.setFillColor(...green);
+        doc.rect(15, y - 4, w - 30, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text('RAZOM:', 18, y + 1);
+        doc.text(`${totalWatts} Vt`, 110, y + 1);
+        doc.text(`${totalDailyKwh.toFixed(1)} kVt·god/den`, 165, y + 1);
+        y += 16;
+      }
+
+      // ── GENERATION & COVERAGE ──
+      if (y > 230) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(...darkGreen);
+      doc.text('Generatsiya ta pokryttya', 15, y);
+      y += 10;
+
+      const genData = [
+        ['Shchomisyachne spozhyvannya', `${monthlyKwh.toFixed(0)} kVt·god`],
+        ['Generatsiya (2 paneli, 800 Vt)', `${(gen2daily * 30).toFixed(0)} kVt·god/mis`],
+        ['Generatsiya (4 paneli, 1600 Vt)', `${(gen4daily * 30).toFixed(0)} kVt·god/mis`],
+        ['Pokryttya (2 paneli)', `${coverage2.toFixed(0)}%`],
+        ['Pokryttya (4 paneli)', `${coverage4.toFixed(0)}%`],
+      ];
+      doc.setFontSize(10);
+      genData.forEach(([label, val], i) => {
+        if (i % 2 === 0) {
+          doc.setFillColor(245, 248, 245);
+          doc.rect(15, y - 4, w - 30, 8, 'F');
+        }
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...gray);
+        doc.text(label, 18, y);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...darkText);
+        doc.text(val, w - 18, y, { align: 'right' });
+        y += 8;
+      });
+      y += 8;
+
+      // ── SAVINGS BLOCK ──
+      if (y > 210) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(...darkGreen);
+      doc.text('Ekonomiya', 15, y);
+      y += 10;
+
+      // Big savings card
+      doc.setFillColor(245, 248, 245);
+      doc.roundedRect(15, y - 4, w - 30, 50, 4, 4, 'F');
+      doc.setDrawColor(...green);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(15, y - 4, w - 30, 50, 4, 4, 'S');
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...gray);
+      doc.text('Rakhunok BEZ paneley:', 22, y + 4);
+      doc.text('Rakhunok Z panelyamy:', 22, y + 12);
+      doc.text('Ekonomiya / misyats:', 22, y + 24);
+      doc.text('Okupnist:', 22, y + 32);
+      doc.text('Vyhoda za 10 rokiv:', 22, y + 40);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...darkText);
+      doc.text(`${billBefore.toFixed(0)} grn`, w - 22, y + 4, { align: 'right' });
+      doc.setTextColor(...green);
+      doc.text(`${billAfter.toFixed(0)} grn`, w - 22, y + 12, { align: 'right' });
+
+      doc.setFontSize(13);
+      doc.setTextColor(...darkGreen);
+      doc.text(`${monthlySaving.toFixed(0)} grn`, w - 22, y + 24, { align: 'right' });
+      doc.setFontSize(10);
+      doc.setTextColor(...darkText);
+      const paybackStr = paybackMonths > 0 ? `${(paybackMonths / 12).toFixed(1)} rokiv` : '—';
+      doc.text(paybackStr, w - 22, y + 32, { align: 'right' });
+      const s10yStr = saving10y > 0 ? `${(saving10y / 1000).toFixed(0)},000 grn` : '—';
+      doc.text(s10yStr, w - 22, y + 40, { align: 'right' });
+      y += 60;
+
+      // ── SYSTEM COST NOTE ──
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(...gray);
+      doc.text('* Rozrakhunok na systemu 4 paneli Trina 455 Vt + Deye (70,200 grn). Seredni 3.5 sonyachnykh godyn/den.', 15, y);
+      y += 4;
+      doc.text('* Derzhavna programa kredytuvannya 0% — do 480,000 grn na 10 rokiv.', 15, y);
+      y += 12;
+
+      // ── FOOTER ──
+      if (y > 240) { doc.addPage(); y = 250; } else { y = 262; }
+
+      doc.setFillColor(...green);
+      doc.rect(0, y - 4, w, 40, 'F');
+      doc.setFillColor(...gold);
+      doc.rect(0, y - 6, w, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text('SolarBalkon', 15, y + 6);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text('solarbalkon.shop  |  manager@solarbalkon.shop', 15, y + 14);
+      doc.text('Tel: +49 151 23366987  |  WhatsApp: +380 67 4455669', 15, y + 20);
+      doc.text('Telegram: @solarbalkonshop  |  Kyyiv, vul. Vikentiya Khvoiky 15/15, 04080', 15, y + 26);
+
+      doc.setFontSize(9);
+      doc.text('Sonyachna energiya dlya kozhnogo balkonu', w - 15, y + 10, { align: 'right' });
+
+      // Save
+      doc.save(`SolarBalkon_Rozrakhunok_${dateStr.replace(/\./g, '-')}.pdf`);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('Помилка генерації PDF. Спробуйте ще раз.');
+    }
+    setPdfLoading(false);
+  };
+
+  // ─── Share Results Text ───
+  const getResultsText = () => {
+    const lines = [
+      `⚡ SolarBalkon — Розрахунок сонячної системи`,
+      ``,
+      `📊 Споживання: ${monthlyKwh.toFixed(0)} кВт·год/міс`,
+      `☀️ Генерація (4 панелі): ${(gen4daily * 30).toFixed(0)} кВт·год/міс`,
+      `📉 Рахунок без панелей: ${billBefore.toFixed(0)} грн`,
+      `📈 Рахунок з панелями: ${billAfter.toFixed(0)} грн`,
+      `💰 Економія: ${monthlySaving.toFixed(0)} грн/міс`,
+      `⏱ Окупність: ${paybackMonths > 0 ? (paybackMonths / 12).toFixed(1) + ' р.' : '—'}`,
+      `🏆 Вигода за 10 років: ${saving10y > 0 ? (saving10y / 1000).toFixed(0) + 'k грн' : '—'}`,
+      ``,
+      `🔗 Розрахуйте свій варіант: solarbalkon.shop`,
+    ];
+    return lines.join('\n');
+  };
+
+  const shareTelegram = () => {
+    const text = getResultsText();
+    window.open(`https://t.me/share/url?url=${encodeURIComponent('https://solarbalkon.shop')}&text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareWhatsApp = () => {
+    const text = getResultsText();
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const copyResults = () => {
+    navigator.clipboard.writeText(getResultsText()).then(() => {
+      setResultCopied(true);
+      setTimeout(() => setResultCopied(false), 2500);
+    });
+  };
+
   return (
     <>
       <style>{css}</style>
@@ -3383,9 +3210,8 @@ export default function SolarBalkon() {
             <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a></li>
             <li><a href="/#calc" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('calc')?.scrollIntoView({behavior:'smooth'}), 100); }}>Калькулятор</a></li>
             <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>Системи</a></li>
-            <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>Конфігуратор</a></li>
+            <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>{tariffType === 'commercial' ? 'Аудит' : 'Конфігуратор'}</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
-            <li><a href="/audit" className="nav-audit" onClick={(e) => { e.preventDefault(); goToPage('audit'); }}>⚡ Аудит СЕС</a></li>
             <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a></li>
           </ul>
           <div className="nav-social">
@@ -3794,8 +3620,11 @@ export default function SolarBalkon() {
         </section>
       )}
 
-      {/* EQUIPMENT / CONFIGURATOR */}
+      {/* EQUIPMENT / CONFIGURATOR or AUDIT */}
       <section className="section section-alt" id="equip">
+
+        {/* ═══ ПОБУТОВИЙ: Конфігуратор ═══ */}
+        {tariffType !== 'commercial' ? (<>
         <div className="section-title fade-up">Конфігуратор системи</div>
         <div className="section-sub fade-up-d1">Оберіть систему, кількість панелей та додаткові компоненти</div>
 
@@ -3909,10 +3738,189 @@ export default function SolarBalkon() {
           </div>
         </div>
 
+        </>) : (<>
+        {/* ═══ КОМЕРЦІЙНИЙ: Аудит об'єкта ═══ */}
+        <div className="section-title fade-up">Аудит об'єкта — розрахунок СЕС</div>
+        <div className="section-sub fade-up-d1">Заповніть форму і ми розрахуємо оптимальну сонячну електростанцію для вашого бізнесу</div>
+
+        <div className="audit-container fade-up-d2">
+          {auditStatus === 'sent' ? (
+            <div className="audit-success">
+              <div className="audit-success-icon">✅</div>
+              <h3>Заявку на аудит отримано!</h3>
+              <p>
+                Наш інженер зв'яжеться з вами протягом 24 годин для уточнення деталей
+                та підготовки попереднього розрахунку СЕС.
+              </p>
+              <button
+                className="audit-submit-btn"
+                style={{ marginTop: '1.5rem' }}
+                onClick={() => { setAuditStatus(null); setAuditForm({ objectType: '', area: '', consumption: '', power: '', roofType: '', name: '', phone: '', email: '', comment: '' }); }}
+              >
+                Нова заявка
+              </button>
+            </div>
+          ) : (<>
+            <div className="audit-intro">
+              <div className="audit-intro-icon">🏗️</div>
+              <p>
+                Безкоштовний аудит для комерційних об'єктів — склади, офіси, виробництва, магазини.
+                Ми оцінимо потенціал вашого даху, розрахуємо потужність СЕС та термін окупності.
+              </p>
+            </div>
+
+            <div className="audit-grid">
+              {/* Object type */}
+              <div className="audit-field full">
+                <label>Тип об'єкта *</label>
+                <div className="audit-type-grid">
+                  {[
+                    { key: 'warehouse', icon: '🏭', label: 'Склад' },
+                    { key: 'office', icon: '🏢', label: 'Офіс' },
+                    { key: 'factory', icon: '⚙️', label: 'Виробництво' },
+                    { key: 'shop', icon: '🏪', label: 'Магазин / ТРЦ' },
+                    { key: 'farm', icon: '🌾', label: 'Агро / Ферма' },
+                    { key: 'hotel', icon: '🏨', label: 'Готель / HoReCa' },
+                    { key: 'other', icon: '📋', label: 'Інший' },
+                  ].map(t => (
+                    <button
+                      key={t.key}
+                      className={`audit-type-btn ${auditForm.objectType === t.key ? 'active' : ''}`}
+                      onClick={() => setAuditForm(p => ({ ...p, objectType: t.key }))}
+                    >
+                      <span className="audit-type-icon">{t.icon}</span>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Area */}
+              <div className="audit-field">
+                <label>Площа даху / території <span>(м²)</span></label>
+                <input
+                  type="number"
+                  placeholder="напр. 500"
+                  value={auditForm.area}
+                  onChange={e => setAuditForm(p => ({ ...p, area: e.target.value }))}
+                />
+              </div>
+
+              {/* Monthly consumption */}
+              <div className="audit-field">
+                <label>Місячне споживання <span>(кВт·год)</span></label>
+                <input
+                  type="number"
+                  placeholder="напр. 5000"
+                  value={auditForm.consumption}
+                  onChange={e => setAuditForm(p => ({ ...p, consumption: e.target.value }))}
+                />
+              </div>
+
+              {/* Desired power */}
+              <div className="audit-field">
+                <label>Бажана потужність СЕС <span>(кВт)</span></label>
+                <input
+                  type="number"
+                  placeholder="напр. 30"
+                  value={auditForm.power}
+                  onChange={e => setAuditForm(p => ({ ...p, power: e.target.value }))}
+                />
+              </div>
+
+              {/* Roof type */}
+              <div className="audit-field">
+                <label>Тип даху</label>
+                <select
+                  value={auditForm.roofType}
+                  onChange={e => setAuditForm(p => ({ ...p, roofType: e.target.value }))}
+                >
+                  <option value="">— Оберіть —</option>
+                  <option value="Плоский (бітум / мембрана)">Плоский (бітум / мембрана)</option>
+                  <option value="Плоский (бетон)">Плоский (бетон)</option>
+                  <option value="Скатний (метал)">Скатний (метал)</option>
+                  <option value="Скатний (черепиця)">Скатний (черепиця)</option>
+                  <option value="Сендвіч-панель">Сендвіч-панель</option>
+                  <option value="Наземний монтаж">Наземний монтаж</option>
+                  <option value="Інший / не знаю">Інший / не знаю</option>
+                </select>
+              </div>
+
+              {/* Separator */}
+              <div className="audit-field full" style={{ borderTop: '1px solid var(--gray-200)', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                <label style={{ fontSize: '1rem', color: 'var(--green-700)' }}>📞 Контактні дані</label>
+              </div>
+
+              {/* Name */}
+              <div className="audit-field">
+                <label>Ім'я та прізвище *</label>
+                <input
+                  type="text"
+                  placeholder="Іван Петренко"
+                  value={auditForm.name}
+                  onChange={e => setAuditForm(p => ({ ...p, name: e.target.value }))}
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="audit-field">
+                <label>Телефон *</label>
+                <input
+                  type="tel"
+                  placeholder="+380 XX XXX XX XX"
+                  value={auditForm.phone}
+                  onChange={e => setAuditForm(p => ({ ...p, phone: e.target.value }))}
+                />
+              </div>
+
+              {/* Email */}
+              <div className="audit-field full">
+                <label>Email <span>(за бажанням)</span></label>
+                <input
+                  type="email"
+                  placeholder="info@company.ua"
+                  value={auditForm.email}
+                  onChange={e => setAuditForm(p => ({ ...p, email: e.target.value }))}
+                />
+              </div>
+
+              {/* Comment */}
+              <div className="audit-field full">
+                <label>Коментар <span>(додаткова інформація)</span></label>
+                <textarea
+                  placeholder="Опишіть об'єкт, побажання або задачі, які хочете вирішити..."
+                  value={auditForm.comment}
+                  onChange={e => setAuditForm(p => ({ ...p, comment: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            {auditStatus === 'error' && (
+              <div style={{ textAlign: 'center', color: '#e53e3e', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                ⚠️ Не вдалося відправити. Спробуйте ще раз або зв'яжіться через Telegram.
+              </div>
+            )}
+
+            <div className="audit-submit-bar">
+              <button
+                className="audit-submit-btn"
+                disabled={!auditForm.name.trim() || !auditForm.phone.trim() || auditStatus === 'sending'}
+                onClick={submitAudit}
+              >
+                {auditStatus === 'sending' ? '⏳ Відправляємо...' : '📩 Замовити безкоштовний аудит'}
+              </button>
+              <p className="audit-note">
+                Або напишіть напряму в <a href="https://t.me/solarbalkonshop" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--green-600)' }}>Telegram</a> · <a href="mailto:manager@solarbalkon.shop" style={{ color: 'var(--green-600)' }}>manager@solarbalkon.shop</a>
+              </p>
+            </div>
+          </>)}
+        </div>
+        </>)}
+
         {/* CREDIT */}
         <div className="credit-banner" style={{ cursor: 'pointer' }} onClick={() => goToPage('credit')}>
-          <h3>Державний кредит 0% — «Джерела енергії»</h3>
-          <p>Програма для фізичних осіб через 43 банки-партнери</p>
+          <h3>{tariffType === 'commercial' ? 'Державні програми кредитування для бізнесу' : 'Державний кредит 0% — «Джерела енергії»'}</h3>
+          <p>{tariffType === 'commercial' ? 'Програма «5-7-9%» для юридичних осіб та «Джерела енергії» для фізичних осіб' : 'Програма для фізичних осіб через 43 банки-партнери'}</p>
           <div className="credit-details">
             <div className="credit-detail">
               <div className="credit-detail-value">0%</div>
@@ -3932,30 +3940,6 @@ export default function SolarBalkon() {
             </div>
           </div>
           <p style={{ marginTop: '1rem', fontWeight: 600, color: 'var(--gray-900)' }}>Дізнатися більше →</p>
-        </div>
-      </section>
-
-      {/* AUDIT BANNER */}
-      <section className="section" style={{ paddingBottom: 0 }}>
-        <div className="audit-banner fade-up" onClick={() => goToPage('audit')}>
-          <div className="audit-banner-content">
-            <div className="audit-banner-badge">🆕 Новий інструмент</div>
-            <h3>Аудит об'єкта — Розрахунок СЕС</h3>
-            <p>
-              Не знаєте з чого почати? Наш покроковий калькулятор розрахує оптимальну 
-              систему для вашого об'єкта: потужність, генерацію, обладнання та окупність.
-            </p>
-            <div className="audit-banner-features">
-              <div className="audit-banner-feat"><span>📊</span> Детальний BOM</div>
-              <div className="audit-banner-feat"><span>💰</span> Розрахунок окупності</div>
-              <div className="audit-banner-feat"><span>🔋</span> Підбір батареї</div>
-              <div className="audit-banner-feat"><span>📍</span> 22 області України</div>
-            </div>
-            <div style={{ marginTop: '1.25rem' }}>
-              <span className="audit-banner-cta">🔍 Розрахувати систему →</span>
-            </div>
-          </div>
-          <div className="audit-banner-icon">🏗️</div>
         </div>
       </section>
 
@@ -4010,10 +3994,28 @@ export default function SolarBalkon() {
               <div className="savings-stat-label">Вигода за 10 років</div>
             </div>
           </div>
+
+          {/* PDF Download & Share */}
+          <div className="savings-actions">
+            <button className="savings-action-btn pdf-btn" onClick={generatePDF} disabled={pdfLoading}>
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h5v7h7v9H6zm2-7h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>
+              {pdfLoading ? 'Генерація...' : '📄 Завантажити PDF'}
+            </button>
+            <button className="savings-action-btn tg-share" onClick={shareTelegram}>
+              <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              Telegram
+            </button>
+            <button className="savings-action-btn wa-share" onClick={shareWhatsApp}>
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp
+            </button>
+            <button className="savings-action-btn copy-result" onClick={copyResults}>
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              {resultCopied ? '✓ Скопійовано!' : 'Копіювати'}
+            </button>
+          </div>
         </div>
       </section>
-
-      {/* BLOG PREVIEW */}
       <section className="section section-alt">
         <div className="section-title fade-up">Корисні статті</div>
         <div className="section-sub fade-up-d1">Дізнайтесь більше про сонячну енергію та як зекономити</div>
@@ -5393,9 +5395,6 @@ export default function SolarBalkon() {
           </div>
         );
       })()}
-
-      {/* ═══════ AUDIT PAGE ═══════ */}
-      {currentPage === 'audit' && <AuditWizard goToPage={goToPage} />}
 
       {/* ORDER FORM MODAL */}
       {showOrderForm && (
