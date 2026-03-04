@@ -2517,6 +2517,7 @@ function AuditTip({text}){const[s,setS]=useState(false);return(<span style={{pos
 function AuditWizard({ goToPage }) {
   const [calcMode, setCalcMode] = useState('basic');
   const [step, setStep] = useState(0);
+  const wizardRef = useRef(null);
   const [mode, setMode] = useState('residential');
   const [region, setRegion] = useState('');
   const [installType, setInstallType] = useState('');
@@ -2544,7 +2545,7 @@ function AuditWizard({ goToPage }) {
   const totalSteps = stepLabels.length;
   const isResult = step === totalSteps - 1;
 
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
+  useEffect(() => { wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [step]);
   const switchMode = (m) => { setCalcMode(m); setStep(0); };
 
   const canProceed = () => {
@@ -2732,7 +2733,7 @@ function AuditWizard({ goToPage }) {
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#e8f5e9 0%,white 35%,#fff9c4 100%)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div ref={wizardRef} style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#e8f5e9 0%,white 35%,#fff9c4 100%)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* HEADER */}
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }} style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: '#2d7a3a', textDecoration: 'none' }}>☀ Solar<span style={{ color: '#f9a825' }}>Balkon</span></a>
@@ -2994,7 +2995,7 @@ function AuditWizard({ goToPage }) {
               {step === totalSteps - 2 ? '🔍 Розрахувати' : 'Далі →'}
             </button>
           ) : (
-            <button onClick={() => { setStep(0); window.scrollTo(0, 0); }} style={{ padding: '12px 28px', borderRadius: 50, background: 'linear-gradient(135deg,#388e3c,#4caf50)', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', border: 'none', boxShadow: '0 4px 16px rgba(76,175,80,0.3)' }}>🔄 Знову</button>
+            <button onClick={() => { setStep(0); }} style={{ padding: '12px 28px', borderRadius: 50, background: 'linear-gradient(135deg,#388e3c,#4caf50)', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem', border: 'none', boxShadow: '0 4px 16px rgba(76,175,80,0.3)' }}>🔄 Знову</button>
           )}
         </div>
       </div>
