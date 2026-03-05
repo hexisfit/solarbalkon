@@ -947,6 +947,47 @@ body {
   font-size:0.85rem; opacity:0.75;
 }
 
+/* CALC RECOMMENDATIONS */
+.calc-reco {
+  margin-top:1.5rem; padding-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,0.2);
+}
+.calc-reco-title {
+  font-size:0.9rem; opacity:0.85; text-align:center;
+  margin-bottom:1rem; font-weight:600; letter-spacing:0.5px;
+}
+.calc-reco-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:0.75rem;
+}
+.calc-reco-card {
+  background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+  border-radius:12px; padding:1rem; text-align:center;
+  cursor:pointer; transition:all 0.25s;
+}
+.calc-reco-card:hover { background:rgba(255,255,255,0.2); transform:translateY(-2px); }
+.calc-reco-card.best { background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.5); }
+.calc-reco-card-name { font-size:0.82rem; font-weight:700; margin-bottom:4px; }
+.calc-reco-card-out { font-size:0.72rem; opacity:0.75; }
+.calc-reco-card-price { font-size:0.9rem; font-weight:700; margin-top:6px; }
+.calc-reco-card-badge {
+  display:inline-block; font-size:0.65rem; font-weight:700;
+  padding:2px 10px; border-radius:50px; margin-top:6px;
+  background:rgba(251,192,45,0.3); color:#fff;
+}
+.calc-reco-commercial {
+  background:rgba(255,255,255,0.1); border:1px dashed rgba(255,255,255,0.3);
+  border-radius:12px; padding:1.25rem; text-align:center; margin-top:0.75rem;
+}
+.calc-reco-commercial p { font-size:0.85rem; opacity:0.85; margin-bottom:0.75rem; }
+.calc-reco-commercial button {
+  padding:10px 28px; border-radius:50px; border:2px solid white;
+  background:rgba(255,255,255,0.15); color:white;
+  font-family:var(--font-body); font-size:0.88rem; font-weight:600;
+  cursor:pointer; transition:all 0.2s;
+}
+.calc-reco-commercial button:hover { background:white; color:var(--green-700); }
+
 /* PRODUCTS */
 .products-grid {
   display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
@@ -2514,7 +2555,7 @@ const AUDIT_TIPS = {clientType:'Побутовий — домогосподар�
 
 function AuditTip({text}){const[s,setS]=useState(false);return(<span style={{position:'relative',display:'inline-flex',marginLeft:6,cursor:'help'}} onMouseEnter={()=>setS(true)} onMouseLeave={()=>setS(false)} onClick={()=>setS(v=>!v)}><span style={{width:18,height:18,borderRadius:'50%',background:'#eee',color:'#9e9e9e',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:700}}>?</span>{s&&(<span style={{position:'absolute',bottom:'calc(100% + 8px)',left:'50%',transform:'translateX(-50%)',background:'#212121',color:'white',padding:'10px 14px',borderRadius:8,fontSize:'0.78rem',lineHeight:1.5,width:260,boxShadow:'0 8px 24px rgba(0,0,0,0.2)',zIndex:100}}>{text}<span style={{position:'absolute',bottom:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'6px solid transparent',borderRight:'6px solid transparent',borderTop:'6px solid #212121'}}/></span>)}</span>);}
 
-function AuditWizard({ goToPage }) {
+function AuditWizard({ goToPage, liveInverters = [] }) {
   const [calcMode, setCalcMode] = useState('basic');
   const [step, setStep] = useState(0);
   const wizardRef = useRef(null);
@@ -2617,13 +2658,19 @@ function AuditWizard({ goToPage }) {
     const tPW = pC * AUDIT_PANELS[0].power;
 
     // #8 Inverter sizing: ratio 0.8-1.0, phase logic
+    // Build inverter list from live API data (Google Sheets), fallback to hardcoded
+    const stringInverters = liveInverters.length > 0
+      ? liveInverters.map(inv => ({ name: inv.name || inv.model, power: inv.kw * 1000, price: inv.priceUah, ph: inv.phases }))
+          .sort((a, b) => a.power - b.power)
+      : AUDIT_INV.string;
+
     let selInv = [];
     if (tPW <= 1600 && installType === 'balcony') {
       selInv = [{ ...AUDIT_INV.micro[0], qty: Math.ceil(pC / 2) }];
     } else {
       const ph = calcMode === 'basic' ? (recP > 10 ? 3 : 1) : phases;
       const invTargetW = tPW * 0.9;
-      const cands = AUDIT_INV.string.filter(v => ph === 3 ? v.ph === 3 : true).filter(v => v.power >= invTargetW * 0.7);
+      const cands = stringInverters.filter(v => ph === 3 ? v.ph === 3 : true).filter(v => v.power >= invTargetW * 0.7);
       if (cands.length > 0) {
         // Pick smallest that covers, or use multiple
         const best = cands[0];
@@ -2633,7 +2680,7 @@ function AuditWizard({ goToPage }) {
           selInv = [{ ...best, qty: Math.ceil(invTargetW / best.power) }];
         }
       } else {
-        const biggest = AUDIT_INV.string[AUDIT_INV.string.length - 1];
+        const biggest = stringInverters[stringInverters.length - 1];
         selInv = [{ ...biggest, qty: Math.ceil(invTargetW / biggest.power) }];
       }
     }
@@ -3561,6 +3608,102 @@ export default function SolarBalkon() {
             <div className="calc-result-note">
               * Розрахунок базується на середніх 3.5 сонячних годинах / день та панелях Trina 455 Вт
             </div>
+
+            {/* RECOMMENDATION */}
+            {(() => {
+              const fittingProducts = PRODUCTS.filter(p => p.output >= totalWatts);
+              const needCommercial = fittingProducts.length === 0;
+              const bestFit = fittingProducts.length > 0
+                ? fittingProducts.reduce((a, b) => a.output <= b.output && a.price <= b.price ? a : b)
+                : null;
+
+              // Find matching commercial inverter
+              const fittingInv1ph = commercialInverters.filter(inv => inv.phases === 1 && inv.kw * 1000 >= totalWatts);
+              const fittingInv3ph = commercialInverters.filter(inv => inv.phases === 3 && inv.kw * 1000 >= totalWatts);
+              const bestInv1ph = fittingInv1ph.length > 0 ? fittingInv1ph[0] : null;
+              const bestInv3ph = fittingInv3ph.length > 0 ? fittingInv3ph[0] : null;
+
+              return (
+                <div className="calc-reco">
+                  {!needCommercial ? (
+                    <>
+                      <div className="calc-reco-title">
+                        ⚡ {fittingProducts.length === PRODUCTS.length
+                          ? 'Усі наші системи підходять — оберіть за потребами'
+                          : `Рекомендовані системи для ${totalWatts.toLocaleString()} Вт навантаження`}
+                      </div>
+                      <div className="calc-reco-grid">
+                        {fittingProducts.map(p => (
+                          <div
+                            key={p.key}
+                            className={`calc-reco-card ${p.key === bestFit?.key ? 'best' : ''}`}
+                            onClick={() => goToPage(p.key)}
+                          >
+                            <div className="calc-reco-card-name">{p.name}</div>
+                            <div className="calc-reco-card-out">{p.output.toLocaleString()} Вт · {p.capacity.toLocaleString()} Вт·год</div>
+                            <div className="calc-reco-card-price">{formatPrice(p.price)}</div>
+                            {p.ups && <div className="calc-reco-card-badge">⚡ UPS</div>}
+                            {p.key === bestFit?.key && <div className="calc-reco-card-badge" style={{ background: 'rgba(76,175,80,0.4)' }}>✓ Оптимальний</div>}
+                          </div>
+                        ))}
+                      </div>
+                      {/* If some don't fit, mention commercial option */}
+                      {fittingProducts.length < PRODUCTS.length && (
+                        <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', opacity: 0.7 }}>
+                          💡 Системи з виходом менше {totalWatts.toLocaleString()} Вт не підходять для вашого навантаження
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="calc-reco-title">
+                        🏢 Навантаження {totalWatts.toLocaleString()} Вт перевищує побутові системи — потрібна комерційна СЕС
+                      </div>
+                      <div className="calc-reco-commercial">
+                        <p>
+                          Для потужності {totalWatts.toLocaleString()} Вт рекомендуємо гібридний інвертор Deye:
+                        </p>
+                        <div className="calc-reco-grid">
+                          {bestInv1ph && (
+                            <div className="calc-reco-card best" onClick={() => {
+                              setTariffType('commercial'); setConfigSystem('deye');
+                              setInvPhaseFilter(1); setInvSelectedKw(bestInv1ph.kw);
+                              setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
+                            }}>
+                              <div className="calc-reco-card-name">{bestInv1ph.name}</div>
+                              <div className="calc-reco-card-out">{bestInv1ph.kw} кВт · 1-фаза</div>
+                              <div className="calc-reco-card-price">{formatPrice(bestInv1ph.priceUah)}</div>
+                              <div className="calc-reco-card-badge">Рекомендовано</div>
+                            </div>
+                          )}
+                          {bestInv3ph && (
+                            <div className="calc-reco-card" onClick={() => {
+                              setTariffType('commercial'); setConfigSystem('deye');
+                              setInvPhaseFilter(3); setInvSelectedKw(bestInv3ph.kw);
+                              setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
+                            }}>
+                              <div className="calc-reco-card-name">{bestInv3ph.name}</div>
+                              <div className="calc-reco-card-out">{bestInv3ph.kw} кВт · 3-фази</div>
+                              <div className="calc-reco-card-price">{formatPrice(bestInv3ph.priceUah)}</div>
+                              <div className="calc-reco-card-badge">3-фази</div>
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          style={{ marginTop: '1rem' }}
+                          onClick={() => {
+                            setTariffType('commercial'); setConfigSystem('deye');
+                            setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
+                          }}
+                        >
+                          Переглянути комерційні інвертори →
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         )}
       </section>
@@ -3938,7 +4081,7 @@ export default function SolarBalkon() {
       </section>
       ) : (
       <div id="equip">
-        <AuditWizard goToPage={goToPage} />
+        <AuditWizard goToPage={goToPage} liveInverters={commercialInverters} />
       </div>
       )}
 
@@ -5404,7 +5547,7 @@ export default function SolarBalkon() {
       })()}
 
       {/* ═══════ AUDIT PAGE ═══════ */}
-      {currentPage === 'audit' && <AuditWizard goToPage={goToPage} />}
+      {currentPage === 'audit' && <AuditWizard goToPage={goToPage} liveInverters={commercialInverters} />}
 
       {/* ORDER FORM MODAL */}
       {showOrderForm && (
