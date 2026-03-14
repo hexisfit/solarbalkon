@@ -3183,106 +3183,279 @@ function VideoCarousel() {
 }
 
 /* ───────────────────────── ADMIN PANEL ───────────────────────── */
-// AdminPanel.jsx — окремий файл, підключається в App.jsx як сторінка /admin
-// Використовує /api/admin-data (GET/POST) та /api/inverters
-
-
 const ADMIN_CSS = `
-.adm { font-family: 'Source Sans 3', sans-serif; background: #f5f5f5; min-height: 100vh; }
-.adm-login { max-width: 380px; margin: 0 auto; padding: 4rem 1rem; }
-.adm-login-card { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-.adm-login h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
-.adm-field { margin-bottom: 1rem; }
-.adm-field label { display: block; font-size: 0.85rem; font-weight: 600; color: #616161; margin-bottom: 6px; }
-.adm-field input, .adm-field select, .adm-field textarea {
-  width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 8px;
-  font-size: 0.95rem; outline: none; transition: border .15s;
-}
-.adm-field input:focus, .adm-field select:focus { border-color: #2d7a3a; }
-.adm-btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: opacity .15s; }
-.adm-btn:hover { opacity: .85; }
-.adm-btn-primary { background: #2d7a3a; color: white; }
-.adm-btn-danger { background: #e53935; color: white; }
-.adm-btn-ghost { background: white; color: #424242; border: 1px solid #e0e0e0; }
-.adm-btn-yellow { background: #fbc02d; color: #333; }
-.adm-btn:disabled { opacity: .5; cursor: not-allowed; }
-.adm-header { background: #2d7a3a; color: white; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-.adm-header h1 { font-size: 1.1rem; font-weight: 700; margin: 0; }
-.adm-tabs { display: flex; gap: 0; background: white; border-bottom: 2px solid #e0e0e0; padding: 0 1.5rem; }
-.adm-tab { padding: 12px 20px; font-size: 0.9rem; font-weight: 600; color: #757575; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-.adm-tab.active { color: #2d7a3a; border-bottom-color: #2d7a3a; }
-.adm-body { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
-.adm-card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.adm-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: #212121; }
-.adm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-.adm-table th { text-align: left; padding: 8px 10px; background: #f5f5f5; font-weight: 600; font-size: 0.78rem; color: #616161; border-bottom: 1px solid #e0e0e0; }
-.adm-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-.adm-table tr:hover td { background: #fafafa; }
-.adm-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-.adm-badge-ok { background: #e8f5e9; color: #2d7a3a; }
-.adm-badge-warn { background: #fff3e0; color: #e65100; }
-.adm-badge-no { background: #fce4ec; color: #c62828; }
-.adm-badge-manual { background: #e3f2fd; color: #1565c0; }
-.adm-inline { display: flex; gap: 8px; align-items: center; }
-.adm-input-sm { padding: 5px 8px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.85rem; width: 110px; }
-.adm-select-sm { padding: 5px 8px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.85rem; }
-.adm-toast { position: fixed; bottom: 2rem; right: 2rem; background: #212121; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.9rem; z-index: 9999; animation: fadein .2s; }
-@keyframes fadein { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-.adm-settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-.adm-stat { background: #f5f5f5; border-radius: 8px; padding: 1rem; }
-.adm-stat-n { font-size: 1.5rem; font-weight: 700; color: #2d7a3a; }
-.adm-stat-l { font-size: 0.8rem; color: #757575; margin-top: 2px; }
+.adm{font-family:'Source Sans 3',sans-serif;background:#f5f5f5;min-height:100vh}
+.adm-login{max-width:380px;margin:0 auto;padding:4rem 1rem}
+.adm-login-card{background:white;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.adm-login h2{font-size:1.4rem;font-weight:700;margin-bottom:1.5rem;text-align:center}
+.adm-field{margin-bottom:1rem}
+.adm-field label{display:block;font-size:0.85rem;font-weight:600;color:#616161;margin-bottom:6px}
+.adm-field input,.adm-field select,.adm-field textarea{width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:0.95rem;outline:none;transition:border .15s;font-family:inherit}
+.adm-field input:focus,.adm-field select:focus,.adm-field textarea:focus{border-color:#2d7a3a}
+.adm-field textarea{min-height:80px;resize:vertical}
+.adm-btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;font-weight:600;transition:opacity .15s;font-family:inherit}
+.adm-btn:hover{opacity:.85}
+.adm-btn-primary{background:#2d7a3a;color:white}
+.adm-btn-danger{background:#e53935;color:white}
+.adm-btn-ghost{background:white;color:#424242;border:1px solid #e0e0e0}
+.adm-btn-yellow{background:#fbc02d;color:#333}
+.adm-btn-sm{padding:5px 12px;font-size:0.8rem}
+.adm-btn:disabled{opacity:.5;cursor:not-allowed}
+.adm-header{background:#2d7a3a;color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.adm-header h1{font-size:1.1rem;font-weight:700;margin:0}
+.adm-tabs{display:flex;gap:0;background:white;border-bottom:2px solid #e0e0e0;padding:0 1.5rem;overflow-x:auto}
+.adm-tab{padding:12px 20px;font-size:0.9rem;font-weight:600;color:#757575;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.adm-tab.active{color:#2d7a3a;border-bottom-color:#2d7a3a}
+.adm-body{max-width:1200px;margin:0 auto;padding:1.5rem}
+.adm-card{background:white;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.adm-card h3{font-size:1rem;font-weight:700;margin-bottom:1.25rem;color:#212121}
+.adm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.adm-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.adm-table{width:100%;border-collapse:collapse;font-size:0.85rem}
+.adm-table th{text-align:left;padding:8px 10px;background:#f5f5f5;font-weight:600;font-size:0.78rem;color:#616161;border-bottom:1px solid #e0e0e0}
+.adm-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.adm-table tr:hover td{background:#fafafa}
+.adm-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.adm-badge-ok{background:#e8f5e9;color:#2d7a3a}
+.adm-badge-warn{background:#fff3e0;color:#e65100}
+.adm-badge-no{background:#fce4ec;color:#c62828}
+.adm-badge-manual{background:#e3f2fd;color:#1565c0}
+.adm-input-sm{padding:5px 8px;border:1px solid #e0e0e0;border-radius:6px;font-size:0.85rem;font-family:inherit}
+.adm-select-sm{padding:5px 8px;border:1px solid #e0e0e0;border-radius:6px;font-size:0.85rem;font-family:inherit}
+.adm-toast{position:fixed;bottom:2rem;right:2rem;background:#212121;color:white;padding:12px 20px;border-radius:10px;font-size:0.9rem;z-index:9999;max-width:320px}
+.adm-stat{background:#f5f5f5;border-radius:8px;padding:1rem}
+.adm-stat-n{font-size:1.5rem;font-weight:700;color:#2d7a3a}
+.adm-stat-l{font-size:0.8rem;color:#757575;margin-top:2px}
+.adm-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
+.adm-modal{background:white;border-radius:16px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:1.5rem}
+.adm-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.adm-modal-head h3{font-size:1.1rem;font-weight:700;margin:0}
+.adm-upload-zone{border:2px dashed #e0e0e0;border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.adm-upload-zone:hover,.adm-upload-zone.drag{border-color:#2d7a3a;background:#f1f8f1}
+.adm-upload-zone input{display:none}
+.adm-img-preview{width:100%;max-height:200px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;margin-top:0.75rem}
+.adm-prod-card{border:1px solid #e0e0e0;border-radius:10px;padding:1rem;display:flex;gap:12px;align-items:flex-start;position:relative}
+.adm-prod-card:hover{border-color:#2d7a3a}
+.adm-prod-thumb{width:80px;height:80px;object-fit:contain;border-radius:6px;border:1px solid #e0e0e0;flex-shrink:0;background:#fafafa}
+.adm-prod-thumb-placeholder{width:80px;height:80px;background:#f5f5f5;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+.adm-prod-info{flex:1;min-width:0}
+.adm-prod-name{font-weight:700;font-size:0.9rem;margin-bottom:2px}
+.adm-prod-model{font-size:0.78rem;color:#757575;font-family:monospace}
+.adm-prod-price{font-size:0.85rem;color:#2d7a3a;font-weight:600;margin-top:4px}
+.adm-prod-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+@media(max-width:700px){.adm-grid2,.adm-grid3{grid-template-columns:1fr}}
 `;
 
+function AdminPhotoUpload({ folder, currentUrl, onUploaded, password }) {
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(currentUrl || null);
+  const [error, setError] = useState('');
+
+  const handleFile = async (file) => {
+    if (!file || !file.type.startsWith('image/')) { setError('Оберіть зображення'); return; }
+    if (file.size > 4 * 1024 * 1024) { setError('Файл більше 4MB'); return; }
+    setError('');
+    setUploading(true);
+
+    // Convert to base64
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+
+    // Preview
+    setPreview(URL.createObjectURL(file));
+
+    try {
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+        body: JSON.stringify({ fileBase64: base64, filename: file.name, folder }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onUploaded(data.url);
+      } else {
+        setError(data.error || 'Помилка завантаження');
+      }
+    } catch (e) {
+      setError(e.message);
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div>
+      <div
+        className={`adm-upload-zone ${dragging ? 'drag' : ''}`}
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => { e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]); }}
+        onClick={() => document.getElementById(`upload-${folder}`).click()}
+      >
+        <input id={`upload-${folder}`} type="file" accept="image/*" onChange={(e) => handleFile(e.target.files[0])} />
+        {uploading ? (
+          <div style={{ color: '#9e9e9e' }}>Завантаження...</div>
+        ) : (
+          <>
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
+            <div style={{ fontSize: '0.85rem', color: '#9e9e9e' }}>Перетягніть фото або натисніть</div>
+            <div style={{ fontSize: '0.75rem', color: '#bdbdbd', marginTop: '4px' }}>PNG, JPG, WebP до 4MB</div>
+          </>
+        )}
+      </div>
+      {preview && <img src={preview} alt="preview" className="adm-img-preview" />}
+      {error && <p style={{ color: '#e53935', fontSize: '0.82rem', marginTop: '4px' }}>{error}</p>}
+    </div>
+  );
+}
+
+function AdminProductModal({ product, type, onSave, onClose, password }) {
+  const [form, setForm] = useState({
+    name: product.name || '',
+    model: product.model || '',
+    category: product.category || (type === 'battery' ? 'Батарея' : 'Інвертор'),
+    phases: product.phases || 1,
+    kw: product.kw || 0,
+    specs: product.specs || '',
+    usp: product.usp || '',
+    availability: product.availability || 'В наявності',
+    manualPrice: product.clientEur || 0,
+    skipAutoUpdate: !!product.skipAutoUpdate,
+    imageUrl: product.imageUrl || '',
+    weight: product.weight || '',
+  });
+
+  const folder = type === 'battery' ? 'batteries' : type === 'system' ? 'systems' : 'inverters';
+
+  return (
+    <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="adm-modal">
+        <div className="adm-modal-head">
+          <h3>✏️ Редагувати: {form.model || form.name}</h3>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="adm-grid2" style={{ marginBottom: '1rem' }}>
+          <div className="adm-field">
+            <label>Назва товару (UA)</label>
+            <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
+          </div>
+          <div className="adm-field">
+            <label>Модель (артикул)</label>
+            <input value={form.model} onChange={e => setForm(p => ({ ...p, model: e.target.value }))} style={{ fontFamily: 'monospace' }} />
+          </div>
+        </div>
+
+        {type !== 'system' && (
+          <div className="adm-grid3" style={{ marginBottom: '1rem' }}>
+            <div className="adm-field">
+              <label>Фази</label>
+              <select value={form.phases} onChange={e => setForm(p => ({ ...p, phases: parseInt(e.target.value) }))}>
+                <option value={1}>1-фаза</option>
+                <option value={3}>3-фази</option>
+              </select>
+            </div>
+            <div className="adm-field">
+              <label>Потужність (кВт)</label>
+              <input type="number" step="0.1" value={form.kw} onChange={e => setForm(p => ({ ...p, kw: parseFloat(e.target.value) || 0 }))} />
+            </div>
+            <div className="adm-field">
+              <label>Вага (кг)</label>
+              <input type="number" step="0.1" value={form.weight} onChange={e => setForm(p => ({ ...p, weight: e.target.value }))} />
+            </div>
+          </div>
+        )}
+
+        <div className="adm-field">
+          <label>Технічні характеристики (формат: MPPT:2;Вхід:5500 Вт;...)</label>
+          <textarea value={form.specs} onChange={e => setForm(p => ({ ...p, specs: e.target.value }))} rows={3} />
+        </div>
+
+        <div className="adm-field">
+          <label>Ключова перевага (USP)</label>
+          <input value={form.usp} onChange={e => setForm(p => ({ ...p, usp: e.target.value }))} placeholder="Наприклад: Найкраще рішення для квартир" />
+        </div>
+
+        <div className="adm-grid2" style={{ marginBottom: '1rem' }}>
+          <div className="adm-field">
+            <label>Наявність</label>
+            <select value={form.availability} onChange={e => setForm(p => ({ ...p, availability: e.target.value }))}>
+              <option value="В наявності">В наявності</option>
+              <option value="Попереднє замовлення">Попереднє замовлення</option>
+              <option value="Немає в наявності">Немає в наявності</option>
+            </select>
+          </div>
+          <div className="adm-field">
+            <label>
+              <input type="checkbox" checked={form.skipAutoUpdate} onChange={e => setForm(p => ({ ...p, skipAutoUpdate: e.target.checked }))} style={{ width: 'auto', marginRight: 6 }} />
+              Ручна ціна (не оновлювати з nkon.nl)
+            </label>
+            {form.skipAutoUpdate && (
+              <input type="number" step="0.01" value={form.manualPrice} onChange={e => setForm(p => ({ ...p, manualPrice: parseFloat(e.target.value) || 0 }))} placeholder="Ціна €" style={{ marginTop: 6 }} />
+            )}
+          </div>
+        </div>
+
+        <div className="adm-field">
+          <label>Фото товару</label>
+          <AdminPhotoUpload
+            folder={folder}
+            currentUrl={form.imageUrl}
+            password={password}
+            onUploaded={(url) => setForm(p => ({ ...p, imageUrl: url }))}
+          />
+          {form.imageUrl && (
+            <p style={{ fontSize: '0.78rem', color: '#4caf50', marginTop: 4 }}>✅ {form.imageUrl}</p>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <button className="adm-btn adm-btn-ghost" onClick={onClose}>Скасувати</button>
+          <button className="adm-btn adm-btn-primary" onClick={() => onSave({ ...product, ...form })}>
+            💾 Зберегти
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminPanel({ goToPage }) {
-  const [authed, setAuthed]         = useState(false);
-  const [password, setPassword]     = useState('');
-  const [authError, setAuthError]   = useState('');
-  const [tab, setTab]               = useState('inverters');
-  const [saving, setSaving]         = useState(false);
-  const [toast, setToast]           = useState('');
-
-  // Data
-  const [adminData, setAdminData]   = useState(null);
-  const [inverters, setInverters]   = useState([]);
-  const [loading, setLoading]       = useState(false);
-
-  // Edit state
+  const [authed, setAuthed]       = useState(false);
+  const [password, setPassword]   = useState('');
+  const [authError, setAuthError] = useState('');
+  const [tab, setTab]             = useState('inverters');
+  const [saving, setSaving]       = useState(false);
+  const [toast, setToast]         = useState('');
+  const [adminData, setAdminData] = useState(null);
+  const [inverters, setInverters] = useState([]);
+  const [loading, setLoading]     = useState(false);
   const [editOverrides, setEditOverrides] = useState({});
-  const [settings, setSettings]     = useState({ markupEur: 25, markupPercent: 15 });
+  const [settings, setSettings]   = useState({ markupEur: 25, markupPercent: 15 });
+  const [editModal, setEditModal] = useState(null); // { product, type }
 
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
-  // Login
   const handleLogin = async () => {
     setLoading(true);
+    setAuthError('');
     try {
-      const res = await fetch('/api/admin-data', {
-        headers: { 'Authorization': `Bearer ${password}` },
-      });
-      // Test POST with empty body to verify password
       const testRes = await fetch('/api/admin-data', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${password}`,
-        },
-        body: JSON.stringify({ _test: true }),
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+        body: JSON.stringify({ _ping: true }),
       });
-      if (testRes.status === 401) {
-        setAuthError('Невірний пароль');
-        setLoading(false);
-        return;
-      }
+      if (testRes.status === 401) { setAuthError('Невірний пароль'); setLoading(false); return; }
       setAuthed(true);
-      loadData();
-    } catch {
-      setAuthError('Помилка підключення');
-    }
+      await loadData(password);
+    } catch { setAuthError('Помилка підключення'); }
     setLoading(false);
   };
 
-  const loadData = async () => {
+  const loadData = async (pw) => {
     setLoading(true);
     try {
       const [adminRes, invRes] = await Promise.all([
@@ -3291,19 +3464,13 @@ function AdminPanel({ goToPage }) {
       ]);
       const admin = adminRes.ok ? await adminRes.json() : {};
       const inv   = invRes.ok   ? await invRes.json()   : { inverters: [] };
-
       setAdminData(admin);
       setSettings(admin.settings || { markupEur: 25, markupPercent: 15 });
-
-      // Build overrides map
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
-
       setInverters(inv.inverters || []);
-    } catch (e) {
-      showToast('❌ Помилка завантаження: ' + e.message);
-    }
+    } catch (e) { showToast('❌ ' + e.message); }
     setLoading(false);
   };
 
@@ -3317,53 +3484,53 @@ function AdminPanel({ goToPage }) {
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
         updatedAt: new Date().toISOString(),
       };
-
       const res = await fetch('/api/admin-data', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${password}`,
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
         body: JSON.stringify(payload),
       });
-
       if (res.ok) {
         const data = await res.json();
         setAdminData(prev => ({ ...prev, ...payload, _sha: data.sha }));
-        showToast('✅ Збережено! Сайт оновиться за ~1 хв.');
+        showToast('✅ Збережено! Vercel оновить сайт за ~1 хв.');
       } else {
         const err = await res.json();
-        showToast('❌ Помилка: ' + err.error);
+        showToast('❌ ' + (err.error || 'Помилка'));
       }
-    } catch (e) {
-      showToast('❌ ' + e.message);
-    }
+    } catch (e) { showToast('❌ ' + e.message); }
     setSaving(false);
   };
 
-  const setOverride = (model, field, value) => {
+  const setOv = (model, field, value) => {
     setEditOverrides(prev => ({
       ...prev,
       [model]: { ...(prev[model] || { model }), [field]: value },
     }));
   };
 
-  const removeOverride = (model) => {
-    setEditOverrides(prev => {
-      const copy = { ...prev };
-      delete copy[model];
-      return copy;
-    });
+  const removeOv = (model) => setEditOverrides(prev => { const c = { ...prev }; delete c[model]; return c; });
+
+  const handleSaveProduct = (updated) => {
+    const model = updated.model;
+    setEditOverrides(prev => ({ ...prev, [model]: { ...updated } }));
+    setEditModal(null);
+    showToast('✅ Збережено в пам\'яті — натисни "Зберегти" щоб записати на сайт');
   };
 
-  const getAvailBadge = (av) => {
+  const avBadge = (av) => {
     if (!av) return null;
-    if (av === 'В наявності') return <span className="adm-badge adm-badge-ok">{av}</span>;
-    if (av.includes('Попередн')) return <span className="adm-badge adm-badge-warn">{av}</span>;
-    return <span className="adm-badge adm-badge-no">{av}</span>;
+    const cls = av === 'В наявності' ? 'adm-badge-ok' : av.includes('Попередн') ? 'adm-badge-warn' : 'adm-badge-no';
+    return <span className={`adm-badge ${cls}`}>{av}</span>;
   };
 
-  // ── LOGIN SCREEN ─────────────────────────────────────────────────
+  const allInverters = inverters.filter(i => { const c = (i.category||'').toLowerCase(); return !c.includes('батар') && !c.includes('bms'); });
+  const allBatteries = inverters.filter(i => { const c = (i.category||'').toLowerCase(); return c.includes('батар') || c.includes('bms'); });
+
+  // Merge overrides into product list for display
+  const mergedInverters = allInverters.map(i => ({ ...i, ...(editOverrides[i.model] || {}) }));
+  const mergedBatteries = allBatteries.map(b => ({ ...b, ...(editOverrides[b.model] || {}) }));
+
+  // ── LOGIN ────────────────────────────────────────────────────────
   if (!authed) {
     return (
       <div className="adm">
@@ -3373,14 +3540,8 @@ function AdminPanel({ goToPage }) {
             <h2>☀ SolarBalkon Admin</h2>
             <div className="adm-field">
               <label>Пароль</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                placeholder="Введіть пароль..."
-                autoFocus
-              />
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()} placeholder="Введіть пароль..." autoFocus />
             </div>
             {authError && <p style={{ color: '#e53935', fontSize: '0.85rem', marginBottom: '0.75rem' }}>{authError}</p>}
             <button className="adm-btn adm-btn-primary" style={{ width: '100%' }} onClick={handleLogin} disabled={loading}>
@@ -3395,37 +3556,93 @@ function AdminPanel({ goToPage }) {
     );
   }
 
-  const allProducts = [
-    ...inverters.filter(i => { const c = (i.category||'').toLowerCase(); return !c.includes('батар') && !c.includes('bms'); }),
-  ];
-  const batteries = inverters.filter(i => { const c = (i.category||'').toLowerCase(); return c.includes('батар') || c.includes('bms'); });
+  const ProductTable = ({ items, type }) => (
+    <div style={{ overflowX: 'auto' }}>
+      <table className="adm-table">
+        <thead>
+          <tr>
+            <th>Фото</th>
+            <th>Назва / Модель</th>
+            {type !== 'battery' && <th>кВт / Фази</th>}
+            <th>Закуп €</th>
+            <th>Сайт €</th>
+            <th>Наявність</th>
+            <th>Режим</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(item => {
+            const ov = editOverrides[item.model] || {};
+            const isManual = !!ov.skipAutoUpdate;
+            const imgUrl = ov.imageUrl || item.imageUrl;
+            return (
+              <tr key={item.model}>
+                <td>
+                  {imgUrl
+                    ? <img src={imgUrl} alt="" style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 4 }} />
+                    : <div style={{ width: 48, height: 48, background: '#f5f5f5', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>📦</div>
+                  }
+                </td>
+                <td>
+                  <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{ov.name || item.name}</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#9e9e9e' }}>{item.model}</div>
+                </td>
+                {type !== 'battery' && <td style={{ fontSize: '0.85rem' }}>{item.kw} кВт · {item.phases === 1 ? '1ф' : '3ф'}</td>}
+                <td style={{ fontSize: '0.85rem' }}>{item.purchaseEur?.toFixed(2) || '—'}</td>
+                <td style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  {isManual && ov.manualPrice ? `${ov.manualPrice} €` : `${item.clientEur?.toFixed(2)} €`}
+                </td>
+                <td>{avBadge(ov.manualAvailability || item.availability)}</td>
+                <td>
+                  {isManual
+                    ? <span className="adm-badge adm-badge-manual">Ручна</span>
+                    : <span className="adm-badge adm-badge-ok">Авто</span>
+                  }
+                </td>
+                <td>
+                  <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                    onClick={() => setEditModal({ product: { ...item, ...(ov || {}) }, type })}>
+                    ✏️ Редагувати
+                  </button>
+                  {isManual && (
+                    <button className="adm-btn adm-btn-ghost adm-btn-sm" style={{ marginLeft: 4 }} onClick={() => removeOv(item.model)}>
+                      ↺ Авто
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 
-  // ── MAIN ADMIN UI ────────────────────────────────────────────────
+  // ── MAIN UI ──────────────────────────────────────────────────────
   return (
     <div className="adm">
       <style>{ADMIN_CSS}</style>
 
       <div className="adm-header">
-        <h1>☀ SolarBalkon — Адмін-панель</h1>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <h1>☀ SolarBalkon Admin</h1>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-            Оновлено: {adminData?.updatedAt ? new Date(adminData.updatedAt).toLocaleString('uk-UA') : '—'}
+            {adminData?.updatedAt ? new Date(adminData.updatedAt).toLocaleString('uk-UA') : ''}
           </span>
           <button className="adm-btn adm-btn-yellow" onClick={save} disabled={saving}>
             {saving ? 'Зберігаємо...' : '💾 Зберегти'}
           </button>
-          <button className="adm-btn adm-btn-ghost" onClick={() => goToPage('home')}>
-            ← Сайт
-          </button>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => goToPage('home')}>← Сайт</button>
         </div>
       </div>
 
       <div className="adm-tabs">
         {[
-          { id: 'inverters', label: `Інвертори (${allProducts.length})` },
-          { id: 'batteries', label: `Батареї (${batteries.length})` },
-          { id: 'settings',  label: '⚙ Налаштування' },
-          { id: 'export',    label: '📱 Мобільний експорт' },
+          { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
+          { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
+          { id: 'settings',  label: '⚙️ Ціни' },
+          { id: 'export',    label: '📱 Мобільний' },
         ].map(t => (
           <button key={t.id} className={`adm-tab ${tab === t.id ? 'active' : ''}`} onClick={() => setTab(t.id)}>
             {t.label}
@@ -3436,284 +3653,92 @@ function AdminPanel({ goToPage }) {
       <div className="adm-body">
         {loading && <p style={{ color: '#9e9e9e', textAlign: 'center', padding: '2rem' }}>Завантаження...</p>}
 
-        {/* ── INVERTERS TAB ── */}
         {tab === 'inverters' && !loading && (
           <div className="adm-card">
             <h3>Комерційні інвертори Deye</h3>
             <p style={{ fontSize: '0.82rem', color: '#9e9e9e', marginBottom: '1rem' }}>
-              Ціни оновлюються автоматично з nkon.nl щодня. Тут можна перевизначити ціну або наявність для окремих позицій.
+              Ціни оновлюються щодня з nkon.nl. Натисни "Редагувати" щоб змінити дані або фото.
             </p>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="adm-table">
-                <thead>
-                  <tr>
-                    <th>Модель</th>
-                    <th>Фази / кВт</th>
-                    <th>Закуп €</th>
-                    <th>Ціна сайт €</th>
-                    <th>Ціна грн</th>
-                    <th>Наявність</th>
-                    <th>Режим ціни</th>
-                    <th>Ручна ціна €</th>
-                    <th>Ручна наявність</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allProducts.map(inv => {
-                    const ov = editOverrides[inv.model] || {};
-                    const isManual = !!ov.skipAutoUpdate;
-                    return (
-                      <tr key={inv.model}>
-                        <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{inv.model}</td>
-                        <td>{inv.phases === 1 ? '1ф' : '3ф'} · {inv.kw} кВт</td>
-                        <td>{inv.purchaseEur?.toFixed(2) || '—'}</td>
-                        <td style={{ fontWeight: 600 }}>{inv.clientEur?.toFixed(2)}</td>
-                        <td>{inv.priceUah?.toLocaleString()} ₴</td>
-                        <td>{getAvailBadge(ov.manualAvailability || inv.availability)}</td>
-                        <td>
-                          <select
-                            className="adm-select-sm"
-                            value={isManual ? 'manual' : 'auto'}
-                            onChange={e => {
-                              if (e.target.value === 'manual') {
-                                setOverride(inv.model, 'skipAutoUpdate', true);
-                                setOverride(inv.model, 'manualPrice', inv.clientEur);
-                              } else {
-                                removeOverride(inv.model);
-                              }
-                            }}
-                          >
-                            <option value="auto">Авто (nkon+{settings.markupPercent}%)</option>
-                            <option value="manual">Ручна ціна</option>
-                          </select>
-                        </td>
-                        <td>
-                          {isManual ? (
-                            <input
-                              className="adm-input-sm"
-                              type="number"
-                              step="0.01"
-                              value={ov.manualPrice || ''}
-                              onChange={e => setOverride(inv.model, 'manualPrice', parseFloat(e.target.value) || 0)}
-                            />
-                          ) : <span style={{ color: '#bdbdbd', fontSize: '0.8rem' }}>авто</span>}
-                        </td>
-                        <td>
-                          <select
-                            className="adm-select-sm"
-                            value={ov.manualAvailability || ''}
-                            onChange={e => {
-                              if (e.target.value) setOverride(inv.model, 'manualAvailability', e.target.value);
-                              else {
-                                const copy = { ...editOverrides[inv.model] };
-                                delete copy.manualAvailability;
-                                setEditOverrides(prev => ({ ...prev, [inv.model]: copy }));
-                              }
-                            }}
-                          >
-                            <option value="">— авто —</option>
-                            <option value="В наявності">В наявності</option>
-                            <option value="Попереднє замовлення">Попереднє замовлення</option>
-                            <option value="Немає в наявності">Немає в наявності</option>
-                          </select>
-                        </td>
-                        <td>
-                          {isManual && (
-                            <button className="adm-btn adm-btn-ghost" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => removeOverride(inv.model)}>
-                              ✕ скинути
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ProductTable items={mergedInverters} type="inverter" />
           </div>
         )}
 
-        {/* ── BATTERIES TAB ── */}
         {tab === 'batteries' && !loading && (
           <div className="adm-card">
             <h3>Батареї Deye</h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="adm-table">
-                <thead>
-                  <tr>
-                    <th>Модель</th>
-                    <th>Назва</th>
-                    <th>Закуп €</th>
-                    <th>Ціна сайт €</th>
-                    <th>Ціна грн</th>
-                    <th>Наявність</th>
-                    <th>Режим ціни</th>
-                    <th>Ручна ціна €</th>
-                    <th>Ручна наявність</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {batteries.map(bat => {
-                    const ov = editOverrides[bat.model] || {};
-                    const isManual = !!ov.skipAutoUpdate;
-                    return (
-                      <tr key={bat.model}>
-                        <td style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{bat.model}</td>
-                        <td style={{ fontSize: '0.82rem', maxWidth: 160 }}>{bat.name}</td>
-                        <td>{bat.purchaseEur?.toFixed(2) || '—'}</td>
-                        <td style={{ fontWeight: 600 }}>{bat.clientEur?.toFixed(2)}</td>
-                        <td>{bat.priceUah?.toLocaleString()} ₴</td>
-                        <td>{getAvailBadge(ov.manualAvailability || bat.availability)}</td>
-                        <td>
-                          <select
-                            className="adm-select-sm"
-                            value={isManual ? 'manual' : 'auto'}
-                            onChange={e => {
-                              if (e.target.value === 'manual') {
-                                setOverride(bat.model, 'skipAutoUpdate', true);
-                                setOverride(bat.model, 'manualPrice', bat.clientEur);
-                              } else removeOverride(bat.model);
-                            }}
-                          >
-                            <option value="auto">Авто (nkon+{settings.markupPercent}%)</option>
-                            <option value="manual">Ручна ціна</option>
-                          </select>
-                        </td>
-                        <td>
-                          {isManual ? (
-                            <input className="adm-input-sm" type="number" step="0.01"
-                              value={ov.manualPrice || ''}
-                              onChange={e => setOverride(bat.model, 'manualPrice', parseFloat(e.target.value) || 0)}
-                            />
-                          ) : <span style={{ color: '#bdbdbd', fontSize: '0.8rem' }}>авто</span>}
-                        </td>
-                        <td>
-                          <select className="adm-select-sm"
-                            value={ov.manualAvailability || ''}
-                            onChange={e => {
-                              if (e.target.value) setOverride(bat.model, 'manualAvailability', e.target.value);
-                              else {
-                                const copy = { ...editOverrides[bat.model] };
-                                delete copy.manualAvailability;
-                                setEditOverrides(prev => ({ ...prev, [bat.model]: copy }));
-                              }
-                            }}
-                          >
-                            <option value="">— авто —</option>
-                            <option value="В наявності">В наявності</option>
-                            <option value="Попереднє замовлення">Попереднє замовлення</option>
-                            <option value="Немає в наявності">Немає в наявності</option>
-                          </select>
-                        </td>
-                        <td>
-                          {isManual && (
-                            <button className="adm-btn adm-btn-ghost" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => removeOverride(bat.model)}>
-                              ✕ скинути
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ProductTable items={mergedBatteries} type="battery" />
           </div>
         )}
 
-        {/* ── SETTINGS TAB ── */}
         {tab === 'settings' && (
           <div className="adm-card">
             <h3>Налаштування ціноутворення</h3>
-            <div className="adm-settings-grid">
+            <div className="adm-grid2">
               <div className="adm-field">
                 <label>Надбавка до закупівельної ціни (€)</label>
                 <input type="number" step="1" value={settings.markupEur}
-                  onChange={e => setSettings(p => ({ ...p, markupEur: parseFloat(e.target.value) || 0 }))}
-                />
+                  onChange={e => setSettings(p => ({ ...p, markupEur: parseFloat(e.target.value) || 0 }))} />
                 <p style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>
-                  Apps Script додає цю суму до ціни nkon.nl → записує в col J
+                  Apps Script: nkon.nl ціна + {settings.markupEur}€ → col J таблиці
                 </p>
               </div>
               <div className="adm-field">
                 <label>Роздрібна націнка (%)</label>
                 <input type="number" step="1" value={settings.markupPercent}
-                  onChange={e => setSettings(p => ({ ...p, markupPercent: parseFloat(e.target.value) || 0 }))}
-                />
+                  onChange={e => setSettings(p => ({ ...p, markupPercent: parseFloat(e.target.value) || 0 }))} />
                 <p style={{ fontSize: '0.78rem', color: '#9e9e9e', marginTop: 4 }}>
-                  /api/inverters множить col J на (1 + X/100) → показує клієнту
+                  /api/inverters: col J × {(1 + settings.markupPercent/100).toFixed(2)} = ціна клієнта
                 </p>
               </div>
             </div>
-
             <div style={{ background: '#f5f5f5', borderRadius: 8, padding: '1rem', marginTop: '1rem' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Приклад розрахунку:</div>
-              <div style={{ fontSize: '0.82rem', color: '#616161', lineHeight: 1.8 }}>
-                nkon.nl ціна: 649.95€<br />
-                + {settings.markupEur}€ надбавка = {(649.95 + settings.markupEur).toFixed(2)}€ (col J)<br />
-                × {(1 + settings.markupPercent/100).toFixed(2)} націнка = <strong>{((649.95 + settings.markupEur) * (1 + settings.markupPercent/100)).toFixed(2)}€</strong> (ціна для клієнта)
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Приклад (SUN-5K):</div>
+              <div style={{ fontSize: '0.82rem', color: '#616161', lineHeight: 1.9 }}>
+                649.95€ nkon.nl + {settings.markupEur}€ = {(649.95 + settings.markupEur).toFixed(2)}€ (закуп)<br/>
+                × {(1 + settings.markupPercent/100).toFixed(2)} = <strong style={{ color: '#2d7a3a' }}>{((649.95 + settings.markupEur) * (1 + settings.markupPercent/100)).toFixed(2)}€</strong> клієнту
               </div>
             </div>
           </div>
         )}
 
-        {/* ── MOBILE EXPORT TAB ── */}
         {tab === 'export' && (
           <div className="adm-card">
             <h3>📱 Мобільний експорт</h3>
-            <p style={{ fontSize: '0.85rem', color: '#616161', marginBottom: '1.5rem' }}>
-              Endpoint для мобільного додатку — повертає всі товари, ціни та налаштування в одному запиті.
-            </p>
-
-            <div className="adm-settings-grid" style={{ marginBottom: '1.5rem' }}>
-              <div className="adm-stat">
-                <div className="adm-stat-n">{adminData?.mobileExportVersion || 1}</div>
-                <div className="adm-stat-l">Версія експорту</div>
-              </div>
-              <div className="adm-stat">
-                <div className="adm-stat-n">{allProducts.length + batteries.length}</div>
-                <div className="adm-stat-l">Товарів всього</div>
-              </div>
-              <div className="adm-stat">
-                <div className="adm-stat-n">{Object.keys(editOverrides).length}</div>
-                <div className="adm-stat-l">Ручних перевизначень</div>
-              </div>
+            <div className="adm-grid3" style={{ marginBottom: '1.5rem' }}>
+              <div className="adm-stat"><div className="adm-stat-n">{adminData?.mobileExportVersion || 1}</div><div className="adm-stat-l">Версія</div></div>
+              <div className="adm-stat"><div className="adm-stat-n">{mergedInverters.length + mergedBatteries.length}</div><div className="adm-stat-l">Товарів</div></div>
+              <div className="adm-stat"><div className="adm-stat-n">{Object.keys(editOverrides).length}</div><div className="adm-stat-l">Перевизначень</div></div>
             </div>
-
-            <div style={{ background: '#212121', borderRadius: 8, padding: '1rem', fontFamily: 'monospace', fontSize: '0.82rem', color: '#a5d6a7' }}>
-              <div style={{ color: '#9e9e9e', marginBottom: '0.5rem' }}>// URL для мобільного додатку:</div>
+            <div style={{ background: '#212121', borderRadius: 8, padding: '1rem', fontFamily: 'monospace', fontSize: '0.82rem', color: '#a5d6a7', marginBottom: '1rem' }}>
               GET https://solarbalkon.shop/api/export-mobile
             </div>
-
-            <div style={{ marginTop: '1rem' }}>
-              <button
-                className="adm-btn adm-btn-primary"
-                onClick={() => window.open('/api/export-mobile', '_blank')}
-              >
-                🔗 Переглянути JSON →
-              </button>
-              <button
-                className="adm-btn adm-btn-ghost"
-                style={{ marginLeft: '0.5rem' }}
-                onClick={async () => {
-                  const res = await fetch('/api/export-mobile');
-                  const data = await res.json();
-                  showToast(`✅ Інверторів: ${data.inverters?.length}, Батарей: ${data.batteries?.length}, EUR: ${data.eurRate}`);
-                }}
-              >
-                🔄 Перевірити
-              </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="adm-btn adm-btn-primary" onClick={() => window.open('/api/export-mobile', '_blank')}>🔗 Відкрити JSON</button>
+              <button className="adm-btn adm-btn-ghost" onClick={async () => {
+                const r = await fetch('/api/export-mobile');
+                const d = await r.json();
+                showToast(`✅ Інв: ${d.inverters?.length}, Бат: ${d.batteries?.length}, EUR: ${d.eurRate}`);
+              }}>🔄 Перевірити</button>
             </div>
           </div>
         )}
       </div>
 
+      {editModal && (
+        <AdminProductModal
+          product={editModal.product}
+          type={editModal.type}
+          password={password}
+          onSave={handleSaveProduct}
+          onClose={() => setEditModal(null)}
+        />
+      )}
+
       {toast && <div className="adm-toast">{toast}</div>}
     </div>
   );
 }
+
 
 /* ───────────────────────── COMPONENT ───────────────────────── */
 export default function SolarBalkon() {
