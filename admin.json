@@ -88,8 +88,29 @@
       "imageUrl": "/batteries/BMS-BDU-Deye-GB-L-Pro.png",
       "manualPrice": 626.69,
       "skipAutoUpdate": false
+    },
+    {
+      "name": "Акумулятор Deye GB-L-Pro 4kWh",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "GB-L-Pro-4kWh",
+      "kw": 4,
+      "phases": 1,
+      "specs": "Напруга:51.2В;Ємність:4кВт⋅год;Хімія:LiFePO4",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-gb-l-pro-4kwh-thuisbatterij.html",
+      "weight": "",
+      "purchaseEur": 699.95,
+      "clientEur": 833.69,
+      "priceUah": 42600,
+      "availability": "В наявності",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-gb-l-pro-4kwh-thuisbatterij.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "/batteries/-----------Deye-GB-L-Pro-4kWh.png",
+      "manualPrice": 833.69,
+      "skipAutoUpdate": false
     }
   ],
-  "mobileExportVersion": 6,
-  "updatedAt": "2026-03-14T12:10:09.445Z"
+  "mobileExportVersion": 7,
+  "updatedAt": "2026-03-14T12:11:24.210Z"
 }
