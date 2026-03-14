@@ -22,7 +22,7 @@
       "usp": "",
       "productUrl": "https://www.nkon.nl/ru/deye-se-f12-c.html",
       "compatibleIds": "14.03.2026 9:54",
-      "imageUrl": "",
+      "imageUrl": "/batteries/-----------Deye-SE-F12-C.png",
       "manualPrice": 1500.69,
       "skipAutoUpdate": false
     },
@@ -46,8 +46,29 @@
       "imageUrl": "/batteries/-----------Deye-SE-G5-1Pro-B-51.2V-.webp",
       "manualPrice": 753.19,
       "skipAutoUpdate": false
+    },
+    {
+      "name": "Акумулятор Deye SE-F16-C",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "SE-F16-C",
+      "kw": 0,
+      "phases": 1,
+      "specs": "Напруга:51.2В;Ємність:16кВт⋅год;Хімія:LiFePO4",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-se-f16-c.html",
+      "weight": "",
+      "purchaseEur": 1599.95,
+      "clientEur": 1868.69,
+      "priceUah": 95500,
+      "availability": "Попереднє замовлення",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-se-f16-c.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "/batteries/-----------Deye-SE-F16-C.png",
+      "manualPrice": 1868.69,
+      "skipAutoUpdate": false
     }
   ],
-  "mobileExportVersion": 3,
-  "updatedAt": "2026-03-14T12:05:42.512Z"
+  "mobileExportVersion": 4,
+  "updatedAt": "2026-03-14T12:08:21.482Z"
 }
