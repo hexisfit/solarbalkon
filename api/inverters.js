@@ -7,17 +7,48 @@ export default async function handler(req, res) {
   const PRIVAT_API    = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
   const ADMIN_JSON    = 'https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json';
 
-  const KNOWN_IMGS = [
-    'SUN-12K-SG02LP1-EU','SUN-12K-SG05LP3-EU','SUN-3.6K-SG05LP1-EU-AM2-P',
-    'SUN-30K-SG02HP3-EU-AM2','SUN-50K-SG01HP3-EU','SUN-5K-SG05LP1-EU',
-    'SUN-6K-SG05LP1-EU-AM2-P','SUN-6K-SG05LP3-EU','SUN-8K-SG05LP3-EU',
+  // Inverter images — exact filenames from /public/inverters/
+  const INVERTER_IMGS = [
+    'SUN-12K-SG02LP1-EU',
+    'SUN-12K-SG05LP3-EU',
+    'SUN-3.6K-LP1',
+    'SUN-30K-SG02HP3-EU-AM2',
+    'SUN-50K-SG01HP3-EU',
+    'SUN-5K-SG05LP1-EU',
+    'SUN-6K-SG05LP1-EU-AM2-P',
+    'SUN-6K-SG05LP3-EU',
+    'SUN-8K-SG05LP3-EU',
   ];
 
-  function findImageUrl(model) {
-    const exact = KNOWN_IMGS.find(f => f === model);
+  // Battery images — exact filenames from /public/batteries/
+  const BATTERY_IMGS = [
+    'Deye-SE-F5-Pro-C-',
+  ];
+
+  function findImageUrl(model, category) {
+    const isBattery = category && (category.toLowerCase().includes('батар') || category.toLowerCase().includes('bms'));
+
+    if (isBattery) {
+      // Search in /public/batteries/
+      const sanitized = model.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+      const exact = BATTERY_IMGS.find(f => f === sanitized);
+      if (exact) return `/batteries/${exact}.png`;
+      // Partial match — model contains file name or vice versa
+      const partial = BATTERY_IMGS.find(f =>
+        sanitized.includes(f.replace(/-$/, '')) || f.includes(sanitized.substring(0, 10))
+      );
+      if (partial) return `/batteries/${partial}.png`;
+      return null;
+    }
+
+    // Inverter: search in /public/inverters/
+    const exact = INVERTER_IMGS.find(f => f === model);
     if (exact) return `/inverters/${exact}.png`;
-    const core = model.replace(/-(EU|AM\d*|SM\d*|AU|US)([-A-Z0-9]*)?$/i, '');
-    const partial = KNOWN_IMGS.find(f => f.startsWith(core));
+    // Strip suffixes for partial match: SUN-3.6K-LP1-EU-AM2 → SUN-3.6K-LP1
+    const core = model
+      .replace(/-(SG\d+LP\d+|SG\d+HP\d+).*$/i, '') // remove SG suffix
+      .replace(/-(EU|AM\d*|SM\d*|AU|US)([-A-Z0-9]*)?$/i, ''); // remove region suffix
+    const partial = INVERTER_IMGS.find(f => f === core || f.startsWith(core) || core.startsWith(f));
     return partial ? `/inverters/${partial}.png` : null;
   }
 
@@ -106,7 +137,7 @@ export default async function handler(req, res) {
         finalPriceUah  = Math.round((ov.manualPrice * eurSale) / 100) * 100;
       }
 
-      const imageUrl = ov.imageUrl || findImageUrl(model);
+      const imageUrl = ov.imageUrl || findImageUrl(model, category);
 
       inverters.push({
         name:          ov.name          || name,
