@@ -25,8 +25,29 @@
       "imageUrl": "",
       "manualPrice": 1500.69,
       "skipAutoUpdate": false
+    },
+    {
+      "name": "Акумулятор Deye SE-G5-1Pro-B 51.2V 5.12kWh",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "SE-G5-1Pro-B",
+      "kw": 0,
+      "phases": 1,
+      "specs": "Напруга:51.2В;Ємність:5.12кВт⋅год;Хімія:LiFePO4;Тип:підлогова",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-se-g5-1pro-b-51-2v-5-12kwh.html",
+      "weight": "",
+      "purchaseEur": 629.95,
+      "clientEur": 753.19,
+      "priceUah": 38500,
+      "availability": "Попереднє замовлення",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-se-g5-1pro-b-51-2v-5-12kwh.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "/batteries/-----------Deye-SE-G5-1Pro-B-51.2V-.webp",
+      "manualPrice": 753.19,
+      "skipAutoUpdate": false
     }
   ],
-  "mobileExportVersion": 2,
-  "updatedAt": "2026-03-14T12:04:26.316Z"
+  "mobileExportVersion": 3,
+  "updatedAt": "2026-03-14T12:05:42.512Z"
 }
