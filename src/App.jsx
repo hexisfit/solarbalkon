@@ -3897,62 +3897,95 @@ function AdminPanel({ goToPage }) {
           </div>
         )}
 
-        {tab === 'blog' && (
+        {tab === 'blog' && (() => {
+          // Merge: ARTICLES (built-in) + blogPosts (from admin.json)
+          // blogPosts override built-in by slug
+          const builtInMap = {};
+          ARTICLES.forEach(a => { builtInMap[a.slug] = { ...a, _builtin: true }; });
+          const adminMap = {};
+          blogPosts.forEach(a => { adminMap[a.slug] = a; });
+          // All slugs: built-in first, then admin-only
+          const allSlugs = [
+            ...ARTICLES.map(a => a.slug),
+            ...blogPosts.filter(p => !builtInMap[p.slug]).map(p => p.slug),
+          ];
+          const allPosts = allSlugs.map(slug => ({
+            ...(builtInMap[slug] || {}),
+            ...(adminMap[slug] || {}),
+          })).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+          return (
           <>
             <div className="adm-card">
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
-                <h3 style={{margin:0}}>Статті блогу</h3>
+                <h3 style={{margin:0}}>Статті блогу ({allPosts.length})</h3>
                 <button className="adm-btn adm-btn-primary adm-btn-sm" onClick={() => setBlogModal({ slug:'',title:'',content:'' })}>
                   + Нова стаття
                 </button>
               </div>
-              <p style={{ fontSize:'0.82rem', color:'#9e9e9e', marginBottom:'1rem' }}>
-                Вбудовані статті (5 шт) + додані через адмінку ({blogPosts.length} шт). Редагування вбудованих стає окремим записом в admin.json.
-              </p>
               <table className="adm-table">
                 <thead>
                   <tr>
-                    <th>Фото</th><th>Заголовок</th><th>Дата</th><th>Категорія</th><th>Статус</th><th></th>
+                    <th>Фото</th><th>Заголовок</th><th>Дата</th><th>Категорія</th><th>Тип</th><th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Admin posts */}
-                  {blogPosts.map(post => (
-                    <tr key={post.slug}>
-                      <td>
-                        {post.image
-                          ? <img src={post.image} alt="" style={{width:48,height:32,objectFit:'cover',borderRadius:4}} />
-                          : <div style={{width:48,height:32,background:'#f5f5f5',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>🖼</div>
-                        }
-                      </td>
-                      <td style={{fontWeight:600,fontSize:'0.85rem',maxWidth:240}}>{post.title}</td>
-                      <td style={{fontSize:'0.82rem',color:'#9e9e9e',whiteSpace:'nowrap'}}>{post.date}</td>
-                      <td><span className="adm-badge adm-badge-ok">{post.category || 'Стаття'}</span></td>
-                      <td>
-                        {post.published !== false
-                          ? <span className="adm-badge adm-badge-ok">Опубліковано</span>
-                          : <span className="adm-badge adm-badge-warn">Чернетка</span>
-                        }
-                      </td>
-                      <td style={{display:'flex',gap:6}}>
-                        <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setBlogModal(post)}>✏️</button>
-                        <button className="adm-btn adm-btn-danger adm-btn-sm"
-                          onClick={() => { if(confirm('Видалити статтю?')) setBlogPosts(prev => prev.filter(p => p.slug !== post.slug)); }}>
-                          🗑
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {blogPosts.length === 0 && (
-                    <tr><td colSpan={6} style={{textAlign:'center',color:'#9e9e9e',padding:'2rem'}}>
-                      Немає доданих статей. Натисни "+ Нова стаття"
-                    </td></tr>
-                  )}
+                  {allPosts.map(post => {
+                    const isBuiltin = !!post._builtin && !adminMap[post.slug];
+                    const isEdited  = !!post._builtin && !!adminMap[post.slug];
+                    return (
+                      <tr key={post.slug}>
+                        <td>
+                          {post.image
+                            ? <img src={post.image} alt="" style={{width:48,height:32,objectFit:'cover',borderRadius:4}} />
+                            : <div style={{width:48,height:32,background:'#f5f5f5',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1rem'}}>🖼</div>
+                          }
+                        </td>
+                        <td style={{fontWeight:600,fontSize:'0.85rem'}}>
+                          <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer"
+                            style={{color:'inherit',textDecoration:'none'}}
+                            onMouseEnter={e=>e.target.style.textDecoration='underline'}
+                            onMouseLeave={e=>e.target.style.textDecoration='none'}>
+                            {post.title}
+                          </a>
+                        </td>
+                        <td style={{fontSize:'0.82rem',color:'#9e9e9e',whiteSpace:'nowrap'}}>{post.date}</td>
+                        <td><span className="adm-badge adm-badge-ok">{post.category || 'Стаття'}</span></td>
+                        <td>
+                          {isBuiltin && <span className="adm-badge" style={{background:'#e3f2fd',color:'#1565c0'}}>Вбудована</span>}
+                          {isEdited  && <span className="adm-badge" style={{background:'#fff3e0',color:'#e65100'}}>Відредаговано</span>}
+                          {!isBuiltin && !isEdited && (
+                            post.published !== false
+                              ? <span className="adm-badge adm-badge-ok">Нова</span>
+                              : <span className="adm-badge adm-badge-warn">Чернетка</span>
+                          )}
+                        </td>
+                        <td style={{display:'flex',gap:6}}>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                            onClick={() => setBlogModal({ ...post })}>✏️ Редагувати</button>
+                          {!isBuiltin && (
+                            <button className="adm-btn adm-btn-danger adm-btn-sm"
+                              onClick={() => { if(window.confirm('Видалити статтю?')) setBlogPosts(prev => prev.filter(p => p.slug !== post.slug)); }}>
+                              🗑
+                            </button>
+                          )}
+                          {(isBuiltin || isEdited) && isEdited && (
+                            <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                              title="Скинути до вбудованої"
+                              onClick={() => { if(window.confirm('Скинути зміни до оригіналу?')) setBlogPosts(prev => prev.filter(p => p.slug !== post.slug)); }}>
+                              ↺
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </>
-        )}
+          );
+        })()}
 
         {tab === 'export' && (
           <div className="adm-card">
