@@ -3246,6 +3246,186 @@ const ADMIN_CSS = `
 @media(max-width:700px){.adm-grid2,.adm-grid3{grid-template-columns:1fr}}
 `;
 
+
+function AdminBlogModal({ post, onSave, onClose, password }) {
+  const isNew = !post.slug;
+  const [form, setForm] = useState({
+    slug:     post.slug     || '',
+    title:    post.title    || '',
+    excerpt:  post.excerpt  || '',
+    date:     post.date     || new Date().toISOString().slice(0,10),
+    author:   post.author   || 'SolarBalkon',
+    category: post.category || 'Стаття',
+    tags:     post.tags     ? post.tags.join(', ') : '',
+    image:    post.image    || '',
+    readTime: post.readTime || 5,
+    content:  post.content  || '',
+    published: post.published !== false,
+  });
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(form.image || null);
+  const [tab, setTab] = useState('content');
+
+  const autoSlug = (title) =>
+    title.toLowerCase()
+      .replace(/[іїєґ]/g, c => ({і:'i',ї:'yi',є:'ye',ґ:'g'}[c]||c))
+      .replace(/[а-яёА-ЯЁ]/g, c => {
+        const m = {а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ж:'zh',з:'z',и:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'kh',ц:'ts',ч:'ch',ш:'sh',щ:'shch',ю:'yu',я:'ya'};
+        return m[c.toLowerCase()] || c;
+      })
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+  const handleTitleChange = (val) => {
+    setForm(p => ({ ...p, title: val, ...(isNew ? { slug: autoSlug(val) } : {}) }));
+  };
+
+  const handleImageUpload = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploading(true);
+    const base64 = await new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file); });
+    setPreview(URL.createObjectURL(file));
+    try {
+      const resp = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+        body: JSON.stringify({ fileBase64: base64, filename: file.name, folder: 'blog' }),
+      });
+      const data = await resp.json();
+      if (data.success) setForm(p => ({ ...p, image: data.url }));
+    } catch(e) { console.error(e); }
+    setUploading(false);
+  };
+
+  const handleSave = () => {
+    if (!form.title.trim() || !form.slug.trim()) return;
+    onSave({
+      ...form,
+      tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
+      readTime: parseInt(form.readTime) || 5,
+    });
+  };
+
+  return (
+    <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="adm-modal" style={{ maxWidth: 760 }}>
+        <div className="adm-modal-head">
+          <h3>{isNew ? '✏️ Нова стаття' : `✏️ ${form.title.slice(0,40)}...`}</h3>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display:'flex', gap:0, borderBottom:'1px solid #e0e0e0', marginBottom:'1rem' }}>
+          {[{id:'content',label:'📝 Контент'},{id:'meta',label:'⚙️ Мета'},{id:'image',label:'🖼 Фото'}].map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ padding:'8px 16px', border:'none', background:'none', cursor:'pointer', fontWeight:600,
+                fontSize:'0.85rem', borderBottom: tab===t.id ? '2px solid #2d7a3a' : '2px solid transparent',
+                color: tab===t.id ? '#2d7a3a' : '#9e9e9e' }}>
+              {t.label}
+            </button>
+          ))}
+          <label style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8, fontSize:'0.85rem' }}>
+            <input type="checkbox" checked={form.published} onChange={e => setForm(p=>({...p,published:e.target.checked}))} />
+            Опубліковано
+          </label>
+        </div>
+
+        {tab === 'content' && (
+          <div>
+            <div className="adm-field">
+              <label>Заголовок *</label>
+              <input value={form.title} onChange={e => handleTitleChange(e.target.value)} placeholder="Назва статті..." />
+            </div>
+            <div className="adm-field">
+              <label>Короткий опис (excerpt)</label>
+              <textarea value={form.excerpt} onChange={e => setForm(p=>({...p,excerpt:e.target.value}))} rows={3} placeholder="Короткий опис для картки блогу (1-2 речення)" />
+            </div>
+            <div className="adm-field">
+              <label>Текст статті (Markdown)</label>
+              <textarea value={form.content} onChange={e => setForm(p=>({...p,content:e.target.value}))}
+                rows={18}
+                style={{ fontFamily:'monospace', fontSize:'0.82rem', lineHeight:1.6 }}
+                placeholder="## Заголовок&#10;&#10;Текст статті у форматі Markdown...&#10;&#10;### Підзаголовок&#10;&#10;- Пункт 1&#10;- Пункт 2" />
+            </div>
+          </div>
+        )}
+
+        {tab === 'meta' && (
+          <div>
+            <div className="adm-grid2">
+              <div className="adm-field">
+                <label>URL (slug) *</label>
+                <input value={form.slug} onChange={e => setForm(p=>({...p,slug:e.target.value}))}
+                  style={{ fontFamily:'monospace', fontSize:'0.85rem' }}
+                  placeholder="nazva-statti-translit" />
+                <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginTop:4}}>solarbalkon.shop/blog/{form.slug}</p>
+              </div>
+              <div className="adm-field">
+                <label>Дата публікації</label>
+                <input type="date" value={form.date} onChange={e => setForm(p=>({...p,date:e.target.value}))} />
+              </div>
+            </div>
+            <div className="adm-grid2">
+              <div className="adm-field">
+                <label>Категорія</label>
+                <select value={form.category} onChange={e => setForm(p=>({...p,category:e.target.value}))}>
+                  <option>Стаття</option><option>Гід</option><option>Новини</option>
+                  <option>Порівняння</option><option>Інструкція</option>
+                </select>
+              </div>
+              <div className="adm-field">
+                <label>Час читання (хв)</label>
+                <input type="number" min={1} max={60} value={form.readTime} onChange={e => setForm(p=>({...p,readTime:e.target.value}))} />
+              </div>
+            </div>
+            <div className="adm-field">
+              <label>Теги (через кому)</label>
+              <input value={form.tags} onChange={e => setForm(p=>({...p,tags:e.target.value}))}
+                placeholder="сонячні панелі, балкон, економія" />
+            </div>
+            <div className="adm-field">
+              <label>Автор</label>
+              <input value={form.author} onChange={e => setForm(p=>({...p,author:e.target.value}))} />
+            </div>
+          </div>
+        )}
+
+        {tab === 'image' && (
+          <div>
+            <div className="adm-field">
+              <label>Фото обкладинки</label>
+              <div className="adm-upload-zone"
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => { e.preventDefault(); handleImageUpload(e.dataTransfer.files[0]); }}
+                onClick={() => document.getElementById('blog-img-upload').click()}>
+                <input id="blog-img-upload" type="file" accept="image/*" style={{display:'none'}}
+                  onChange={e => handleImageUpload(e.target.files[0])} />
+                {uploading ? <div style={{color:'#9e9e9e'}}>Завантаження...</div> : (
+                  <><div style={{fontSize:'2rem',marginBottom:'0.5rem'}}>🖼</div>
+                  <div style={{fontSize:'0.85rem',color:'#9e9e9e'}}>Перетягніть або натисніть</div>
+                  <div style={{fontSize:'0.75rem',color:'#bdbdbd',marginTop:4}}>PNG, JPG, WebP до 4MB</div></>
+                )}
+              </div>
+              {(preview || form.image) && (
+                <img src={preview || form.image} alt="preview"
+                  style={{width:'100%',maxHeight:220,objectFit:'cover',borderRadius:8,marginTop:8}} />
+              )}
+              {form.image && <p style={{fontSize:'0.78rem',color:'#4caf50',marginTop:4}}>✅ {form.image}</p>}
+            </div>
+          </div>
+        )}
+
+        <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:'1.5rem', borderTop:'1px solid #f0f0f0', paddingTop:'1rem' }}>
+          <button className="adm-btn adm-btn-ghost" onClick={onClose}>Скасувати</button>
+          <button className="adm-btn adm-btn-primary" onClick={handleSave}
+            disabled={!form.title.trim() || !form.slug.trim()}>
+            💾 Зберегти статтю
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminPhotoUpload({ folder, currentUrl, onUploaded, password }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -3436,6 +3616,8 @@ function AdminPanel({ goToPage }) {
   const [editOverrides, setEditOverrides] = useState({});
   const [settings, setSettings]   = useState({ markupEur: 25, markupPercent: 15 });
   const [editModal, setEditModal] = useState(null); // { product, type }
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [blogModal, setBlogModal] = useState(null); // null | 'new' | {post}
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
@@ -3472,6 +3654,7 @@ function AdminPanel({ goToPage }) {
       const inv   = invRes.ok   ? await invRes.json()   : { inverters: [] };
       setAdminData(admin);
       setSettings(admin.settings || { markupEur: 25, markupPercent: 15 });
+      setBlogPosts(admin.blogPosts || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
@@ -3487,6 +3670,7 @@ function AdminPanel({ goToPage }) {
         ...adminData,
         settings,
         overrides: Object.values(editOverrides),
+        blogPosts,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
         updatedAt: new Date().toISOString(),
       };
@@ -3652,6 +3836,7 @@ function AdminPanel({ goToPage }) {
         {[
           { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
+          { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
           { id: 'settings',  label: '⚙️ Ціни' },
           { id: 'export',    label: '📱 Мобільний' },
         ].map(t => (
@@ -3712,6 +3897,63 @@ function AdminPanel({ goToPage }) {
           </div>
         )}
 
+        {tab === 'blog' && (
+          <>
+            <div className="adm-card">
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
+                <h3 style={{margin:0}}>Статті блогу</h3>
+                <button className="adm-btn adm-btn-primary adm-btn-sm" onClick={() => setBlogModal({ slug:'',title:'',content:'' })}>
+                  + Нова стаття
+                </button>
+              </div>
+              <p style={{ fontSize:'0.82rem', color:'#9e9e9e', marginBottom:'1rem' }}>
+                Вбудовані статті (5 шт) + додані через адмінку ({blogPosts.length} шт). Редагування вбудованих стає окремим записом в admin.json.
+              </p>
+              <table className="adm-table">
+                <thead>
+                  <tr>
+                    <th>Фото</th><th>Заголовок</th><th>Дата</th><th>Категорія</th><th>Статус</th><th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Admin posts */}
+                  {blogPosts.map(post => (
+                    <tr key={post.slug}>
+                      <td>
+                        {post.image
+                          ? <img src={post.image} alt="" style={{width:48,height:32,objectFit:'cover',borderRadius:4}} />
+                          : <div style={{width:48,height:32,background:'#f5f5f5',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center'}}>🖼</div>
+                        }
+                      </td>
+                      <td style={{fontWeight:600,fontSize:'0.85rem',maxWidth:240}}>{post.title}</td>
+                      <td style={{fontSize:'0.82rem',color:'#9e9e9e',whiteSpace:'nowrap'}}>{post.date}</td>
+                      <td><span className="adm-badge adm-badge-ok">{post.category || 'Стаття'}</span></td>
+                      <td>
+                        {post.published !== false
+                          ? <span className="adm-badge adm-badge-ok">Опубліковано</span>
+                          : <span className="adm-badge adm-badge-warn">Чернетка</span>
+                        }
+                      </td>
+                      <td style={{display:'flex',gap:6}}>
+                        <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setBlogModal(post)}>✏️</button>
+                        <button className="adm-btn adm-btn-danger adm-btn-sm"
+                          onClick={() => { if(confirm('Видалити статтю?')) setBlogPosts(prev => prev.filter(p => p.slug !== post.slug)); }}>
+                          🗑
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {blogPosts.length === 0 && (
+                    <tr><td colSpan={6} style={{textAlign:'center',color:'#9e9e9e',padding:'2rem'}}>
+                      Немає доданих статей. Натисни "+ Нова стаття"
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
         {tab === 'export' && (
           <div className="adm-card">
             <h3>📱 Мобільний експорт</h3>
@@ -3734,6 +3976,23 @@ function AdminPanel({ goToPage }) {
           </div>
         )}
       </div>
+
+      {blogModal && (
+        <AdminBlogModal
+          post={blogModal}
+          password={password}
+          onSave={(updated) => {
+            setBlogPosts(prev => {
+              const idx = prev.findIndex(p => p.slug === updated.slug);
+              if (idx >= 0) { const next = [...prev]; next[idx] = updated; return next; }
+              return [...prev, updated];
+            });
+            setBlogModal(null);
+            showToast('✅ Статтю збережено — натисни "Зберегти" щоб опублікувати');
+          }}
+          onClose={() => setBlogModal(null)}
+        />
+      )}
 
       {editModal && (
         <AdminProductModal
@@ -3774,6 +4033,7 @@ export default function SolarBalkon() {
   const [invSelectedKw, setInvSelectedKw] = useState(null);
   const [nkonBatteries, setNkonBatteries] = useState([]);
   const [selectedBattery, setSelectedBattery] = useState(null);
+  const [adminArticles, setAdminArticles] = useState([]); // extra articles from admin.json
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -3828,7 +4088,7 @@ export default function SolarBalkon() {
       });
     } else if (currentPage.startsWith('article:')) {
       const slug = currentPage.slice(8);
-      const article = ARTICLES.find(a => a.slug === slug);
+      const article = ALL_ARTICLES.find(a => a.slug === slug);
       if (article) {
         setSEO({
           title: `${article.title} — SolarBalkon`,
@@ -3863,6 +4123,16 @@ export default function SolarBalkon() {
         console.log(`✅ Ціни оновлено | EUR/UAH: ${data.eurRate} (ПриватБанк)`, data.prices);
       })
       .catch(err => console.log('⚠️ Ціни недоступні, базові ціни:', err));
+  }, []);
+
+  // Fetch admin.json for extra blog posts
+  useEffect(() => {
+    fetch('https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.blogPosts?.length) setAdminArticles(data.blogPosts);
+      })
+      .catch(() => {});
   }, []);
 
   // Fetch commercial inverters from API
@@ -4146,6 +4416,14 @@ export default function SolarBalkon() {
   const systemCost = 70200;
   const paybackMonths = monthlySaving > 0 ? Math.ceil(systemCost / monthlySaving) : 0;
   const saving10y = yearlySaving * 10 - systemCost;
+
+  // Merge hardcoded articles with admin articles (admin ones override by slug)
+  const ALL_ARTICLES = (() => {
+    const map = {};
+    ARTICLES.forEach(a => { map[a.slug] = a; });
+    adminArticles.forEach(a => { map[a.slug] = { ...map[a.slug], ...a }; });
+    return Object.values(map).sort((a, b) => new Date(b.date) - new Date(a.date));
+  })();
 
   return (
     <>
@@ -5107,7 +5385,7 @@ export default function SolarBalkon() {
         <div className="section-title fade-up">Корисні статті</div>
         <div className="section-sub fade-up-d1">Дізнайтесь більше про сонячну енергію та як зекономити</div>
         <div className="blog-grid" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: 0 }}>
-          {ARTICLES.slice(0, 3).map((a) => (
+          {ALL_ARTICLES.slice(0, 3).map((a) => (
             <div className="blog-card fade-up-d2" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
               <div className="blog-card-img-placeholder" style={a.image ? { backgroundImage: `url(${a.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
                 {!a.image && (
@@ -6298,7 +6576,7 @@ export default function SolarBalkon() {
           </div>
 
           <div className="blog-grid">
-            {ARTICLES.map((a) => (
+            {ALL_ARTICLES.map((a) => (
               <div className="blog-card" key={a.slug} onClick={() => goToPage('article:' + a.slug)}>
                 <div className="blog-card-img-placeholder" style={a.image ? { backgroundImage: `url(${a.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
                   {!a.image && (
@@ -6333,7 +6611,7 @@ export default function SolarBalkon() {
       {/* ═══════ ARTICLE DETAIL PAGE ═══════ */}
       {currentPage.startsWith('article:') && (() => {
         const slug = currentPage.slice(8);
-        const article = ARTICLES.find(a => a.slug === slug);
+        const article = ALL_ARTICLES.find(a => a.slug === slug);
         if (!article) return (
           <div className="article-page" style={{ textAlign: 'center', padding: '6rem 2rem' }}>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--gray-900)', marginBottom: '1rem' }}>Статтю не знайдено</h1>
@@ -6422,7 +6700,7 @@ export default function SolarBalkon() {
           return html.join('\n');
         };
 
-        const related = ARTICLES.filter(a => a.slug !== slug).slice(0, 3);
+        const related = ALL_ARTICLES.filter(a => a.slug !== slug).slice(0, 3);
         const articleUrl = `https://solarbalkon.shop/blog/${slug}`;
 
         return (
