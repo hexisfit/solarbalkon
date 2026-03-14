@@ -3112,6 +3112,8 @@ export default function SolarBalkon() {
   const [commercialInverters, setCommercialInverters] = useState([]);
   const [invPhaseFilter, setInvPhaseFilter] = useState(1);
   const [invSelectedKw, setInvSelectedKw] = useState(null);
+  const [nkonBatteries, setNkonBatteries] = useState([]);
+  const [selectedBattery, setSelectedBattery] = useState(null);
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -3207,9 +3209,23 @@ export default function SolarBalkon() {
       .then(r => r.ok ? r.json() : Promise.reject('API unavailable'))
       .then(data => {
         if (data.inverters && data.inverters.length > 0) {
-          setCommercialInverters(data.inverters);
-          // Set default selection to first matching inverter
-          const first1ph = data.inverters.find(inv => inv.phases === 1);
+          // Inverters only (category Інвертор), batteries separately
+          // Inverters: anything that is NOT explicitly a battery
+          const inverters = data.inverters.filter(d => {
+            const cat = (d.category || '').toLowerCase();
+            return !cat.includes('батар') && !cat.includes('battery') && !cat.includes('bms');
+          });
+          // Batteries: explicitly marked as battery/BMS
+          const batteries = data.inverters.filter(d => {
+            const cat = (d.category || '').toLowerCase();
+            return cat.includes('батар') || cat.includes('battery') || cat.includes('bms');
+          });
+          setCommercialInverters(inverters);
+          if (batteries.length > 0) {
+            setNkonBatteries(batteries);
+            setSelectedBattery(batteries[0]);
+          }
+          const first1ph = inverters.find(inv => inv.phases === 1);
           if (first1ph) setInvSelectedKw(first1ph.kw);
         }
         console.log(`✅ Інвертори завантажено: ${data.inverters?.length || 0} шт`);
@@ -3617,15 +3633,59 @@ export default function SolarBalkon() {
                 ? fittingProducts.reduce((a, b) => a.output <= b.output && a.price <= b.price ? a : b)
                 : null;
 
-              // Find matching commercial inverter
-              const fittingInv1ph = commercialInverters.filter(inv => inv.phases === 1 && inv.kw * 1000 >= totalWatts);
-              const fittingInv3ph = commercialInverters.filter(inv => inv.phases === 3 && inv.kw * 1000 >= totalWatts);
-              const bestInv1ph = fittingInv1ph.length > 0 ? fittingInv1ph[0] : null;
-              const bestInv3ph = fittingInv3ph.length > 0 ? fittingInv3ph[0] : null;
+              // Find best matching commercial inverters for current load
+              const bestInv1ph = commercialInverters.filter(inv => inv.phases === 1 && inv.kw * 1000 >= totalWatts)[0] || null;
+              const bestInv3ph = commercialInverters.filter(inv => inv.phases === 3 && inv.kw * 1000 >= totalWatts)[0] || null;
+              const showCommercialCards = commercialInverters.length > 0 && (bestInv1ph || bestInv3ph);
+
+              const scrollToCommercial = (phases, kw) => {
+                setTariffType('commercial');
+                setConfigSystem('deye');
+                setInvPhaseFilter(phases);
+                setInvSelectedKw(kw);
+                setTimeout(() => {
+                  const el = document.getElementById('commercial');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 400);
+              };
 
               return (
                 <div className="calc-reco">
-                  {!needCommercial ? (
+                  {needCommercial ? (
+                    /* ── Навантаження > 6 кВт: тільки комерційні ── */
+                    <div className="calc-reco-commercial">
+                      <div className="calc-reco-title">
+                        🏢 Навантаження {totalWatts.toLocaleString()} Вт — потрібна комерційна СЕС
+                      </div>
+                      <p style={{ fontSize: '0.85rem', opacity: 0.85, marginBottom: '0.75rem' }}>
+                        Рекомендуємо гібридний інвертор Deye:
+                      </p>
+                      {showCommercialCards && (
+                        <div className="calc-reco-grid">
+                          {bestInv1ph && (
+                            <div className="calc-reco-card best" onClick={() => scrollToCommercial(1, bestInv1ph.kw)}>
+                              <div className="calc-reco-card-name">{bestInv1ph.kw} кВт · 1-фаза</div>
+                              <div className="calc-reco-card-out">{bestInv1ph.model}</div>
+                              <div className="calc-reco-card-price">{formatPrice(bestInv1ph.priceUah)}</div>
+                              <div className="calc-reco-card-badge">Рекомендовано</div>
+                            </div>
+                          )}
+                          {bestInv3ph && (
+                            <div className="calc-reco-card" onClick={() => scrollToCommercial(3, bestInv3ph.kw)}>
+                              <div className="calc-reco-card-name">{bestInv3ph.kw} кВт · 3-фази</div>
+                              <div className="calc-reco-card-out">{bestInv3ph.model}</div>
+                              <div className="calc-reco-card-price">{formatPrice(bestInv3ph.priceUah)}</div>
+                              <div className="calc-reco-card-badge">3-фази</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <button style={{ marginTop: '1rem' }} onClick={() => scrollToCommercial(1, bestInv1ph?.kw || invSelectedKw)}>
+                        Переглянути всі інвертори →
+                      </button>
+                    </div>
+                  ) : (
+                    /* ── Побутові системи підходять ── */
                     <>
                       <div className="calc-reco-title">
                         ⚡ {fittingProducts.length === PRODUCTS.length
@@ -3647,58 +3707,37 @@ export default function SolarBalkon() {
                           </div>
                         ))}
                       </div>
-                      {/* If some don't fit, mention commercial option */}
                       {fittingProducts.length < PRODUCTS.length && (
                         <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.8rem', opacity: 0.7 }}>
-                          💡 Системи з виходом менше {totalWatts.toLocaleString()} Вт не підходять для вашого навантаження
+                          💡 Системи з виходом менше {totalWatts.toLocaleString()} Вт не підходять
                         </div>
                       )}
-                    </>
-                  ) : (
-                    <>
-                      <div className="calc-reco-title">
-                        🏢 Навантаження {totalWatts.toLocaleString()} Вт перевищує побутові системи — потрібна комерційна СЕС
-                      </div>
-                      <div className="calc-reco-commercial">
-                        <p>
-                          Для потужності {totalWatts.toLocaleString()} Вт рекомендуємо гібридний інвертор Deye:
-                        </p>
-                        <div className="calc-reco-grid">
-                          {bestInv1ph && (
-                            <div className="calc-reco-card best" onClick={() => {
-                              setTariffType('commercial'); setConfigSystem('deye');
-                              setInvPhaseFilter(1); setInvSelectedKw(bestInv1ph.kw);
-                              setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
-                            }}>
-                              <div className="calc-reco-card-name">{bestInv1ph.name}</div>
-                              <div className="calc-reco-card-out">{bestInv1ph.kw} кВт · 1-фаза</div>
-                              <div className="calc-reco-card-price">{formatPrice(bestInv1ph.priceUah)}</div>
-                              <div className="calc-reco-card-badge">Рекомендовано</div>
-                            </div>
-                          )}
-                          {bestInv3ph && (
-                            <div className="calc-reco-card" onClick={() => {
-                              setTariffType('commercial'); setConfigSystem('deye');
-                              setInvPhaseFilter(3); setInvSelectedKw(bestInv3ph.kw);
-                              setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
-                            }}>
-                              <div className="calc-reco-card-name">{bestInv3ph.name}</div>
-                              <div className="calc-reco-card-out">{bestInv3ph.kw} кВт · 3-фази</div>
-                              <div className="calc-reco-card-price">{formatPrice(bestInv3ph.priceUah)}</div>
-                              <div className="calc-reco-card-badge">3-фази</div>
-                            </div>
-                          )}
+                      {/* Commercial inverters block — shown when load >2400W */}
+                      {totalWatts > 2400 && showCommercialCards && (
+                        <div style={{ marginTop: '1.25rem', padding: '1rem', background: 'rgba(251,192,45,0.08)', borderRadius: 'var(--radius)', border: '1px solid rgba(251,192,45,0.35)' }}>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--gray-800)' }}>
+                            💼 Також розгляньте комерційні інвертори Deye:
+                          </div>
+                          <div className="calc-reco-grid">
+                            {bestInv1ph && (
+                              <div className="calc-reco-card" onClick={() => scrollToCommercial(1, bestInv1ph.kw)}>
+                                <div className="calc-reco-card-name">{bestInv1ph.kw} кВт · 1-фаза</div>
+                                <div className="calc-reco-card-out">{bestInv1ph.model}</div>
+                                <div className="calc-reco-card-price">{formatPrice(bestInv1ph.priceUah)}</div>
+                                <div className="calc-reco-card-badge">Deye</div>
+                              </div>
+                            )}
+                            {bestInv3ph && (
+                              <div className="calc-reco-card" onClick={() => scrollToCommercial(3, bestInv3ph.kw)}>
+                                <div className="calc-reco-card-name">{bestInv3ph.kw} кВт · 3-фази</div>
+                                <div className="calc-reco-card-out">{bestInv3ph.model}</div>
+                                <div className="calc-reco-card-price">{formatPrice(bestInv3ph.priceUah)}</div>
+                                <div className="calc-reco-card-badge">3-фази</div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <button
-                          style={{ marginTop: '1rem' }}
-                          onClick={() => {
-                            setTariffType('commercial'); setConfigSystem('deye');
-                            setTimeout(() => document.getElementById('commercial')?.scrollIntoView({behavior:'smooth'}), 200);
-                          }}
-                        >
-                          Переглянути комерційні інвертори →
-                        </button>
-                      </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -3785,7 +3824,7 @@ export default function SolarBalkon() {
 
       {/* COMMERCIAL INVERTERS */}
       {tariffType === 'commercial' && commercialInverters.length > 0 && (
-        <section className="section section-green" id="commercial">
+        <section className="section section-green" id="commercial" style={{ scrollMarginTop: '80px' }}>
           <div className="section-title fade-up">Комерційні інвертори Deye</div>
           <div className="section-sub fade-up-d1">Гібридні інвертори для дому та бізнесу — оберіть потужність та кількість фаз</div>
 
@@ -3938,6 +3977,102 @@ export default function SolarBalkon() {
         </section>
       )}
 
+
+      {/* BATTERIES DEYE — shown after inverters on commercial tariff */}
+      {tariffType === 'commercial' && nkonBatteries.length > 0 && (
+        <section className="section" id="batteries" style={{ background: '#fffde7' }}>
+          <div className="section-title fade-up">Акумуляторні батареї Deye</div>
+          <div className="section-sub fade-up-d1">Накопичувачі енергії LiFePO4 — оберіть модель для вашого інвертора</div>
+
+          {/* Battery selector tabs */}
+          <div className="inv-kw-buttons fade-up-d2" style={{ marginBottom: '1.5rem' }}>
+            {nkonBatteries.map(bat => (
+              <button
+                key={bat.model}
+                className={`inv-kw-btn ${selectedBattery?.model === bat.model ? 'active' : ''}`}
+                onClick={() => setSelectedBattery(bat)}
+                style={{ fontSize: '0.82rem' }}
+              >
+                {bat.model}
+              </button>
+            ))}
+          </div>
+
+          {/* Battery card */}
+          {selectedBattery && (() => {
+            const bat = selectedBattery;
+            const specPairs = bat.specs ? bat.specs.split(';').map(s => {
+              const [k, ...v] = s.split(':');
+              return k && v.length ? [k.trim(), v.join(':').trim()] : null;
+            }).filter(Boolean) : [];
+
+            return (
+              <div className="inv-card fade-up">
+                <div className="inv-card-left">
+                  <div style={{ width: 160, height: 160, background: 'var(--yellow-100)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>
+                    🔋
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>{bat.model}</div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)' }}>{bat.category}</div>
+                  </div>
+                </div>
+                <div className="inv-card-right">
+                  <div className="inv-card-name">{bat.name}</div>
+                  <div className="inv-card-model">{bat.model}</div>
+
+                  <div className="inv-card-badges">
+                    <span className="inv-badge" style={{ background: '#e8f5e9', color: '#2d7a3a' }}>LiFePO4</span>
+                    <span className="inv-badge" style={{ background: '#e3f2fd', color: '#1565c0' }}>Deye</span>
+                    {bat.availability && (
+                      <span className={`inv-badge ${bat.availability === 'В наявності' ? 'inv-badge-avail' : ''}`}
+                        style={bat.availability !== 'В наявності' ? { background: '#fff3e0', color: '#e65100' } : {}}>
+                        {bat.availability}
+                      </span>
+                    )}
+                  </div>
+
+                  {specPairs.length > 0 && (
+                    <div className="inv-card-specs">
+                      {specPairs.map(([k, v], j) => (
+                        <div className="inv-card-spec" key={j}>
+                          <span className="inv-card-spec-label">{k}</span>
+                          <span className="inv-card-spec-value">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {bat.usp && <div className="inv-card-usp">💡 {bat.usp}</div>}
+
+                  <div className="inv-card-price">{formatPrice(bat.priceUah)}</div>
+                  <div className="inv-card-price-eur">{bat.clientEur?.toFixed(2)} € · курс ПриватБанку</div>
+
+                  <div className="inv-card-actions">
+                    <button
+                      className="inv-card-buy"
+                      onClick={() => {
+                        setDirectOrder({ name: bat.name + ' (' + bat.model + ')', price: bat.priceUah });
+                        setShowOrderForm(true);
+                        setOrderStatus(null);
+                        setOrderForm({ name: '', phone: '', address: '' });
+                      }}
+                    >
+                      🛒 Замовити
+                    </button>
+                    {bat.productUrl && (
+                      <a className="inv-card-link" href={bat.productUrl} target="_blank" rel="noopener noreferrer">
+                        🔗 Магазин
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+      )}
+
       {/* EQUIPMENT / CONFIGURATOR or AUDIT */}
       {tariffType !== 'commercial' ? (
       <section className="section section-alt" id="equip">
@@ -4080,8 +4215,24 @@ export default function SolarBalkon() {
         </div>
       </section>
       ) : (
-      <div id="equip">
-        <AuditWizard goToPage={goToPage} liveInverters={commercialInverters} />
+      <div id="equip" style={{ scrollMarginTop: '80px' }}>
+        {/* Commercial tariff: configurator replaced by AuditWizard CTA */}
+        <section className="section section-alt">
+          <div className="section-title fade-up">Розрахунок комерційної СЕС</div>
+          <div className="section-sub fade-up-d1">Повний енергоаудит об'єкта — розрахунок окупності, підбір інвертора та батарей</div>
+          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <button
+              className="hero-cta"
+              onClick={() => goToPage('audit')}
+              style={{ display: 'inline-block' }}
+            >
+              🔍 Розпочати аудит об'єкта →
+            </button>
+            <p style={{ marginTop: '1rem', color: 'var(--gray-500)', fontSize: '0.9rem' }}>
+              Або прокрутіть вгору щоб переглянути інвертори та батареї Deye
+            </p>
+          </div>
+        </section>
       </div>
       )}
 
