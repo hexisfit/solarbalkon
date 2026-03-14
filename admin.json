@@ -1,3 +1,32 @@
 {
-  "_ping": true
+  "_ping": true,
+  "settings": {
+    "markupEur": 25,
+    "markupPercent": 15
+  },
+  "overrides": [
+    {
+      "name": "Акумулятор Deye SE-F12-C",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "SE-F12-C",
+      "kw": 0,
+      "phases": 1,
+      "specs": "Напруга:51.2В;Ємність:12кВт⋅год;Хімія:LiFePO4",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-se-f12-c.html",
+      "weight": "",
+      "purchaseEur": 1279.95,
+      "clientEur": 1500.69,
+      "priceUah": 76700,
+      "availability": "Попереднє замовлення",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-se-f12-c.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "",
+      "manualPrice": 1500.69,
+      "skipAutoUpdate": false
+    }
+  ],
+  "mobileExportVersion": 2,
+  "updatedAt": "2026-03-14T12:04:26.316Z"
 }
