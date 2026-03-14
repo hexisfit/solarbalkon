@@ -3424,8 +3424,8 @@ function AdminProductModal({ product, type, onSave, onClose, password }) {
 }
 
 function AdminPanel({ goToPage }) {
-  const [authed, setAuthed]       = useState(false);
-  const [password, setPassword]   = useState('');
+  const [authed, setAuthed]       = useState(() => !!sessionStorage.getItem('sb_admin_token'));
+  const [password, setPassword]   = useState(() => sessionStorage.getItem('sb_admin_token') || '');
   const [authError, setAuthError] = useState('');
   const [tab, setTab]             = useState('inverters');
   const [saving, setSaving]       = useState(false);
@@ -3439,6 +3439,11 @@ function AdminPanel({ goToPage }) {
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
+  // Auto-load data if already authenticated (page refresh)
+  useEffect(() => {
+    if (authed && password) loadData(password);
+  }, []);
+
   const handleLogin = async () => {
     setLoading(true);
     setAuthError('');
@@ -3449,6 +3454,7 @@ function AdminPanel({ goToPage }) {
         body: JSON.stringify({ _ping: true }),
       });
       if (testRes.status === 401) { setAuthError('Невірний пароль'); setLoading(false); return; }
+      sessionStorage.setItem('sb_admin_token', password);
       setAuthed(true);
       await loadData(password);
     } catch { setAuthError('Помилка підключення'); }
@@ -3633,6 +3639,11 @@ function AdminPanel({ goToPage }) {
           <button className="adm-btn adm-btn-yellow" onClick={save} disabled={saving}>
             {saving ? 'Зберігаємо...' : '💾 Зберегти'}
           </button>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => {
+            sessionStorage.removeItem('sb_admin_token');
+            setAuthed(false);
+            setPassword('');
+          }}>🚪 Вийти</button>
           <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => goToPage('home')}>← Сайт</button>
         </div>
       </div>
