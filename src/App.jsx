@@ -3234,7 +3234,7 @@ const ADMIN_CSS = `
 .adm-stat-l { font-size: 0.8rem; color: #757575; margin-top: 2px; }
 `;
 
-export default function AdminPanel({ goToPage }) {
+function AdminPanel({ goToPage }) {
   const [authed, setAuthed]         = useState(false);
   const [password, setPassword]     = useState('');
   const [authError, setAuthError]   = useState('');
