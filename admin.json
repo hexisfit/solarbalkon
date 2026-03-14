@@ -67,8 +67,29 @@
       "imageUrl": "/batteries/-----------Deye-SE-F16-C.png",
       "manualPrice": 1868.69,
       "skipAutoUpdate": false
+    },
+    {
+      "name": "BMS/BDU Deye GB-L-Pro",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "GB-L-Pro-BMS-BDU",
+      "kw": 0,
+      "phases": 1,
+      "specs": "Тип:BMS+BDU;Сумісність:GB-L-Pro серія",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-gb-l-pro-bms-bdu.html",
+      "weight": "",
+      "purchaseEur": 519.95,
+      "clientEur": 626.69,
+      "priceUah": 32000,
+      "availability": "В наявності",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-gb-l-pro-bms-bdu.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "/batteries/BMS-BDU-Deye-GB-L-Pro.png",
+      "manualPrice": 626.69,
+      "skipAutoUpdate": false
     }
   ],
-  "mobileExportVersion": 4,
-  "updatedAt": "2026-03-14T12:08:21.482Z"
+  "mobileExportVersion": 5,
+  "updatedAt": "2026-03-14T12:10:01.525Z"
 }
