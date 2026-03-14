@@ -1,3 +1,32 @@
 {
-  "_ping": true
+  "_ping": true,
+  "settings": {
+    "markupEur": 25,
+    "markupPercent": 15
+  },
+  "overrides": [
+    {
+      "name": "Акумулятор Deye SE-F5-Pro-C 51.2V 5.12kWh",
+      "category": "Батарея",
+      "manufacturer": "Deye",
+      "model": "SE-F5-Pro-C",
+      "kw": 0,
+      "phases": 1,
+      "specs": "Напруга:51.2В;Ємність:5.12кВт⋅год;Хімія:LiFePO4;Тип:настінна",
+      "sourceUrl": "https://www.nkon.nl/ru/deye-se-f5-pro-c-51-2v-5-12kwh-thuisbatterij.html",
+      "weight": "",
+      "purchaseEur": 689.95,
+      "clientEur": 822.19,
+      "priceUah": 42000,
+      "availability": "В наявності",
+      "usp": "",
+      "productUrl": "https://www.nkon.nl/ru/deye-se-f5-pro-c-51-2v-5-12kwh-thuisbatterij.html",
+      "compatibleIds": "14.03.2026 9:54",
+      "imageUrl": "",
+      "manualPrice": 822.19,
+      "skipAutoUpdate": false
+    }
+  ],
+  "mobileExportVersion": 2,
+  "updatedAt": "2026-03-14T11:29:08.333Z"
 }
