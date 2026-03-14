@@ -4765,9 +4765,17 @@ export default function SolarBalkon() {
             return (
               <div className="inv-card fade-up">
                 <div className="inv-card-left">
-                  <div style={{ width: 160, height: 160, background: 'var(--yellow-100)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>
-                    🔋
-                  </div>
+                  {bat.imageUrl ? (
+                    <img
+                      src={bat.imageUrl}
+                      alt={bat.name}
+                      style={{ maxWidth: '100%', maxHeight: '220px', objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <div style={{ width: 160, height: 160, background: 'var(--yellow-100)', borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>
+                      🔋
+                    </div>
+                  )}
                   <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>{bat.model}</div>
                     <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)' }}>{bat.category}</div>
