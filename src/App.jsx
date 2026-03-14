@@ -3247,6 +3247,168 @@ const ADMIN_CSS = `
 `;
 
 
+
+function AdminSystemModal({ product, onSave, onClose, password }) {
+  const BASE_KEYS = ['ecoflow','zendure','deye','anker'];
+  const isNew = !product.key || !BASE_KEYS.includes(product.key);
+  const [form, setForm] = useState({
+    key:       product.key      || '',
+    name:      product.name     || '',
+    price:     product.price    || 0,
+    capacity:  product.capacity || 0,
+    output:    product.output   || 0,
+    cycles:    product.cycles   || 6000,
+    warranty:  product.warranty || 2,
+    battery:   product.battery  || 'LiFePO4',
+    ip:        product.ip       || 'IP65',
+    ups:       product.ups      || false,
+    maxPanels: product.maxPanels|| 4,
+    color:     product.color    || '#4caf50',
+    image:     product.image    || '',
+    available: product.available !== false,
+    pageKey:   product.pageKey  || product.key || '',
+  });
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(null);
+
+  const handleImageUpload = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploading(true);
+    const base64 = await new Promise(res => {
+      const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file);
+    });
+    setPreview(URL.createObjectURL(file));
+    try {
+      const resp = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+        body: JSON.stringify({ fileBase64: base64, filename: file.name, folder: 'systems' }),
+      });
+      const data = await resp.json();
+      if (data.success) setForm(p => ({ ...p, image: data.url }));
+    } catch(e) { console.error(e); }
+    setUploading(false);
+  };
+
+  const autoKey = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
+
+  return (
+    <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="adm-modal" style={{ maxWidth: 680 }}>
+        <div className="adm-modal-head">
+          <h3>{isNew ? '➕ Новий продукт' : `✏️ ${form.name}`}</h3>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="adm-grid2">
+          <div className="adm-field">
+            <label>Назва системи *</label>
+            <input value={form.name} onChange={e => {
+              const v = e.target.value;
+              setForm(p => ({ ...p, name: v, ...(isNew ? { key: autoKey(v), pageKey: autoKey(v) } : {}) }));
+            }} placeholder="EcoFlow STREAM AC Pro" />
+          </div>
+          <div className="adm-field">
+            <label>Ключ (key) — унікальний ID</label>
+            <input value={form.key} onChange={e => setForm(p => ({ ...p, key: e.target.value }))}
+              disabled={!isNew} style={{ fontFamily:'monospace', background: !isNew ? '#f5f5f5' : '' }}
+              placeholder="ecoflow" />
+            {!isNew && <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginTop:2}}>Вбудований — key незмінний</p>}
+          </div>
+        </div>
+
+        <div className="adm-grid3">
+          <div className="adm-field">
+            <label>Ціна (грн)</label>
+            <input type="number" value={form.price} onChange={e => setForm(p => ({ ...p, price: parseInt(e.target.value)||0 }))} />
+          </div>
+          <div className="adm-field">
+            <label>Ємність (Вт·год)</label>
+            <input type="number" value={form.capacity} onChange={e => setForm(p => ({ ...p, capacity: parseInt(e.target.value)||0 }))} />
+          </div>
+          <div className="adm-field">
+            <label>Вихідна потужність (Вт)</label>
+            <input type="number" value={form.output} onChange={e => setForm(p => ({ ...p, output: parseInt(e.target.value)||0 }))} />
+          </div>
+        </div>
+
+        <div className="adm-grid3">
+          <div className="adm-field">
+            <label>Цикли</label>
+            <input type="number" value={form.cycles} onChange={e => setForm(p => ({ ...p, cycles: parseInt(e.target.value)||0 }))} />
+          </div>
+          <div className="adm-field">
+            <label>Гарантія (роки)</label>
+            <input type="number" value={form.warranty} onChange={e => setForm(p => ({ ...p, warranty: parseInt(e.target.value)||0 }))} />
+          </div>
+          <div className="adm-field">
+            <label>Макс. панелей</label>
+            <select value={form.maxPanels} onChange={e => setForm(p => ({ ...p, maxPanels: parseInt(e.target.value) }))}>
+              <option value={2}>2</option><option value={4}>4</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="adm-grid3">
+          <div className="adm-field">
+            <label>Тип батареї</label>
+            <input value={form.battery} onChange={e => setForm(p => ({ ...p, battery: e.target.value }))} placeholder="LiFePO4" />
+          </div>
+          <div className="adm-field">
+            <label>Захист IP</label>
+            <input value={form.ip} onChange={e => setForm(p => ({ ...p, ip: e.target.value }))} placeholder="IP65" />
+          </div>
+          <div className="adm-field">
+            <label>Колір картки</label>
+            <input type="color" value={form.color} onChange={e => setForm(p => ({ ...p, color: e.target.value }))}
+              style={{ width:'100%', height:40, padding:2, borderRadius:6, border:'1px solid #e0e0e0', cursor:'pointer' }} />
+          </div>
+        </div>
+
+        <div className="adm-grid2" style={{ marginBottom:'1rem' }}>
+          <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:'0.9rem' }}>
+            <input type="checkbox" checked={form.ups} onChange={e => setForm(p => ({ ...p, ups: e.target.checked }))} style={{width:'auto'}} />
+            ⚡ UPS функція (безперебійне живлення)
+          </label>
+          <label style={{ display:'flex', alignItems:'center', gap:8, fontSize:'0.9rem' }}>
+            <input type="checkbox" checked={form.available} onChange={e => setForm(p => ({ ...p, available: e.target.checked }))} style={{width:'auto'}} />
+            ✅ Доступний (показувати на сайті)
+          </label>
+        </div>
+
+        <div className="adm-field">
+          <label>Фото товару</label>
+          <div className="adm-upload-zone"
+            onDragOver={e => e.preventDefault()}
+            onDrop={e => { e.preventDefault(); handleImageUpload(e.dataTransfer.files[0]); }}
+            onClick={() => document.getElementById('sys-img-upload').click()}>
+            <input id="sys-img-upload" type="file" accept="image/*" style={{display:'none'}}
+              onChange={e => handleImageUpload(e.target.files[0])} />
+            {uploading ? <div style={{color:'#9e9e9e'}}>Завантаження...</div> : (
+              <><div style={{fontSize:'2rem',marginBottom:'0.5rem'}}>📷</div>
+              <div style={{fontSize:'0.85rem',color:'#9e9e9e'}}>Перетягніть або натисніть</div></>
+            )}
+          </div>
+          {(preview || form.image) && (
+            <img src={preview || form.image} alt="preview"
+              style={{maxWidth:'100%',maxHeight:160,objectFit:'contain',borderRadius:8,marginTop:8}} />
+          )}
+          {form.image && <p style={{fontSize:'0.78rem',color:'#4caf50',marginTop:4}}>✅ {form.image}</p>}
+        </div>
+
+        <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:'1.5rem', borderTop:'1px solid #f0f0f0', paddingTop:'1rem' }}>
+          <button className="adm-btn adm-btn-ghost" onClick={onClose}>Скасувати</button>
+          <button className="adm-btn adm-btn-primary"
+            disabled={!form.name.trim() || !form.key.trim()}
+            onClick={() => onSave(form)}>
+            💾 Зберегти
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminBlogModal({ post, onSave, onClose, password }) {
   const isNew = !post.slug;
   const [form, setForm] = useState({
@@ -3617,7 +3779,9 @@ function AdminPanel({ goToPage }) {
   const [settings, setSettings]   = useState({ markupEur: 25, markupPercent: 15 });
   const [editModal, setEditModal] = useState(null); // { product, type }
   const [blogPosts, setBlogPosts] = useState([]);
-  const [blogModal, setBlogModal] = useState(null); // null | 'new' | {post}
+  const [blogModal, setBlogModal] = useState(null);
+  const [systems, setSystems] = useState([]);
+  const [sysModal, setSysModal] = useState(null); // null | product object
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
@@ -3655,6 +3819,7 @@ function AdminPanel({ goToPage }) {
       setAdminData(admin);
       setSettings(admin.settings || { markupEur: 25, markupPercent: 15 });
       setBlogPosts(admin.blogPosts || []);
+      setSystems(admin.products || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
@@ -3671,6 +3836,7 @@ function AdminPanel({ goToPage }) {
         settings,
         overrides: Object.values(editOverrides),
         blogPosts,
+        products: systems,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
         updatedAt: new Date().toISOString(),
       };
@@ -3836,6 +4002,7 @@ function AdminPanel({ goToPage }) {
         {[
           { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
+          { id: 'systems',   label: `🏠 Системи (${4 + systems.filter(s => !['ecoflow','zendure','deye','anker'].includes(s.key)).length})` },
           { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
           { id: 'settings',  label: '⚙️ Ціни' },
           { id: 'export',    label: '📱 Мобільний' },
@@ -3896,6 +4063,91 @@ function AdminPanel({ goToPage }) {
             </div>
           </div>
         )}
+
+        {tab === 'systems' && (() => {
+          const BASE_KEYS = ['ecoflow','zendure','deye','anker'];
+          const BASE_PRODUCTS = [
+            { key:'ecoflow', name:'EcoFlow STREAM AC Pro',      price:40000, capacity:1920, output:1200, cycles:6000, warranty:2,  battery:'LFP',      ip:'IP65', ups:false, maxPanels:4, color:'#4caf50', image:'/ecoflow.png' },
+            { key:'zendure', name:'Zendure SolarFlow 2400 AC+', price:50000, capacity:2400, output:2400, cycles:6000, warranty:10, battery:'LiFePO4',  ip:'IP65', ups:false, maxPanels:4, color:'#5c6bc0', image:'/zendure.png' },
+            { key:'deye',    name:'Deye AE-FS2.0-2H2',          price:40000, capacity:2000, output:1000, cycles:6000, warranty:10, battery:'LiFePO4',  ip:'IP65', ups:true,  maxPanels:4, color:'#fbc02d', image:'/deye.png' },
+            { key:'anker',   name:'Anker SOLIX F3800',           price:151700,capacity:3840, output:6000, cycles:3000, warranty:5,  battery:'LFP',      ip:'IP65', ups:true,  maxPanels:2, color:'#00a0e3', image:'/anker.png' },
+          ];
+          const ovMap = {};
+          systems.forEach(s => { if(s.key) ovMap[s.key] = s; });
+          const allSystems = [
+            ...BASE_PRODUCTS.map(p => ({ ...p, ...(ovMap[p.key]||{}), _builtin: true })),
+            ...systems.filter(s => !BASE_KEYS.includes(s.key)),
+          ];
+          return (
+          <>
+            <div className="adm-card">
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
+                <h3 style={{margin:0}}>Побутові системи накопичення ({allSystems.length})</h3>
+                <button className="adm-btn adm-btn-primary adm-btn-sm"
+                  onClick={() => setSysModal({ key:'', name:'', price:0, capacity:0, output:0 })}>
+                  + Новий продукт
+                </button>
+              </div>
+              <p style={{ fontSize:'0.82rem', color:'#9e9e9e', marginBottom:'1rem' }}>
+                Зміни застосовуються скрізь: картки товарів, конфігуратор, калькулятор, детальні сторінки.
+                Зніми "Доступний" щоб прибрати товар з сайту.
+              </p>
+              <table className="adm-table">
+                <thead>
+                  <tr>
+                    <th>Фото</th><th>Назва</th><th>Ємність</th><th>Вихід</th><th>Ціна</th><th>UPS</th><th>Статус</th><th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allSystems.map(sys => {
+                    const isEdited = sys._builtin && ovMap[sys.key];
+                    return (
+                      <tr key={sys.key}>
+                        <td>
+                          {sys.image
+                            ? <img src={sys.image} alt="" style={{width:48,height:36,objectFit:'contain',borderRadius:4,background:'#f9f9f9'}} />
+                            : <div style={{width:48,height:36,background:'#f5f5f5',borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.2rem'}}>📦</div>
+                          }
+                        </td>
+                        <td>
+                          <div style={{fontWeight:600,fontSize:'0.85rem'}}>{sys.name}</div>
+                          <div style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e'}}>{sys.key}</div>
+                        </td>
+                        <td style={{fontSize:'0.85rem'}}>{(sys.capacity/1000).toFixed(1)} кВт·год</td>
+                        <td style={{fontSize:'0.85rem'}}>{sys.output.toLocaleString()} Вт</td>
+                        <td style={{fontWeight:600,fontSize:'0.85rem'}}>{(sys.price||0).toLocaleString()} ₴</td>
+                        <td>{sys.ups ? '⚡ Так' : '—'}</td>
+                        <td>
+                          {sys.available === false
+                            ? <span className="adm-badge adm-badge-no">Приховано</span>
+                            : sys._builtin && !isEdited
+                              ? <span className="adm-badge" style={{background:'#e3f2fd',color:'#1565c0'}}>Вбудований</span>
+                              : isEdited
+                                ? <span className="adm-badge" style={{background:'#fff3e0',color:'#e65100'}}>Відредаговано</span>
+                                : <span className="adm-badge adm-badge-ok">Новий</span>
+                          }
+                        </td>
+                        <td style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                            onClick={() => setSysModal({ ...sys })}>✏️</button>
+                          {isEdited && (
+                            <button className="adm-btn adm-btn-ghost adm-btn-sm" title="Скинути до оригіналу"
+                              onClick={() => { if(window.confirm('Скинути зміни?')) setSystems(prev => prev.filter(s => s.key !== sys.key)); }}>↺</button>
+                          )}
+                          {!sys._builtin && (
+                            <button className="adm-btn adm-btn-danger adm-btn-sm"
+                              onClick={() => { if(window.confirm('Видалити продукт?')) setSystems(prev => prev.filter(s => s.key !== sys.key)); }}>🗑</button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+          );
+        })()}
 
         {tab === 'blog' && (() => {
           // Merge: ARTICLES (built-in) + blogPosts (from admin.json)
@@ -4010,6 +4262,23 @@ function AdminPanel({ goToPage }) {
         )}
       </div>
 
+      {sysModal && (
+        <AdminSystemModal
+          product={sysModal}
+          password={password}
+          onSave={(updated) => {
+            setSystems(prev => {
+              const idx = prev.findIndex(s => s.key === updated.key);
+              if (idx >= 0) { const next = [...prev]; next[idx] = updated; return next; }
+              return [...prev, updated];
+            });
+            setSysModal(null);
+            showToast('✅ Продукт збережено — натисни "Зберегти" щоб опублікувати');
+          }}
+          onClose={() => setSysModal(null)}
+        />
+      )}
+
       {blogModal && (
         <AdminBlogModal
           post={blogModal}
@@ -4067,6 +4336,7 @@ export default function SolarBalkon() {
   const [nkonBatteries, setNkonBatteries] = useState([]);
   const [selectedBattery, setSelectedBattery] = useState(null);
   const [adminArticles, setAdminArticles] = useState([]); // extra articles from admin.json
+  const [adminProducts, setAdminProducts] = useState([]); // product overrides from admin.json
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -4164,6 +4434,7 @@ export default function SolarBalkon() {
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data?.blogPosts?.length) setAdminArticles(data.blogPosts);
+        if (data?.products?.length)  setAdminProducts(data.products);
       })
       .catch(() => {});
   }, []);
@@ -4198,11 +4469,30 @@ export default function SolarBalkon() {
       .catch(err => console.log('⚠️ Інвертори недоступні:', err));
   }, []);
 
-  // Merge sheet prices into products
-  const PRODUCTS = PRODUCTS_BASE.map(p => ({
-    ...p,
-    price: (sheetPrices && sheetPrices[p.name]) || p.price,
-  }));
+  // Merge: PRODUCTS_BASE + sheet prices + admin.json overrides
+  const PRODUCTS = (() => {
+    // Start with base + sheet prices
+    const withPrices = PRODUCTS_BASE.map(p => ({
+      ...p,
+      price: (sheetPrices && sheetPrices[p.name]) || p.price,
+    }));
+    // Apply admin overrides by key
+    const overrideMap = {};
+    adminProducts.forEach(p => { if (p.key) overrideMap[p.key] = p; });
+    const merged = withPrices.map(p => ({
+      ...p,
+      ...(overrideMap[p.key] || {}),
+      // Always recalculate price from admin if set, or keep sheet price
+      price: overrideMap[p.key]?.price || (sheetPrices && sheetPrices[p.name]) || p.price,
+    }));
+    // Add new products from admin that don't exist in base
+    adminProducts.forEach(ap => {
+      if (!withPrices.find(p => p.key === ap.key)) {
+        merged.push({ maxPanels: 4, ups: false, ...ap });
+      }
+    });
+    return merged.filter(p => p.available !== false);
+  })();
 
   // Helper: get formatted price for detail pages
   const getPrice = (name) => {
