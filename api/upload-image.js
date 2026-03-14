@@ -4,8 +4,6 @@
 //
 // ENV: ADMIN_PASSWORD, GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO
 
-export const config = { api: { bodyParser: { sizeLimit: '5mb' } } };
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -66,8 +64,10 @@ export default async function handler(req, res) {
     });
 
     if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || `GitHub PUT ${putRes.status}`);
+      let errMsg = `GitHub PUT ${putRes.status}`;
+      try { const err = await putRes.json(); errMsg = err.message || errMsg; } catch {}
+      console.error('GitHub PUT error:', errMsg);
+      return res.status(500).json({ error: errMsg });
     }
 
     const publicUrl = `/${folder}/${safeName}`;
