@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
 
   const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRugOouDlg1Dy8RaUVuAXtJSYl1UI3qpwu-Lhib0OjFBVS6IlM6t-puBvzfWEGRNikipQtU9nXKv5YY/pub?output=csv';
   const PRIVAT_API    = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5';
