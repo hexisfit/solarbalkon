@@ -2466,6 +2466,95 @@ body {
 }
 .chat-send:hover { opacity:0.9; }
 .chat-send:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* ═══════ CART ═══════ */
+.nav-cart-btn {
+  position: relative; background: none; border: none; cursor: pointer;
+  padding: 6px 8px; border-radius: 8px; color: var(--gray-800);
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 600; transition: background .15s;
+}
+.nav-cart-btn:hover { background: var(--green-50); color: var(--green-700); }
+.nav-cart-badge {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--yellow-500); color: #333; font-size: 0.65rem;
+  font-weight: 800; width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.cart-drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2000;
+  display: flex; justify-content: flex-end;
+}
+.cart-drawer {
+  width: 100%; max-width: 420px; background: white; height: 100%;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.15);
+}
+.cart-drawer-head {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cart-drawer-head h2 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+.cart-drawer-close {
+  background: none; border: none; cursor: pointer; font-size: 1.3rem;
+  color: var(--gray-500); padding: 4px 8px; border-radius: 6px;
+}
+.cart-drawer-close:hover { background: var(--gray-100); }
+.cart-drawer-body {
+  flex: 1; overflow-y: auto; padding: 1rem 1.5rem;
+}
+.cart-empty {
+  text-align: center; padding: 3rem 1rem; color: var(--gray-500);
+}
+.cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+.cart-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+}
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-name {
+  font-size: 0.88rem; font-weight: 600; color: var(--gray-800);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cart-item-model { font-size: 0.78rem; color: var(--gray-500); margin-top: 2px; }
+.cart-item-price { font-size: 0.9rem; font-weight: 700; color: var(--green-700); margin-top: 4px; }
+.cart-item-qty {
+  display: flex; align-items: center; gap: 6px; margin-top: 6px;
+}
+.cart-qty-btn {
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1px solid var(--gray-300); background: white;
+  cursor: pointer; font-size: 1rem; display: flex;
+  align-items: center; justify-content: center; color: var(--gray-700);
+}
+.cart-qty-btn:hover { background: var(--gray-100); }
+.cart-qty-num { font-size: 0.85rem; font-weight: 600; min-width: 20px; text-align: center; }
+.cart-item-remove {
+  background: none; border: none; cursor: pointer; color: var(--gray-400);
+  font-size: 1rem; padding: 4px; border-radius: 4px; flex-shrink: 0;
+}
+.cart-item-remove:hover { color: #e53935; background: #ffeaea; }
+.cart-drawer-foot {
+  padding: 1.25rem 1.5rem; border-top: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+.cart-total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem;
+}
+.cart-total-label { font-size: 0.9rem; color: var(--gray-600); }
+.cart-total-price { font-size: 1.2rem; font-weight: 800; color: var(--green-700); }
+.cart-checkout-btn {
+  width: 100%; padding: 14px; background: var(--green-700);
+  color: white; border: none; border-radius: var(--radius); cursor: pointer;
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.3px;
+  transition: background .15s;
+}
+.cart-checkout-btn:hover { background: var(--green-900); }
+.cart-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+.cart-page-title { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1.5rem; }
+@media(max-width:600px){ .cart-drawer{ max-width:100%; } }
 `;
 
 const VIDEOS = [
@@ -3107,6 +3196,8 @@ export default function SolarBalkon() {
   const [configExtras, setConfigExtras] = useState([]);
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [orderForm, setOrderForm] = useState({ name: '', phone: '', address: '' });
+  const [cart, setCart] = useState([]); // [{id, name, model, price, qty, type}]
+  const [showCart, setShowCart] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null); // null | 'sending' | 'sent' | 'error'
   const [directOrder, setDirectOrder] = useState(null); // { name, price } for buying system only from detail page
   const [commercialInverters, setCommercialInverters] = useState([]);
@@ -3360,6 +3451,55 @@ export default function SolarBalkon() {
     }
   };
 
+  // ── CART HELPERS ──
+  const addToCart = (item) => {
+    // item: { id, name, model, price, type }
+    setCart(prev => {
+      const existing = prev.find(c => c.id === item.id);
+      if (existing) {
+        return prev.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c);
+      }
+      return [...prev, { ...item, qty: 1 }];
+    });
+    setShowCart(true);
+  };
+
+  const removeFromCart = (id) => setCart(prev => prev.filter(c => c.id !== id));
+
+  const updateQty = (id, delta) => {
+    setCart(prev => prev.map(c => c.id === id
+      ? { ...c, qty: Math.max(1, c.qty + delta) }
+      : c
+    ));
+  };
+
+  const cartTotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const cartCount = cart.reduce((s, c) => s + c.qty, 0);
+
+  const submitCartOrder = async () => {
+    if (!orderForm.name.trim() || !orderForm.phone.trim()) return;
+    setOrderStatus('sending');
+    const orderData = {
+      name: orderForm.name.trim(),
+      phone: orderForm.phone.trim(),
+      address: orderForm.address.trim() || null,
+      system: cart.map(c => `${c.name}${c.model ? ' (' + c.model + ')' : ''} × ${c.qty}`).join(', '),
+      panels: '',
+      components: cart.map(c => ({ name: c.name, qty: c.qty, price: formatPrice(c.price * c.qty) })),
+      extras: [],
+      total: formatPrice(cartTotal),
+    };
+    try {
+      const resp = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+      if (resp.ok) { setOrderStatus('sent'); setCart([]); }
+      else setOrderStatus('error');
+    } catch { setOrderStatus('error'); }
+  };
+
   // SEO: dynamic title & meta description per page
   useEffect(() => {
     const seo = {
@@ -3452,6 +3592,16 @@ export default function SolarBalkon() {
             <li><a href="/audit" className="nav-audit" onClick={(e) => { e.preventDefault(); goToPage('audit'); }}>⚡ Аудит СЕС</a></li>
             <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a></li>
           </ul>
+          <button
+            className="nav-cart-btn"
+            onClick={() => setShowCart(true)}
+            title="Кошик"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
+          </button>
           <div className="nav-social">
             <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
@@ -3816,6 +3966,16 @@ export default function SolarBalkon() {
               >
                 Детальніше →
               </button>
+              <button
+                className="product-btn"
+                style={{ background: 'var(--green-700)', color: 'white', borderColor: 'var(--green-700)', marginTop: '0.5rem' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart({ id: `sys-${p.key}`, name: p.name, model: '', price: p.price, type: 'system' });
+                }}
+              >
+                🛒 В кошик
+              </button>
             </div>
           ))}
         </div>
@@ -3950,6 +4110,19 @@ export default function SolarBalkon() {
                   <div className="inv-card-actions">
                     <button
                       className="inv-card-buy"
+                      onClick={() => addToCart({
+                        id: `inv-${inv.model}`,
+                        name: inv.name,
+                        model: inv.model,
+                        price: inv.priceUah,
+                        type: 'inverter',
+                      })}
+                    >
+                      🛒 В кошик
+                    </button>
+                    <button
+                      className="inv-card-buy"
+                      style={{ background: 'var(--gray-100)', color: 'var(--gray-800)', marginLeft: '0.5rem' }}
                       onClick={() => {
                         setDirectOrder({ name: inv.name + ' (' + inv.model + ')', price: inv.priceUah });
                         setShowOrderForm(true);
@@ -3957,7 +4130,7 @@ export default function SolarBalkon() {
                         setOrderForm({ name: '', phone: '', address: '' });
                       }}
                     >
-                      🛒 Замовити
+                      Замовити одразу
                     </button>
                     {inv.productUrl && (
                       <a className="inv-card-link" href={inv.productUrl} target="_blank" rel="noopener noreferrer">
@@ -4051,6 +4224,19 @@ export default function SolarBalkon() {
                   <div className="inv-card-actions">
                     <button
                       className="inv-card-buy"
+                      onClick={() => addToCart({
+                        id: `bat-${bat.model}`,
+                        name: bat.name,
+                        model: bat.model,
+                        price: bat.priceUah,
+                        type: 'battery',
+                      })}
+                    >
+                      🛒 В кошик
+                    </button>
+                    <button
+                      className="inv-card-buy"
+                      style={{ background: 'var(--gray-100)', color: 'var(--gray-800)', marginLeft: '0.5rem' }}
                       onClick={() => {
                         setDirectOrder({ name: bat.name + ' (' + bat.model + ')', price: bat.priceUah });
                         setShowOrderForm(true);
@@ -4058,7 +4244,7 @@ export default function SolarBalkon() {
                         setOrderForm({ name: '', phone: '', address: '' });
                       }}
                     >
-                      🛒 Замовити
+                      Замовити одразу
                     </button>
                     {bat.productUrl && (
                       <a className="inv-card-link" href={bat.productUrl} target="_blank" rel="noopener noreferrer">
@@ -4173,7 +4359,20 @@ export default function SolarBalkon() {
             <div className="config-total-value">{configTotal > 0 ? formatPrice(configTotal) : '—'}</div>
             {configTotal > 0 && (
               <button
-                onClick={() => { setDirectOrder(null); setShowOrderForm(true); setOrderStatus(null); setOrderForm({ name: '', phone: '', address: '' }); }}
+                onClick={() => {
+                // Add full configurator set to cart
+                const systemProduct = PRODUCTS.find(p2 => p2.key === configSystem);
+                if (systemProduct) {
+                  addToCart({ id: `sys-${configSystem}`, name: systemProduct.name, model: '', price: configSystemPrice, type: 'system' });
+                }
+                [...panelItems, ...nonPanelRequired].forEach(c => {
+                  addToCart({ id: `comp-${c.sku}`, name: c.name, model: c.sku, price: c.priceUah, type: 'component' });
+                });
+                configExtras.forEach(sku => {
+                  const item = optionalComponents.find(c => c.sku === sku);
+                  if (item) addToCart({ id: `extra-${sku}`, name: item.name, model: sku, price: item.priceUah, type: 'component' });
+                });
+              }}
                 style={{
                   padding: '12px 28px', borderRadius: '50px', border: '2px solid white',
                   background: 'rgba(255,255,255,0.15)', color: 'white',
@@ -5699,6 +5898,154 @@ export default function SolarBalkon() {
 
       {/* ═══════ AUDIT PAGE ═══════ */}
       {currentPage === 'audit' && <AuditWizard goToPage={goToPage} liveInverters={commercialInverters} />}
+
+
+      {/* ═══════ CART DRAWER ═══════ */}
+      {showCart && (
+        <div className="cart-drawer-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowCart(false); }}>
+          <div className="cart-drawer">
+            <div className="cart-drawer-head">
+              <h2>🛒 Кошик {cartCount > 0 && <span style={{ fontSize:'0.85rem', fontWeight:400, color:'var(--gray-500)' }}>({cartCount} поз.)</span>}</h2>
+              <button className="cart-drawer-close" onClick={() => setShowCart(false)}>✕</button>
+            </div>
+
+            <div className="cart-drawer-body">
+              {cart.length === 0 ? (
+                <div className="cart-empty">
+                  <div className="cart-empty-icon">🛒</div>
+                  <p>Кошик порожній</p>
+                  <p style={{ fontSize:'0.85rem', marginTop:'0.5rem' }}>Додайте товари з каталогу</p>
+                </div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.id} className="cart-item">
+                    <div className="cart-item-info">
+                      <div className="cart-item-name">{item.name}</div>
+                      {item.model && <div className="cart-item-model">{item.model}</div>}
+                      <div className="cart-item-price">{formatPrice(item.price * item.qty)}</div>
+                      <div className="cart-item-qty">
+                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, -1)}>−</button>
+                        <span className="cart-qty-num">{item.qty}</span>
+                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, 1)}>+</button>
+                        <span style={{ fontSize:'0.78rem', color:'var(--gray-400)', marginLeft:'4px' }}>{formatPrice(item.price)} / шт</span>
+                      </div>
+                    </div>
+                    <button className="cart-item-remove" onClick={() => removeFromCart(item.id)} title="Видалити">✕</button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="cart-drawer-foot">
+                <div className="cart-total-row">
+                  <span className="cart-total-label">Разом:</span>
+                  <span className="cart-total-price">{formatPrice(cartTotal)}</span>
+                </div>
+                <button
+                  className="cart-checkout-btn"
+                  onClick={() => {
+                    setShowCart(false);
+                    goToPage('cart');
+                  }}
+                >
+                  Оформити замовлення →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════ CART PAGE ═══════ */}
+      {currentPage === 'cart' && (
+        <div className="cart-page">
+          <button
+            onClick={() => goToPage('home')}
+            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--green-700)', fontWeight:600, fontSize:'0.95rem', marginBottom:'1rem', display:'flex', alignItems:'center', gap:'6px' }}
+          >
+            ← Назад до магазину
+          </button>
+          <h1 className="cart-page-title">Оформлення замовлення</h1>
+
+          {cart.length === 0 ? (
+            <div className="cart-empty" style={{ paddingTop:'4rem' }}>
+              <div className="cart-empty-icon">🛒</div>
+              <p>Кошик порожній</p>
+              <button className="hero-cta" style={{ marginTop:'1.5rem', display:'inline-block' }} onClick={() => goToPage('home')}>
+                До каталогу →
+              </button>
+            </div>
+          ) : (
+            <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:'1.5rem' }}>
+              {/* Order summary */}
+              <div style={{ background:'var(--gray-50)', borderRadius:'var(--radius)', padding:'1.5rem', border:'1px solid var(--gray-200)' }}>
+                <h2 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'1rem' }}>Ваше замовлення</h2>
+                {cart.map(item => (
+                  <div key={item.id} className="cart-item">
+                    <div className="cart-item-info">
+                      <div className="cart-item-name">{item.name}</div>
+                      {item.model && <div className="cart-item-model">{item.model}</div>}
+                      <div className="cart-item-price">{formatPrice(item.price * item.qty)}</div>
+                      <div className="cart-item-qty">
+                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, -1)}>−</button>
+                        <span className="cart-qty-num">{item.qty}</span>
+                        <button className="cart-qty-btn" onClick={() => updateQty(item.id, 1)}>+</button>
+                      </div>
+                    </div>
+                    <button className="cart-item-remove" onClick={() => removeFromCart(item.id)}>✕</button>
+                  </div>
+                ))}
+                <div className="cart-total-row" style={{ marginTop:'1rem', paddingTop:'1rem', borderTop:'1px solid var(--gray-200)' }}>
+                  <span style={{ fontWeight:700, fontSize:'1rem' }}>Разом:</span>
+                  <span className="cart-total-price">{formatPrice(cartTotal)}</span>
+                </div>
+              </div>
+
+              {/* Contact form */}
+              <div style={{ background:'white', borderRadius:'var(--radius)', padding:'1.5rem', border:'1px solid var(--gray-200)' }}>
+                <h2 style={{ fontSize:'1.1rem', fontWeight:700, marginBottom:'1rem' }}>Контактні дані</h2>
+                {orderStatus === 'sent' ? (
+                  <div className="order-success">
+                    <div className="order-success-icon">✅</div>
+                    <h3>Замовлення відправлено!</h3>
+                    <p>Ми зв'яжемося з вами найближчим часом для підтвердження деталей.</p>
+                    <button className="cart-checkout-btn" style={{ marginTop:'1.5rem' }} onClick={() => { setOrderStatus(null); goToPage('home'); }}>
+                      На головну
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="order-field">
+                      <label>Ім'я та прізвище *</label>
+                      <input type="text" placeholder="Іван Петренко" value={orderForm.name} onChange={e => setOrderForm(p => ({ ...p, name: e.target.value }))} />
+                    </div>
+                    <div className="order-field">
+                      <label>Телефон *</label>
+                      <input type="tel" placeholder="+380 XX XXX XX XX" value={orderForm.phone} onChange={e => setOrderForm(p => ({ ...p, phone: e.target.value }))} />
+                    </div>
+                    <div className="order-field">
+                      <label>Адреса доставки</label>
+                      <input type="text" placeholder="Місто, вулиця, будинок" value={orderForm.address} onChange={e => setOrderForm(p => ({ ...p, address: e.target.value }))} />
+                    </div>
+                    {orderStatus === 'error' && <p style={{ color:'#e53935', fontSize:'0.85rem', marginBottom:'0.75rem' }}>Помилка — спробуйте ще раз</p>}
+                    <button
+                      className="cart-checkout-btn"
+                      disabled={orderStatus === 'sending'}
+                      onClick={submitCartOrder}
+                    >
+                      {orderStatus === 'sending' ? 'Відправляємо...' : '✅ Підтвердити замовлення'}
+                    </button>
+                    <p style={{ fontSize:'0.78rem', color:'var(--gray-400)', marginTop:'0.75rem', textAlign:'center' }}>
+                      Після підтвердження ми надішлемо деталі у Telegram
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ORDER FORM MODAL */}
       {showOrderForm && (
