@@ -3248,6 +3248,8 @@ const ADMIN_CSS = `
 
 
 
+
+
 function AdminSystemModal({ product, onSave, onClose, password }) {
   const BASE_KEYS = ['ecoflow','zendure','deye','anker'];
   const isNew = !product.key || !BASE_KEYS.includes(product.key);
@@ -3765,6 +3767,374 @@ function AdminProductModal({ product, type, onSave, onClose, password }) {
   );
 }
 
+
+function AdminPageEditor({ page, onSave, onClose, password }) {
+  const [meta, setMeta] = useState({
+    slug:            page.slug || '',
+    title:           page.title || '',
+    metaDescription: page.metaDescription || '',
+    product:         page.product || {},
+  });
+  const [blocks, setBlocks] = useState(page.blocks || []);
+  const [activeBlock, setActiveBlock] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState('');
+
+  const BLOCK_TYPES = [
+    { type:'hero',        label:'🦸 Hero — назва + фото + ціна' },
+    { type:'specs',       label:'📊 Характеристики' },
+    { type:'photo_text',  label:'🖼 Фото + текст' },
+    { type:'advantages',  label:'⭐ Переваги (іконки)' },
+    { type:'video',       label:'▶️ Відео YouTube' },
+    { type:'faq',         label:'❓ FAQ' },
+    { type:'price_cta',   label:'💰 Ціна + замовити' },
+    { type:'gallery',     label:'🖼🖼 Галерея фото' },
+  ];
+
+  const addBlock = (type) => {
+    const defaults = {
+      hero:       { title:'', subtitle:'', price:'', cta:'Замовити зараз', ctaLink:'#order', image:'' },
+      specs:      { heading:'Технічні характеристики', rows:[{label:'',value:''}] },
+      photo_text: { heading:'', text:'', image:'', imageRight:false },
+      advantages: { heading:'Переваги', items:[{icon:'☀️',title:'',text:''}] },
+      video:      { heading:'', youtubeId:'' },
+      faq:        { heading:'Часті питання', items:[{q:'',a:''}] },
+      price_cta:  { heading:'Готові замовити?', price:'', credit:'Кредит 0% від держави', cta:'Замовити', ctaLink:'https://solarbalkon.shop/#order', note:'' },
+      gallery:    { heading:'Фотогалерея', images:[] },
+    };
+    const newBlock = { id: Date.now(), type, ...defaults[type] };
+    setBlocks(prev => [...prev, newBlock]);
+    setActiveBlock(newBlock.id);
+  };
+
+  const updateBlock = (id, data) => setBlocks(prev => prev.map(b => b.id === id ? { ...b, ...data } : b));
+  const removeBlock = (id) => { setBlocks(prev => prev.filter(b => b.id !== id)); if (activeBlock === id) setActiveBlock(null); };
+  const moveBlock = (id, dir) => {
+    setBlocks(prev => {
+      const idx = prev.findIndex(b => b.id === id);
+      if (idx < 0) return prev;
+      const next = [...prev];
+      const target = idx + dir;
+      if (target < 0 || target >= next.length) return prev;
+      [next[idx], next[target]] = [next[target], next[idx]];
+      return next;
+    });
+  };
+
+  const handlePublish = async () => {
+    if (!meta.slug || !meta.title) return;
+    setSaving(true);
+    try {
+      const html = generateProductHTML({ ...meta, blocks });
+      const base64 = btoa(unescape(encodeURIComponent(html)));
+      const filePath = `public/pages/${meta.slug}.html`;
+      const fileUrl = `https://api.github.com/repos/hexisfit/solarbalkon/contents/${filePath}`;
+      const ghHeaders = {
+        'Authorization': `Bearer ${password}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+      };
+      // Check SHA
+      let sha;
+      const check = await fetch(fileUrl, { headers: ghHeaders });
+      if (check.ok) { const d = await check.json(); sha = d.sha; }
+      const putRes = await fetch(fileUrl, {
+        method: 'PUT',
+        headers: ghHeaders,
+        body: JSON.stringify({ message: `pages: update ${meta.slug}.html`, content: base64, ...(sha ? { sha } : {}) }),
+      });
+      if (putRes.ok) {
+        setSaved(`✅ Опубліковано: solarbalkon.shop/pages/${meta.slug}.html`);
+        onSave({ ...meta, blocks, publishedAt: new Date().toISOString() });
+      } else {
+        const err = await putRes.json();
+        setSaved('❌ ' + (err.message || 'Помилка GitHub'));
+      }
+    } catch(e) { setSaved('❌ ' + e.message); }
+    setSaving(false);
+  };
+
+  const uploadImg = async (file, onUrl) => {
+    if (!file) return;
+    const base64 = await new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file); });
+    const resp = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+      body: JSON.stringify({ fileBase64: base64, filename: file.name, folder: 'pages' }),
+    });
+    const data = await resp.json();
+    if (data.success) onUrl(data.url);
+  };
+
+  const active = blocks.find(b => b.id === activeBlock);
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'white', zIndex:2000, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+      {/* Header */}
+      <div style={{ background:'#2d7a3a', color:'white', padding:'0.75rem 1.5rem', display:'flex', alignItems:'center', gap:'1rem', flexShrink:0 }}>
+        <button onClick={onClose} style={{ background:'rgba(255,255,255,0.2)', border:'none', color:'white', padding:'6px 14px', borderRadius:6, cursor:'pointer', fontSize:'0.9rem' }}>← Назад</button>
+        <div style={{ flex:1 }}>
+          <input value={meta.title} onChange={e => setMeta(p=>({...p,title:e.target.value}))}
+            placeholder="Назва сторінки (H1 і title)"
+            style={{ width:'100%', background:'transparent', border:'none', color:'white', fontSize:'1.1rem', fontWeight:700, outline:'none' }} />
+        </div>
+        <div style={{ fontSize:'0.82rem', opacity:0.8, maxWidth:300 }}>{saved}</div>
+        <button onClick={handlePublish} disabled={saving || !meta.slug || !meta.title}
+          style={{ background:'#fbc02d', color:'#333', border:'none', padding:'8px 20px', borderRadius:8, cursor:'pointer', fontWeight:700, fontSize:'0.9rem', whiteSpace:'nowrap' }}>
+          {saving ? '⏳ Публікуємо...' : '🚀 Опублікувати HTML'}
+        </button>
+      </div>
+
+      <div style={{ display:'flex', flex:1, overflow:'hidden' }}>
+        {/* Left: blocks list */}
+        <div style={{ width:280, borderRight:'1px solid #e0e0e0', display:'flex', flexDirection:'column', overflow:'hidden', background:'#fafafa', flexShrink:0 }}>
+          {/* Meta */}
+          <div style={{ padding:'1rem', borderBottom:'1px solid #e0e0e0' }}>
+            <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#9e9e9e', marginBottom:'0.5rem', textTransform:'uppercase' }}>SEO / Meta</div>
+            <input value={meta.slug} onChange={e => setMeta(p=>({...p,slug:e.target.value}))}
+              placeholder="URL: product-slug"
+              style={{ width:'100%', padding:'6px 8px', border:'1px solid #e0e0e0', borderRadius:6, fontSize:'0.82rem', fontFamily:'monospace', marginBottom:6 }} />
+            <textarea value={meta.metaDescription} onChange={e => setMeta(p=>({...p,metaDescription:e.target.value}))}
+              placeholder="Meta description (160 символів)"
+              rows={3}
+              style={{ width:'100%', padding:'6px 8px', border:'1px solid #e0e0e0', borderRadius:6, fontSize:'0.82rem', resize:'none' }} />
+            <a href={`/pages/${meta.slug}.html`} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize:'0.75rem', color:'#2d7a3a', display:'block', marginTop:4 }}>
+              🔗 /pages/{meta.slug}.html
+            </a>
+          </div>
+
+          {/* Blocks */}
+          <div style={{ flex:1, overflowY:'auto', padding:'0.5rem' }}>
+            <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#9e9e9e', padding:'0.5rem', textTransform:'uppercase' }}>Блоки сторінки</div>
+            {blocks.map((b, idx) => (
+              <div key={b.id}
+                style={{ background: activeBlock===b.id ? '#e8f5e9' : 'white', border: activeBlock===b.id ? '1px solid #2d7a3a' : '1px solid #e0e0e0',
+                  borderRadius:8, padding:'8px 10px', marginBottom:6, cursor:'pointer' }}
+                onClick={() => setActiveBlock(activeBlock===b.id ? null : b.id)}>
+                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                  <span style={{ fontSize:'0.85rem', fontWeight:600, flex:1 }}>
+                    {BLOCK_TYPES.find(t=>t.type===b.type)?.label || b.type}
+                  </span>
+                  <button onClick={e=>{e.stopPropagation();moveBlock(b.id,-1)}} style={{background:'none',border:'none',cursor:'pointer',fontSize:'0.8rem',padding:'2px 4px',color:'#9e9e9e'}} title="Вгору">↑</button>
+                  <button onClick={e=>{e.stopPropagation();moveBlock(b.id,1)}}  style={{background:'none',border:'none',cursor:'pointer',fontSize:'0.8rem',padding:'2px 4px',color:'#9e9e9e'}} title="Вниз">↓</button>
+                  <button onClick={e=>{e.stopPropagation();if(window.confirm('Видалити?'))removeBlock(b.id)}} style={{background:'none',border:'none',cursor:'pointer',fontSize:'0.8rem',padding:'2px 4px',color:'#e53935'}} title="Видалити">✕</button>
+                </div>
+              </div>
+            ))}
+
+            <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#9e9e9e', padding:'0.75rem 0.5rem 0.5rem', textTransform:'uppercase' }}>Додати блок</div>
+            {BLOCK_TYPES.map(t => (
+              <button key={t.type} onClick={() => addBlock(t.type)}
+                style={{ width:'100%', textAlign:'left', padding:'7px 10px', border:'1px dashed #e0e0e0', borderRadius:8, background:'white', cursor:'pointer', fontSize:'0.82rem', marginBottom:4, color:'#424242' }}>
+                + {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: block editor */}
+        <div style={{ flex:1, overflowY:'auto', padding:'1.5rem' }}>
+          {!active && (
+            <div style={{ textAlign:'center', color:'#9e9e9e', paddingTop:'4rem' }}>
+              <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>🧱</div>
+              <div style={{ fontSize:'1rem' }}>Оберіть блок зліва для редагування<br/>або додайте новий</div>
+            </div>
+          )}
+
+          {active && active.type === 'hero' && (
+            <BlockHeroEditor block={active} onChange={d=>updateBlock(active.id,d)} uploadImg={uploadImg} />
+          )}
+          {active && active.type === 'specs' && (
+            <BlockSpecsEditor block={active} onChange={d=>updateBlock(active.id,d)} />
+          )}
+          {active && active.type === 'photo_text' && (
+            <BlockPhotoTextEditor block={active} onChange={d=>updateBlock(active.id,d)} uploadImg={uploadImg} />
+          )}
+          {active && active.type === 'advantages' && (
+            <BlockAdvantagesEditor block={active} onChange={d=>updateBlock(active.id,d)} />
+          )}
+          {active && active.type === 'video' && (
+            <BlockVideoEditor block={active} onChange={d=>updateBlock(active.id,d)} />
+          )}
+          {active && active.type === 'faq' && (
+            <BlockFaqEditor block={active} onChange={d=>updateBlock(active.id,d)} />
+          )}
+          {active && active.type === 'price_cta' && (
+            <BlockPriceCtaEditor block={active} onChange={d=>updateBlock(active.id,d)} />
+          )}
+          {active && active.type === 'gallery' && (
+            <BlockGalleryEditor block={active} onChange={d=>updateBlock(active.id,d)} uploadImg={uploadImg} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Block editors
+function BlockField({label, children}) {
+  return <div style={{marginBottom:'1rem'}}><label style={{display:'block',fontSize:'0.82rem',fontWeight:600,color:'#616161',marginBottom:4}}>{label}</label>{children}</div>;
+}
+const BI = (props) => <input {...props} style={{width:'100%',padding:'8px 10px',border:'1px solid #e0e0e0',borderRadius:6,fontSize:'0.9rem',fontFamily:'inherit',...(props.style||{})}} />;
+const BTA = (props) => <textarea {...props} style={{width:'100%',padding:'8px 10px',border:'1px solid #e0e0e0',borderRadius:6,fontSize:'0.9rem',fontFamily:'inherit',resize:'vertical',...(props.style||{})}} />;
+const BH = ({children}) => <h3 style={{fontSize:'1rem',fontWeight:700,marginBottom:'1.25rem',color:'#212121',paddingBottom:'0.5rem',borderBottom:'1px solid #f0f0f0'}}>{children}</h3>;
+
+function UploadField({label, value, onUrl, uploadImg}) {
+  const [upl, setUpl] = useState(false);
+  return (
+    <BlockField label={label}>
+      <div style={{display:'flex',gap:8,alignItems:'center'}}>
+        <BI value={value||''} onChange={e=>onUrl(e.target.value)} placeholder="URL або завантажте →" style={{flex:1}} />
+        <button onClick={()=>document.getElementById(`upl-${label}`).click()}
+          style={{padding:'8px 12px',border:'1px solid #e0e0e0',borderRadius:6,background:'white',cursor:'pointer',whiteSpace:'nowrap',fontSize:'0.82rem'}}>
+          {upl?'⏳':'📷 Upload'}
+        </button>
+        <input id={`upl-${label}`} type="file" accept="image/*" style={{display:'none'}}
+          onChange={async e=>{setUpl(true);await uploadImg(e.target.files[0],onUrl);setUpl(false);}} />
+      </div>
+      {value && <img src={value} alt="preview" style={{marginTop:8,maxHeight:120,borderRadius:6,objectFit:'contain',border:'1px solid #e0e0e0'}} />}
+    </BlockField>
+  );
+}
+
+function BlockHeroEditor({block,onChange,uploadImg}) {
+  return <div><BH>🦸 Hero блок</BH>
+    <BlockField label="Заголовок (H1)"><BI value={block.title||''} onChange={e=>onChange({title:e.target.value})} placeholder="Назва товару" /></BlockField>
+    <BlockField label="Підзаголовок"><BTA rows={3} value={block.subtitle||''} onChange={e=>onChange({subtitle:e.target.value})} placeholder="Короткий опис..." /></BlockField>
+    <BlockField label="Ціна (грн)"><BI type="number" value={block.price||''} onChange={e=>onChange({price:e.target.value})} placeholder="40000" /></BlockField>
+    <BlockField label="Текст кнопки"><BI value={block.cta||''} onChange={e=>onChange({cta:e.target.value})} placeholder="Замовити зараз" /></BlockField>
+    <BlockField label="Посилання кнопки"><BI value={block.ctaLink||''} onChange={e=>onChange({ctaLink:e.target.value})} placeholder="#order або https://..." /></BlockField>
+    <UploadField label="Фото товару" value={block.image} onUrl={v=>onChange({image:v})} uploadImg={uploadImg} />
+  </div>;
+}
+
+function BlockSpecsEditor({block,onChange}) {
+  const rows = block.rows||[];
+  return <div><BH>📊 Характеристики</BH>
+    <BlockField label="Заголовок секції"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    {rows.map((r,i) => (
+      <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:8,marginBottom:8}}>
+        <BI value={r.label} onChange={e=>{const nr=[...rows];nr[i]={...nr[i],label:e.target.value};onChange({rows:nr})}} placeholder="Параметр" />
+        <BI value={r.value} onChange={e=>{const nr=[...rows];nr[i]={...nr[i],value:e.target.value};onChange({rows:nr})}} placeholder="Значення" />
+        <button onClick={()=>onChange({rows:rows.filter((_,j)=>j!==i)})} style={{padding:'8px',border:'1px solid #e0e0e0',borderRadius:6,background:'white',cursor:'pointer',color:'#e53935'}}>✕</button>
+      </div>
+    ))}
+    <button onClick={()=>onChange({rows:[...rows,{label:'',value:''}]})}
+      style={{padding:'8px 16px',border:'1px dashed #2d7a3a',borderRadius:6,background:'white',cursor:'pointer',color:'#2d7a3a',fontSize:'0.85rem'}}>+ Додати рядок</button>
+  </div>;
+}
+
+function BlockPhotoTextEditor({block,onChange,uploadImg}) {
+  return <div><BH>🖼 Фото + текст</BH>
+    <BlockField label="Заголовок"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    <BlockField label="Текст"><BTA rows={6} value={block.text||''} onChange={e=>onChange({text:e.target.value})} placeholder="Опис..." /></BlockField>
+    <UploadField label="Фото" value={block.image} onUrl={v=>onChange({image:v})} uploadImg={uploadImg} />
+    <BlockField label="Розташування фото">
+      <label style={{display:'flex',alignItems:'center',gap:8,cursor:'pointer'}}>
+        <input type="checkbox" checked={block.imageRight||false} onChange={e=>onChange({imageRight:e.target.checked})} style={{width:'auto'}} />
+        Фото справа (текст зліва)
+      </label>
+    </BlockField>
+  </div>;
+}
+
+function BlockAdvantagesEditor({block,onChange}) {
+  const items = block.items||[];
+  return <div><BH>⭐ Переваги</BH>
+    <BlockField label="Заголовок секції"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    {items.map((it,i) => (
+      <div key={i} style={{border:'1px solid #e0e0e0',borderRadius:8,padding:'0.75rem',marginBottom:8}}>
+        <div style={{display:'grid',gridTemplateColumns:'60px 1fr auto',gap:8,marginBottom:6}}>
+          <BI value={it.icon||''} onChange={e=>{const ni=[...items];ni[i]={...ni[i],icon:e.target.value};onChange({items:ni})}} placeholder="☀️" />
+          <BI value={it.title||''} onChange={e=>{const ni=[...items];ni[i]={...ni[i],title:e.target.value};onChange({items:ni})}} placeholder="Назва переваги" />
+          <button onClick={()=>onChange({items:items.filter((_,j)=>j!==i)})} style={{padding:'8px',border:'1px solid #e0e0e0',borderRadius:6,background:'white',cursor:'pointer',color:'#e53935'}}>✕</button>
+        </div>
+        <BI value={it.text||''} onChange={e=>{const ni=[...items];ni[i]={...ni[i],text:e.target.value};onChange({items:ni})}} placeholder="Опис (необов'язково)" />
+      </div>
+    ))}
+    <button onClick={()=>onChange({items:[...items,{icon:'✓',title:'',text:''}]})}
+      style={{padding:'8px 16px',border:'1px dashed #2d7a3a',borderRadius:6,background:'white',cursor:'pointer',color:'#2d7a3a',fontSize:'0.85rem'}}>+ Додати перевагу</button>
+  </div>;
+}
+
+function BlockVideoEditor({block,onChange}) {
+  return <div><BH>▶️ YouTube відео</BH>
+    <BlockField label="Заголовок"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    <BlockField label="YouTube ID або повний URL">
+      <BI value={block.youtubeId||''} onChange={e=>{
+        const v = e.target.value.replace(/.*(?:youtu.be\/|v\/|embed\/|watch\?v=)([^&]+).*/,'$1');
+        onChange({youtubeId:v});
+      }} placeholder="dQw4w9WgXcQ або https://youtube.com/..." />
+    </BlockField>
+    {block.youtubeId && <div style={{position:'relative',paddingBottom:'40%',borderRadius:8,overflow:'hidden',marginTop:8}}>
+      <iframe src={`https://www.youtube.com/embed/${block.youtubeId}`} style={{position:'absolute',top:0,left:0,width:'100%',height:'100%'}} frameBorder="0" allowFullScreen title="preview" />
+    </div>}
+  </div>;
+}
+
+function BlockFaqEditor({block,onChange}) {
+  const items = block.items||[];
+  return <div><BH>❓ FAQ</BH>
+    <BlockField label="Заголовок"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    {items.map((it,i) => (
+      <div key={i} style={{border:'1px solid #e0e0e0',borderRadius:8,padding:'0.75rem',marginBottom:8}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr auto',gap:8,marginBottom:6}}>
+          <BI value={it.q||''} onChange={e=>{const ni=[...items];ni[i]={...ni[i],q:e.target.value};onChange({items:ni})}} placeholder="Питання" />
+          <button onClick={()=>onChange({items:items.filter((_,j)=>j!==i)})} style={{padding:'8px',border:'1px solid #e0e0e0',borderRadius:6,background:'white',cursor:'pointer',color:'#e53935'}}>✕</button>
+        </div>
+        <BTA rows={2} value={it.a||''} onChange={e=>{const ni=[...items];ni[i]={...ni[i],a:e.target.value};onChange({items:ni})}} placeholder="Відповідь" />
+      </div>
+    ))}
+    <button onClick={()=>onChange({items:[...items,{q:'',a:''}]})}
+      style={{padding:'8px 16px',border:'1px dashed #2d7a3a',borderRadius:6,background:'white',cursor:'pointer',color:'#2d7a3a',fontSize:'0.85rem'}}>+ Питання</button>
+  </div>;
+}
+
+function BlockPriceCtaEditor({block,onChange}) {
+  return <div><BH>💰 Ціна + замовити</BH>
+    <BlockField label="Заголовок"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    <BlockField label="Ціна (грн)"><BI type="number" value={block.price||''} onChange={e=>onChange({price:e.target.value})} /></BlockField>
+    <BlockField label="Примітка під ціною"><BI value={block.note||''} onChange={e=>onChange({note:e.target.value})} placeholder="Кредит 0% від держави" /></BlockField>
+    <BlockField label="Текст про кредит"><BI value={block.credit||''} onChange={e=>onChange({credit:e.target.value})} /></BlockField>
+    <BlockField label="Текст кнопки"><BI value={block.cta||''} onChange={e=>onChange({cta:e.target.value})} /></BlockField>
+    <BlockField label="Посилання кнопки"><BI value={block.ctaLink||''} onChange={e=>onChange({ctaLink:e.target.value})} /></BlockField>
+  </div>;
+}
+
+function BlockGalleryEditor({block,onChange,uploadImg}) {
+  const images = block.images||[];
+  const [upl, setUpl] = useState(false);
+  return <div><BH>🖼🖼 Галерея</BH>
+    <BlockField label="Заголовок"><BI value={block.heading||''} onChange={e=>onChange({heading:e.target.value})} /></BlockField>
+    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(120px,1fr))',gap:8,marginBottom:12}}>
+      {images.map((img,i) => (
+        <div key={i} style={{position:'relative'}}>
+          <img src={img} alt="" style={{width:'100%',height:90,objectFit:'cover',borderRadius:6,border:'1px solid #e0e0e0'}} />
+          <button onClick={()=>onChange({images:images.filter((_,j)=>j!==i)})}
+            style={{position:'absolute',top:4,right:4,background:'#e53935',color:'white',border:'none',borderRadius:'50%',width:20,height:20,cursor:'pointer',fontSize:'0.7rem',display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+        </div>
+      ))}
+      <button onClick={()=>document.getElementById('gal-upload').click()}
+        style={{height:90,border:'2px dashed #e0e0e0',borderRadius:6,background:'white',cursor:'pointer',color:'#9e9e9e',fontSize:'0.8rem',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:4}}>
+        {upl?'⏳':'📷'}<span>Upload</span>
+      </button>
+      <input id="gal-upload" type="file" accept="image/*" multiple style={{display:'none'}}
+        onChange={async e=>{
+          setUpl(true);
+          for(const f of e.target.files) {
+            await uploadImg(f, url => onChange({images:[...images,url]}));
+          }
+          setUpl(false);
+        }} />
+    </div>
+    <BlockField label="Або вставте URL (по одному)">
+      <BI placeholder="https://..." onKeyDown={e=>{if(e.key==='Enter'&&e.target.value.trim()){onChange({images:[...images,e.target.value.trim()]});e.target.value='';}}} />
+    </BlockField>
+  </div>;
+}
+
 function AdminPanel({ goToPage }) {
   const [authed, setAuthed]       = useState(() => !!sessionStorage.getItem('sb_admin_token'));
   const [password, setPassword]   = useState(() => sessionStorage.getItem('sb_admin_token') || '');
@@ -3781,7 +4151,9 @@ function AdminPanel({ goToPage }) {
   const [blogPosts, setBlogPosts] = useState([]);
   const [blogModal, setBlogModal] = useState(null);
   const [systems, setSystems] = useState([]);
-  const [sysModal, setSysModal] = useState(null); // null | product object
+  const [sysModal, setSysModal] = useState(null);
+  const [pages, setPages] = useState([]);
+  const [pageEditor, setPageEditor] = useState(null); // null | page object
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
@@ -3820,6 +4192,7 @@ function AdminPanel({ goToPage }) {
       setSettings(admin.settings || { markupEur: 25, markupPercent: 15 });
       setBlogPosts(admin.blogPosts || []);
       setSystems(admin.products || []);
+      setPages(admin.pages || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
@@ -3837,6 +4210,8 @@ function AdminPanel({ goToPage }) {
         overrides: Object.values(editOverrides),
         blogPosts,
         products: systems,
+        pages: adminData?.pages || {},
+        pages,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
         updatedAt: new Date().toISOString(),
       };
@@ -4003,6 +4378,8 @@ function AdminPanel({ goToPage }) {
           { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
           { id: 'systems',   label: `🏠 Системи (${4 + systems.filter(s => !['ecoflow','zendure','deye','anker'].includes(s.key)).length})` },
+          { id: 'pages',     label: '📄 Сторінки товарів' },
+          { id: 'pages',     label: `📄 Сторінки (${(adminData?.pages?.length||0)})` },
           { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
           { id: 'settings',  label: '⚙️ Ціни' },
           { id: 'export',    label: '📱 Мобільний' },
@@ -4031,6 +4408,68 @@ function AdminPanel({ goToPage }) {
             <h3>Батареї Deye</h3>
             <ProductTable items={mergedBatteries} type="battery" />
           </div>
+        )}
+
+        {tab === 'pages' && (
+          <>
+            {pageEditor ? (
+              <AdminPageEditor
+                page={pageEditor}
+                password={password}
+                onSave={(saved) => {
+                  setPages(prev => {
+                    const idx = prev.findIndex(p => p.slug === saved.slug);
+                    if (idx >= 0) { const next=[...prev]; next[idx]=saved; return next; }
+                    return [...prev, saved];
+                  });
+                  setPageEditor(null);
+                  showToast('✅ Сторінку збережено і опубліковано');
+                }}
+                onClose={() => setPageEditor(null)}
+              />
+            ) : (
+              <div className="adm-card">
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
+                  <h3 style={{margin:0}}>Сторінки товарів</h3>
+                  <button className="adm-btn adm-btn-primary adm-btn-sm"
+                    onClick={() => setPageEditor({ slug:'', title:'', metaDescription:'', blocks:[], product:{} })}>
+                    + Нова сторінка
+                  </button>
+                </div>
+                <p style={{ fontSize:'0.82rem', color:'#9e9e9e', marginBottom:'1rem' }}>
+                  Статичні HTML сторінки з конструктором блоків. Зберігаються в /public/pages/ і ідеально індексуються Google.
+                </p>
+                {pages.length === 0 ? (
+                  <div style={{ textAlign:'center', padding:'3rem', color:'#9e9e9e' }}>
+                    <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>📄</div>
+                    <p>Немає сторінок. Натисни "+ Нова сторінка" щоб створити першу.</p>
+                  </div>
+                ) : (
+                  <table className="adm-table">
+                    <thead><tr><th>Сторінка</th><th>URL</th><th>Блоків</th><th>Опубліковано</th><th></th></tr></thead>
+                    <tbody>
+                      {pages.map(p => (
+                        <tr key={p.slug}>
+                          <td style={{fontWeight:600,fontSize:'0.85rem'}}>{p.title}</td>
+                          <td><a href={`/pages/${p.slug}.html`} target="_blank" rel="noopener noreferrer"
+                            style={{color:'#2d7a3a',fontSize:'0.82rem',fontFamily:'monospace'}}>/pages/{p.slug}.html</a></td>
+                          <td style={{fontSize:'0.85rem'}}>{p.blocks?.length || 0} шт</td>
+                          <td style={{fontSize:'0.82rem',color:'#9e9e9e'}}>{p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('uk-UA') : '—'}</td>
+                          <td style={{display:'flex',gap:6}}>
+                            <button className="adm-btn adm-btn-primary adm-btn-sm" onClick={() => setPageEditor(p)}>✏️ Редагувати</button>
+                            <a href={`/pages/${p.slug}.html`} target="_blank" rel="noopener noreferrer"
+                              className="adm-btn adm-btn-ghost adm-btn-sm">🔗</a>
+                            <button className="adm-btn adm-btn-danger adm-btn-sm"
+                              onClick={() => { if(window.confirm('Видалити?')) setPages(prev=>prev.filter(x=>x.slug!==p.slug)); }}>🗑</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         {tab === 'settings' && (
@@ -4149,6 +4588,54 @@ function AdminPanel({ goToPage }) {
           );
         })()}
 
+        {tab === 'pages' && (() => {
+          const BASE_KEYS = ['ecoflow','zendure','deye','anker'];
+          const allKeys = [...new Set([...BASE_KEYS, ...systems.map(s=>s.key).filter(Boolean)])];
+          const KEY_NAMES = { ecoflow:'EcoFlow STREAM AC Pro', zendure:'Zendure SolarFlow 2400 AC+', deye:'Deye AE-FS2.0-2H2', anker:'Anker SOLIX F3800' };
+          return (
+          <div className="adm-card">
+            <h3>SEO-сторінки товарів</h3>
+            <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
+              Кожна сторінка зберігається як статичний HTML у /public/products/. Ідеально для Google-індексації.
+            </p>
+            <table className="adm-table">
+              <thead>
+                <tr><th>Товар</th><th>URL</th><th>Статус</th><th></th></tr>
+              </thead>
+              <tbody>
+                {allKeys.map(key => {
+                  const name = KEY_NAMES[key] || systems.find(s=>s.key===key)?.name || key;
+                  const pData = adminData?.pages?.[key];
+                  return (
+                    <tr key={key}>
+                      <td style={{fontWeight:600,fontSize:'0.85rem'}}>{name}</td>
+                      <td>
+                        <a href={`/${key}`} target="_blank" rel="noopener noreferrer"
+                          style={{fontFamily:'monospace',fontSize:'0.8rem',color:'var(--color-text-info)'}}>
+                          /{key}
+                        </a>
+                      </td>
+                      <td>
+                        {pData?.blocks?.length
+                          ? <span className="adm-badge adm-badge-ok">✅ {pData.blocks.length} блоків</span>
+                          : <span className="adm-badge adm-badge-warn">⚠️ Не налаштована</span>
+                        }
+                      </td>
+                      <td>
+                        <button className="adm-btn adm-btn-primary adm-btn-sm"
+                          onClick={() => setPageEditor({ key, name, pageData: pData || { blocks:[], seo:{} } })}>
+                          ✏️ Редагувати
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          );
+        })()}
+
         {tab === 'blog' && (() => {
           // Merge: ARTICLES (built-in) + blogPosts (from admin.json)
           // blogPosts override built-in by slug
@@ -4261,6 +4748,24 @@ function AdminPanel({ goToPage }) {
           </div>
         )}
       </div>
+
+      {pageEditor && (
+        <PageBuilderModal
+          productKey={pageEditor.key}
+          productName={pageEditor.name}
+          pageData={pageEditor.pageData}
+          password={password}
+          onSave={(key, updatedPageData) => {
+            setAdminData(prev => ({
+              ...prev,
+              pages: { ...(prev?.pages||{}), [key]: updatedPageData },
+            }));
+            setPageEditor(null);
+            showToast('✅ Сторінку збережено і опубліковано на сайті!');
+          }}
+          onClose={() => setPageEditor(null)}
+        />
+      )}
 
       {sysModal && (
         <AdminSystemModal
