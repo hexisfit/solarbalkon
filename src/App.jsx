@@ -4099,9 +4099,15 @@ export default function SolarBalkon() {
 
   const tariff = TARIFFS[tariffType];
 
-  // Handle direct /admin URL
+  // Handle direct /admin URL — only via hash to avoid SPA routing issues
   useEffect(() => {
-    if (window.location.pathname === '/admin') setCurrentPage('admin');
+    if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
+      setCurrentPage('admin');
+      // Clean up URL after detecting admin
+      if (window.location.pathname === '/admin') {
+        window.history.replaceState({}, '', '/#admin');
+      }
+    }
   }, []);
 
   useEffect(() => {
