@@ -1,32 +1,3 @@
 {
-  "_ping": true,
-  "settings": {
-    "markupEur": 25,
-    "markupPercent": 15
-  },
-  "overrides": [
-    {
-      "name": "Гібридний інвертор Deye SUN-3.6K-LP1",
-      "category": "Інвертор",
-      "manufacturer": "Deye",
-      "model": "SUN-3.6K-LP1",
-      "kw": 3.6,
-      "phases": 1,
-      "specs": "MPPT:1;Вхід PV:4000 Вт;Батарея:48В LV",
-      "sourceUrl": "https://www.nkon.nl/ru/deye-sun-3-6k-lp1.html",
-      "weight": "",
-      "purchaseEur": 589.95,
-      "clientEur": 707.19,
-      "priceUah": 36100,
-      "availability": "В наявності",
-      "usp": "Компактний 1-фазний гібрид",
-      "productUrl": "https://www.nkon.nl/ru/deye-sun-3-6k-lp1.html",
-      "compatibleIds": "14.03.2026 9:54",
-      "imageUrl": "",
-      "manualPrice": 707.19,
-      "skipAutoUpdate": false
-    }
-  ],
-  "mobileExportVersion": 2,
-  "updatedAt": "2026-03-14T11:23:19.755Z"
+  "_ping": true
 }
