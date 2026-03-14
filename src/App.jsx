@@ -3660,7 +3660,7 @@ function AdminComponentModal({ component, onSave, onClose }) {
           </div>
         </div>
 
-        <div style={{display:'flex',gap:1.5rem,marginBottom:'1rem',flexWrap:'wrap',gap:16}}>
+        <div style={{display:'flex',gap:16,marginBottom:'1rem',flexWrap:'wrap'}}>
           <label style={{display:'flex',alignItems:'center',gap:8,fontSize:'0.9rem',cursor:'pointer'}}>
             <input type="checkbox" checked={form.optional}
               onChange={e => setForm(p => ({...p, optional: e.target.checked}))} style={{width:'auto'}} />
