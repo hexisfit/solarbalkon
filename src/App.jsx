@@ -3771,6 +3771,7 @@ export default function SolarBalkon() {
     if (path === '/anker') return 'anker';
     if (path === '/credit') return 'credit';
     if (path === '/audit') return 'audit';
+    if (path === '/admin') return 'admin';
     if (path === '/blog') return 'blog';
     if (path.startsWith('/blog/')) return 'article:' + path.slice(6);
     return 'home';
@@ -3795,6 +3796,7 @@ export default function SolarBalkon() {
         if (path === '/blog') setCurrentPage('blog');
         else if (path === '/audit') setCurrentPage('audit');
         else if (path.startsWith('/blog/')) setCurrentPage('article:' + path.slice(6));
+        else if (path === '/admin') setCurrentPage('admin');
         else if (path === '/') setCurrentPage('home');
         else setCurrentPage(path.slice(1));
       }
@@ -4099,16 +4101,6 @@ export default function SolarBalkon() {
 
   const tariff = TARIFFS[tariffType];
 
-  // Handle direct /admin URL — only via hash to avoid SPA routing issues
-  useEffect(() => {
-    if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
-      setCurrentPage('admin');
-      // Clean up URL after detecting admin
-      if (window.location.pathname === '/admin') {
-        window.history.replaceState({}, '', '/#admin');
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -4609,30 +4601,13 @@ export default function SolarBalkon() {
               <div className="inv-card fade-up" key={inv.model}>
                 <div className="inv-card-left">
                   {(() => {
-                    // Available images on git (exact filenames without .png)
-                    const KNOWN_IMGS = [
-                      'SUN-12K-SG02LP1-EU',
-                      'SUN-12K-SG05LP3-EU',
-                      'SUN-3.6K-SG05LP1-EU-AM2-P',
-                      'SUN-30K-SG02HP3-EU-AM2',
-                      'SUN-50K-SG01HP3-EU',
-                      'SUN-5K-SG05LP1-EU',
-                      'SUN-6K-SG05LP1-EU-AM2-P',
-                      'SUN-6K-SG05LP3-EU',
-                      'SUN-8K-SG05LP3-EU',
-                    ];
-                    // Find best matching image: exact first, then partial (startsWith core model)
-                    const model = inv.model.replace(/^Deye\s+/i, '');
-                    const exact = KNOWN_IMGS.find(f => f === model);
-                    // Extract core: e.g. SUN-12K-SG02LP1 (without -EU/-AM2/-SM2 suffixes)
-                    const core = model.replace(/-(EU|AM\d*|SM\d*|AU|US)([-A-Z0-9]*)?$/i, '');
-                    const partial = KNOWN_IMGS.find(f => f.startsWith(core));
-                    const imgFile = exact || partial || null;
+                    // imageUrl comes from /api/inverters (admin override or auto-detected)
+                    const imgUrl = inv.imageUrl || null;
                     return (
                       <>
-                        {imgFile ? (
+                        {imgUrl ? (
                           <img
-                            src={`/inverters/${imgFile}.png`}
+                            src={imgUrl}
                             alt={inv.name}
                             style={{ maxWidth: '100%', maxHeight: '280px', objectFit: 'contain' }}
                           />
