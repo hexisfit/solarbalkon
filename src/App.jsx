@@ -3585,6 +3585,109 @@ function PageBuilderModal({ productKey, productName, pageData, password, onSave,
 }
 
 
+function AdminComponentModal({ component, onSave, onClose }) {
+  const isNew = !component.sku;
+  const ALL_SYSTEMS = ['zendure','ecoflow','deye','anker'];
+  const [form, setForm] = useState({
+    name:     component.name     || '',
+    sku:      component.sku      || '',
+    qty:      component.qty      || 1,
+    priceEur: component.priceEur || 0,
+    systems:  component.systems  || ['zendure','ecoflow','deye'],
+    optional: !!component.optional,
+    hidden:   !!component.hidden,
+  });
+
+  const toggleSystem = (sys) => {
+    setForm(p => ({
+      ...p,
+      systems: p.systems.includes(sys)
+        ? p.systems.filter(s => s !== sys)
+        : [...p.systems, sys],
+    }));
+  };
+
+  return (
+    <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="adm-modal" style={{ maxWidth: 520 }}>
+        <div className="adm-modal-head">
+          <h3>{isNew ? '➕ Новий компонент' : `✏️ ${form.name}`}</h3>
+          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="adm-field">
+          <label>Назва компонента *</label>
+          <input value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))}
+            placeholder="Панель сонячна Trina 455 Вт" />
+        </div>
+
+        <div className="adm-grid2">
+          <div className="adm-field">
+            <label>Артикул (SKU) *</label>
+            <input value={form.sku} onChange={e => setForm(p => ({...p, sku: e.target.value}))}
+              style={{fontFamily:'monospace'}} placeholder="TSM-DE09R.28-455" />
+          </div>
+          <div className="adm-field">
+            <label>Кількість в комплекті</label>
+            <input type="number" min={1} value={form.qty}
+              onChange={e => setForm(p => ({...p, qty: parseInt(e.target.value)||1}))} />
+          </div>
+        </div>
+
+        <div className="adm-field">
+          <label>Ціна (EUR)</label>
+          <input type="number" step="0.01" value={form.priceEur}
+            onChange={e => setForm(p => ({...p, priceEur: parseFloat(e.target.value)||0}))} />
+          <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginTop:4}}>
+            Конвертується в грн автоматично за курсом ПриватБанку
+          </p>
+        </div>
+
+        <div className="adm-field">
+          <label>Сумісні системи</label>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:4}}>
+            {ALL_SYSTEMS.map(sys => (
+              <label key={sys} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',
+                padding:'6px 12px',borderRadius:20,border:'1px solid',
+                borderColor: form.systems.includes(sys) ? '#2d7a3a' : '#e0e0e0',
+                background: form.systems.includes(sys) ? '#e8f5e9' : 'white',
+                fontSize:'0.85rem',fontWeight:600,color: form.systems.includes(sys) ? '#2d7a3a' : '#616161'}}>
+                <input type="checkbox" checked={form.systems.includes(sys)}
+                  onChange={() => toggleSystem(sys)} style={{display:'none'}} />
+                {sys}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:'flex',gap:1.5rem,marginBottom:'1rem',flexWrap:'wrap',gap:16}}>
+          <label style={{display:'flex',alignItems:'center',gap:8,fontSize:'0.9rem',cursor:'pointer'}}>
+            <input type="checkbox" checked={form.optional}
+              onChange={e => setForm(p => ({...p, optional: e.target.checked}))} style={{width:'auto'}} />
+            Необов'язковий (опція)
+          </label>
+          <label style={{display:'flex',alignItems:'center',gap:8,fontSize:'0.9rem',cursor:'pointer'}}>
+            <input type="checkbox" checked={form.hidden}
+              onChange={e => setForm(p => ({...p, hidden: e.target.checked}))} style={{width:'auto'}} />
+            Приховати з конфігуратора
+          </label>
+        </div>
+
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:'1.5rem',
+          borderTop:'1px solid #f0f0f0',paddingTop:'1rem'}}>
+          <button className="adm-btn adm-btn-ghost" onClick={onClose}>Скасувати</button>
+          <button className="adm-btn adm-btn-primary"
+            disabled={!form.name.trim() || !form.sku.trim()}
+            onClick={() => onSave(form)}>
+            💾 Зберегти
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function AdminSystemModal({ product, onSave, onClose, password }) {
   const BASE_KEYS = ['ecoflow','zendure','deye','anker'];
   const isNew = !product.key || !BASE_KEYS.includes(product.key);
@@ -4282,6 +4385,8 @@ function AdminPanel({ goToPage }) {
   const [systems, setSystems] = useState([]);
   const [sysModal, setSysModal] = useState(null);
   const [pageEditor, setPageEditor] = useState(null); // null | page object
+  const [components, setComponents] = useState([]);
+  const [compModal, setCompModal] = useState(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
@@ -4320,6 +4425,7 @@ function AdminPanel({ goToPage }) {
       setSettings(admin.settings || { markupEur: 25, markupPercent: 15 });
       setBlogPosts(admin.blogPosts || []);
       setSystems(admin.products || []);
+      setComponents(admin.components || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
@@ -4337,6 +4443,7 @@ function AdminPanel({ goToPage }) {
         overrides: Object.values(editOverrides),
         blogPosts,
         products: systems,
+        components,
         pages: adminData?.pages || {},
         pages,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
@@ -4505,7 +4612,8 @@ function AdminPanel({ goToPage }) {
           { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
           { id: 'systems',   label: `🏠 Системи (${4 + systems.filter(s => !['ecoflow','zendure','deye','anker'].includes(s.key)).length})` },
-          { id: 'pages',     label: '📄 Сторінки товарів' },
+          { id: 'components', label: `⚙️ Конфігуратор (${components.length})` },
+          { id: 'pages',      label: '📄 Сторінки товарів' },
           { id: 'pages',     label: `📄 Сторінки (${(adminData?.pages?.length||0)})` },
           { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
           { id: 'settings',  label: '⚙️ Ціни' },
@@ -4652,6 +4760,69 @@ function AdminPanel({ goToPage }) {
               </table>
             </div>
           </>
+          );
+        })()}
+
+        {tab === 'components' && (() => {
+          // Merge sheet components with admin overrides for display
+          const sheetComps = []; // shown from API, admin overrides shown separately
+          const BASE_SYSTEMS = ['zendure','ecoflow','deye','anker'];
+          return (
+          <div className="adm-card">
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
+              <h3 style={{margin:0}}>Компоненти конфігуратора</h3>
+              <button className="adm-btn adm-btn-primary adm-btn-sm"
+                onClick={() => setCompModal({name:'',sku:'',qty:1,priceEur:0,systems:['zendure','ecoflow','deye','anker'],optional:false})}>
+                + Новий компонент
+              </button>
+            </div>
+            <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
+              Базові компоненти беруться з Google Sheets. Тут можна додати нові або приховати/змінити існуючі по артикулу.
+            </p>
+            {components.length === 0 ? (
+              <div style={{textAlign:'center',padding:'3rem',color:'#9e9e9e'}}>
+                <div style={{fontSize:'3rem',marginBottom:'1rem'}}>⚙️</div>
+                <p>Немає змін. Натисни "+ Новий компонент" або додай override.</p>
+              </div>
+            ) : (
+              <table className="adm-table">
+                <thead>
+                  <tr><th>Назва</th><th>Артикул</th><th>Ціна EUR</th><th>К-ть</th><th>Системи</th><th>Статус</th><th></th></tr>
+                </thead>
+                <tbody>
+                  {components.map(comp => (
+                    <tr key={comp.sku}>
+                      <td style={{fontWeight:600,fontSize:'0.85rem'}}>{comp.name}</td>
+                      <td style={{fontFamily:'monospace',fontSize:'0.78rem',color:'#9e9e9e'}}>{comp.sku}</td>
+                      <td style={{fontSize:'0.85rem'}}>{comp.priceEur}€</td>
+                      <td style={{fontSize:'0.85rem'}}>× {comp.qty}</td>
+                      <td>
+                        <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+                          {(comp.systems||[]).map(s => (
+                            <span key={s} className="adm-badge adm-badge-ok" style={{fontSize:'0.7rem'}}>{s}</span>
+                          ))}
+                        </div>
+                      </td>
+                      <td>
+                        {comp.hidden
+                          ? <span className="adm-badge adm-badge-no">Приховано</span>
+                          : comp.optional
+                            ? <span className="adm-badge adm-badge-warn">Опція</span>
+                            : <span className="adm-badge adm-badge-ok">Обов'язковий</span>
+                        }
+                      </td>
+                      <td style={{display:'flex',gap:6}}>
+                        <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                          onClick={() => setCompModal(comp)}>✏️</button>
+                        <button className="adm-btn adm-btn-danger adm-btn-sm"
+                          onClick={() => { if(window.confirm('Видалити?')) setComponents(p => p.filter(c => c.sku !== comp.sku)); }}>🗑</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
           );
         })()}
 
@@ -4816,6 +4987,22 @@ function AdminPanel({ goToPage }) {
         )}
       </div>
 
+      {compModal && (
+        <AdminComponentModal
+          component={compModal}
+          onSave={(updated) => {
+            setComponents(prev => {
+              const idx = prev.findIndex(c => c.sku === updated.sku);
+              if (idx >= 0) { const next = [...prev]; next[idx] = updated; return next; }
+              return [...prev, updated];
+            });
+            setCompModal(null);
+            showToast('✅ Компонент збережено — натисни "Зберегти"');
+          }}
+          onClose={() => setCompModal(null)}
+        />
+      )}
+
       {pageEditor && (
         <PageBuilderModal
           productKey={pageEditor.key}
@@ -4909,6 +5096,7 @@ export default function SolarBalkon() {
   const [selectedBattery, setSelectedBattery] = useState(null);
   const [adminArticles, setAdminArticles] = useState([]); // extra articles from admin.json
   const [adminProducts, setAdminProducts] = useState([]); // product overrides from admin.json
+  const [adminComponents, setAdminComponents] = useState([]); // component overrides from admin.json
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/ecoflow') return 'ecoflow';
@@ -5005,8 +5193,9 @@ export default function SolarBalkon() {
     fetch('https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json')
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data?.blogPosts?.length) setAdminArticles(data.blogPosts);
-        if (data?.products?.length)  setAdminProducts(data.products);
+        if (data?.blogPosts?.length)    setAdminArticles(data.blogPosts);
+        if (data?.products?.length)     setAdminProducts(data.products);
+        if (data?.components?.length)   setAdminComponents(data.components);
       })
       .catch(() => {});
   }, []);
@@ -5076,7 +5265,19 @@ export default function SolarBalkon() {
   useEffect(() => { setConfigExtras([]); }, [configSystem]);
 
   // Configurator: filter components for selected system
-  const sysComponents = sheetComponents.filter(c => c.systems.includes(configSystem));
+  // Merge sheet components with admin overrides (by sku)
+  const ALL_COMPONENTS = (() => {
+    const overMap = {};
+    adminComponents.forEach(c => { if (c.sku) overMap[c.sku] = c; });
+    const merged = sheetComponents.map(c => ({ ...c, ...(overMap[c.sku] || {}) }));
+    // Add new components from admin not in sheet
+    adminComponents.forEach(ac => {
+      if (!sheetComponents.find(c => c.sku === ac.sku)) merged.push(ac);
+    });
+    return merged.filter(c => c.hidden !== true);
+  })();
+
+  const sysComponents = ALL_COMPONENTS.filter(c => c.systems.includes(configSystem));
 
   // Smart plugs are always optional
   const isSmartPlug = (c) => c.name.toLowerCase().includes('розетка') || c.name.toLowerCase().includes('smart plug');
