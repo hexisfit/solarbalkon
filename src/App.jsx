@@ -4132,16 +4132,7 @@ export default function SolarBalkon() {
                     >
                       Замовити одразу
                     </button>
-                    {inv.productUrl && (
-                      <a className="inv-card-link" href={inv.productUrl} target="_blank" rel="noopener noreferrer">
-                        🔗 Магазин
-                      </a>
-                    )}
-                    {inv.sourceUrl && (
-                      <a className="inv-card-link" href={inv.sourceUrl} target="_blank" rel="noopener noreferrer">
-                        📋 Виробник
-                      </a>
-                    )}
+
                   </div>
                 </div>
               </div>
@@ -4246,11 +4237,7 @@ export default function SolarBalkon() {
                     >
                       Замовити одразу
                     </button>
-                    {bat.productUrl && (
-                      <a className="inv-card-link" href={bat.productUrl} target="_blank" rel="noopener noreferrer">
-                        🔗 Магазин
-                      </a>
-                    )}
+
                   </div>
                 </div>
               </div>
