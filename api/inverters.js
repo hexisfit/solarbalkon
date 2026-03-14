@@ -74,7 +74,16 @@ export default async function handler(req, res) {
       if (clientEur === 0) continue;
 
       const kw = extractKw(model);
-      const priceUah = Math.round((clientEur * eurSale) / 100) * 100;
+
+      // Pricing logic:
+      // Col I (purchaseEur) = nkon.nl price + 25€ (set by Apps Script)
+      // Col J (clientEur)   = same as I (Apps Script writes purchaseEur+25)
+      // Retail price shown to client = clientEur × 1.15
+      // Exception: if purchaseEur === 0 (manually set row) → use clientEur as-is (already final price)
+      const retailEur = purchaseEur > 0
+        ? Math.round(clientEur * 1.15 * 100) / 100
+        : clientEur;
+      const priceUah = Math.round((retailEur * eurSale) / 100) * 100;
 
       inverters.push({
         name,
@@ -86,7 +95,8 @@ export default async function handler(req, res) {
         specs,
         sourceUrl,
         weight,
-        clientEur,
+        purchaseEur,
+        clientEur: retailEur,
         priceUah,
         availability,
         usp,
