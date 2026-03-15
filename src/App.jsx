@@ -2978,6 +2978,7 @@ function CatalogPage({ goToPage, addToCart, setDirectOrder, setShowOrderForm, se
           )}
         </div>
       </div>
+      <SocialFooter page="catalog" />
     </>
   );
 }
@@ -3423,6 +3424,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
       </div>
 
     </div>
+    <SocialFooter page="catalog" />
   );
 }
 
@@ -4223,9 +4225,9 @@ function AuditWizard({ goToPage, liveInverters = [] }) {
         </div>
       </div>
     </div>
+    <SocialFooter page="audit" />
   );
-}
-/* ═══════════ END AUDIT WIZARD ═══════════ */
+}/* ═══════════ END AUDIT WIZARD ═══════════ */
 
 const FOOTER_SEO = {
   home: {
