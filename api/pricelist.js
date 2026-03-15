@@ -59,8 +59,8 @@ export default async function handler(req, res) {
       map: (r) => ({ power_kw: r[4], dims: r[5], weight: r[6], frame: r[7], panel_type: r[8] }),
     },
     {
-      name: "Системи Накопичення Енергії (ES",
-      range: "'Системи Накопичення Енергії (ES'!A7:N200",
+      name: 'Системи Накопичення Енергії (ESS)',
+      range: "'Системи Накопичення Енергії (ESS)'!A7:N200",
       category: 'Системи Накопичення Енергії',
       priceCol: 11, availCol: 13,
       map: (r) => ({ power_kw: r[4], capacity_kwh: r[5], cycles: r[6], phases: r[7], hv_lv: r[8] }),
@@ -80,8 +80,8 @@ export default async function handler(req, res) {
       map: (r) => ({ capacity_kwh: r[4], capacity_ah: r[5], voltage_v: r[6], cycles: r[7], hv_lv: r[8] }),
     },
     {
-      name: 'Готові Комплекти Резервного Жив',
-      range: "'Готові Комплекти Резервного Жив'!A7:M200",
+      name: 'Готові Комплекти Резервного Живлення',
+      range: 'Готові Комплекти Резервного Живлення!A7:M200',
       category: 'Готові Комплекти Резервного Живлення',
       priceCol: 10, availCol: 12,  // 13-кол. лист
       map: (r) => ({ power_kw: r[4], capacity_kwh: r[5], type: r[6], phases: r[7] }),
