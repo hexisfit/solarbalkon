@@ -107,9 +107,9 @@ export default async function handler(req, res) {
     };
   };
   const stock = (v) => {
-    const s = cs(v).toLowerCase();
-    if (s.includes('є в наявності'))  return 5;
-    if (s.includes('закінчуються'))   return 1;
+    const s = cs(v).toLowerCase().trim();
+    if (s === 'є в наявності')    return 5;
+    if (s === 'закінчуються')     return 1;
     return null;
   };
 
