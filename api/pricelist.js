@@ -93,10 +93,53 @@ export default async function handler(req, res) {
     const n = parseFloat(String(v).replace(/[\s\u00A0]/g, '').replace(',', '.'));
     return isNaN(n) ? null : Math.round(n * 100) / 100;
   };
-  const brand = (name) => {
-    const n = name.toLowerCase();
-    for (const b of ['Deye','Dyness','AGENT','Longi','JA Solar','FlashFish','EcoFlow'])
-      if (n.includes(b.toLowerCase())) return b;
+  const brand = (name, sku) => {
+    const s = (sku || '').toUpperCase().trim();
+    const n = (name || '').toLowerCase();
+
+    // ── DAH SOLAR ─────────────────────────────────────────
+    if (s.startsWith('DHN') || s.startsWith('DHT')) return 'DAH Solar';
+
+    // ── LONGI ─────────────────────────────────────────────
+    if (s.startsWith('LR8-66HGD')) return 'Longi';
+
+    // ── JA SOLAR ──────────────────────────────────────────
+    if (s.startsWith('JAM72D40')) return 'JA Solar';
+
+    // ── JSDSOLAR ──────────────────────────────────────────
+    if (['J12100LY','J24100','J12100','J12200','J24230','BG48100'].some(p => s.includes(p))) return 'JSDSolar';
+
+    // ── DYNESS ────────────────────────────────────────────
+    if (s.startsWith('BX51100') || s.includes('DYNESS') || s.includes('DL5.0C') ||
+        s.includes('POWERBRICK') || s.includes('S51100') || s.includes('SBDU') ||
+        s.includes('HV4F') || s.includes('BDU_HV4F') || s.includes('HUB_HV4F') ||
+        s.includes('BR_11SHV4F')) return 'Dyness';
+
+    // ── FLASHFISH ─────────────────────────────────────────
+    if (s.startsWith('FF') || s.startsWith('F132') || n.includes('flashfish')) return 'FlashFish';
+
+    // ── AGENT ─────────────────────────────────────────────
+    const agentSkus = ['HSI_3500','HSI_5500','HSI_3500-WF','HSI_5500-WF',
+      'SP-ESS','J3000L-24','J5500HP','51_2V100AH','24V200AH',
+      'SP-ESS-5K-5K','SP-ESS-5K-5K-A3','24V200AH_4U','J24230','WI-FI MODULE AGENT'];
+    if (agentSkus.some(p => s.includes(p)) || n.includes('agent')) return 'AGENT';
+
+    // ── DEYE ──────────────────────────────────────────────
+    const deyeSkus = [
+      'SUN-','DEYE','BOS-G','BOS-A','GB-S','GB-L','MGB-L',
+      'SE-G5.1PRO','SE-F5','SE-F12','SE-F16','RW-M','RW-F',
+      'AI-W5.1','AE-F2.0','SUN M1000','BK01','GE-F',
+      'ASM20','ASM02','HVB750','3U-HRACK','3U-LRACK',
+      'BOS-GM5.1','BOS-G-PDU','BOS-A-PDU','BOS-A-RACK',
+      'GB-S10K','GB-S20K','GB-SL','GB-L-HVCBWS','GB-L-BB',
+    ];
+    if (deyeSkus.some(p => s.includes(p)) || n.includes('deye')) return 'Deye';
+
+    // ── По названию ───────────────────────────────────────
+    if (n.includes('longi')) return 'Longi';
+    if (n.includes('ja solar')) return 'JA Solar';
+    if (n.includes('ecoflow')) return 'EcoFlow';
+
     return '';
   };
   const dw = (s) => {
@@ -153,7 +196,7 @@ export default async function handler(req, res) {
       const extra = sheet.map(row);
       const item  = {
         category:         sheet.category,
-        brand:            brand(name),
+        brand:            brand(name, sku),
         sku,
         name,
         price_dealer_usd: price,
