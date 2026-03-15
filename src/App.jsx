@@ -4227,7 +4227,90 @@ function AuditWizard({ goToPage, liveInverters = [] }) {
 }
 /* ═══════════ END AUDIT WIZARD ═══════════ */
 
-function SocialFooter() {
+const FOOTER_SEO = {
+  home: {
+    heading: 'Балконні сонячні електростанції в Україні — SolarBalkon',
+    text: 'SolarBalkon — інтернет-магазин балконних та комерційних сонячних електростанцій з доставкою по всій Україні. Продаємо сертифіковане обладнання: мікроінвертори EcoFlow STREAM, накопичувачі Zendure SolarFlow 2400 AC+, гібридні інвертори та батареї Deye. Балконна СЕС потужністю від 600 Вт до 10 кВт дозволяє зменшити рахунки за електроенергію до 80%. Державний кредит 0% на сонячні панелі від "Доступна енергія". Монтаж, підключення до мережі, двонаправлений лічильник. Консультація безкоштовно.',
+    links: [
+      { href: '/catalog', label: 'Каталог обладнання' },
+      { href: '/audit', label: '⚡ Аудит СЕС' },
+      { href: '/blog', label: 'Блог про сонячну енергію' },
+      { href: '/credit', label: 'Кредит 0%' },
+    ],
+  },
+  catalog: {
+    heading: 'Каталог сонячного обладнання — інвертори, батареї, системи',
+    text: 'Повний каталог сонячного обладнання SolarBalkon: 10 моделей гібридних інверторів Deye (3.6–50 кВт, однофазні та трифазні), 6 моделей акумуляторних батарей LiFePO4 Deye (5–16 кВт·год), побутові системи накопичення EcoFlow та Zendure, компоненти для монтажу. Усі ціни в гривнях. Офіційна гарантія. Доставка Нова Пошта по Україні.',
+    links: [
+      { href: '/', label: 'Головна' },
+      { href: '/audit', label: 'Розрахувати СЕС' },
+      { href: '/blog', label: 'Статті та поради' },
+    ],
+  },
+  blog: {
+    heading: 'Блог SolarBalkon — статті про сонячну енергетику та автономію в Україні',
+    text: 'Експертний блог про сонячну енергетику для домашнього використання та бізнесу в Україні. Статті про балконні СЕС, вибір інвертора та акумулятора, економію на електроенергії, державні програми фінансування сонячних панелей, технічні огляди обладнання EcoFlow, Zendure, Deye. Практичні поради з монтажу, підключення та обслуговування. Актуальні тарифи на електроенергію.',
+    links: [
+      { href: '/catalog', label: 'Каталог обладнання' },
+      { href: '/audit', label: 'Аудит СЕС безкоштовно' },
+      { href: '/credit', label: 'Кредит 0% від держави' },
+    ],
+  },
+  audit: {
+    heading: 'Аудит сонячної електростанції — безкоштовний розрахунок окупності СЕС',
+    text: 'Безкоштовний онлайн-аудит сонячної електростанції (СЕС) для приватного будинку або підприємства в Україні. Розраховуємо оптимальну потужність сонячної системи, річне вироблення електроенергії залежно від регіону та орієнтації панелей, термін окупності, економію за 10–25 років. Враховуємо поточний тариф, пільговий тариф від держави, можливість продажу надлишків електроенергії за "зеленим тарифом".',
+    links: [
+      { href: '/catalog', label: 'Обрати обладнання' },
+      { href: '/credit', label: 'Оформити кредит 0%' },
+      { href: '/blog', label: 'Читати статті' },
+    ],
+  },
+  credit: {
+    heading: 'Кредит 0% на сонячні панелі — державна програма «Доступна енергія»',
+    text: 'Державна програма «Доступна енергія» дозволяє придбати балконну або домашню сонячну електростанцію в кредит під 0% річних. Умови: громадяни України, придбання через уповноважений магазин, розстрочка на 36–84 місяці. SolarBalkon — офіційний учасник програми. Допоможемо оформити заявку, підібрати систему та отримати державну субсидію на сонячну енергетику.',
+    links: [
+      { href: '/catalog', label: 'Обрати систему' },
+      { href: '/audit', label: 'Розрахувати окупність' },
+      { href: '/', label: 'На головну' },
+    ],
+  },
+  ecoflow: {
+    heading: 'EcoFlow STREAM AC Pro — балконна сонячна станція з акумулятором',
+    text: 'EcoFlow STREAM AC Pro — компактна балконна сонячна електростанція з вбудованим акумулятором 1920 Вт·год і мікроінвертором 1200 Вт. Підключається до звичайної розетки 220В без дозволів. Технологія LFP (LiFePO4), 6000 циклів заряду, гарантія 2 роки. Ідеальне рішення для квартири, балкону або невеликого будинку. Захист від відключення мережі (безперебійне живлення). Доставка по Україні.',
+    links: [
+      { href: '/catalog', label: 'Усі системи в каталозі' },
+      { href: '/audit', label: 'Розрахувати економію' },
+    ],
+  },
+  zendure: {
+    heading: 'Zendure SolarFlow 2400 AC+ — система накопичення енергії для балкону',
+    text: 'Zendure SolarFlow 2400 AC+ — найпотужніша балконна система накопичення енергії з акумулятором 2400 Вт·год і гібридним інвертором 2400 Вт. Гарантія 10 років, 6000 циклів LiFePO4. Двонаправлена робота: споживання і продаж в мережу. Підтримка Smart Home (Matter, Zigbee). Захищений від короткочасних відключень мережі. Сертифікований для України.',
+    links: [
+      { href: '/catalog', label: 'Усі системи' },
+      { href: '/audit', label: 'Аудит СЕС' },
+    ],
+  },
+  deye: {
+    heading: 'Deye AE-FS2.0-2H2 — гібридна система з батареєю та ДБЖ',
+    text: 'Deye AE-FS2.0-2H2 — гібридна балконна система з вбудованим ДБЖ (безперебійне живлення) та акумулятором 2000 Вт·год. Інвертор 1000 Вт. При відключенні мережі переходить на живлення від сонячних панелей та акумулятора без перерви. Гарантія 10 років. LiFePO4, 6000 циклів. Оптимальний вибір для регіонів з нестабільним електропостачанням.',
+    links: [
+      { href: '/catalog', label: 'Усі системи' },
+      { href: '/audit', label: 'Розрахувати' },
+    ],
+  },
+  default: {
+    heading: 'SolarBalkon — сонячна енергетика для будинку та бізнесу',
+    text: 'SolarBalkon — інтернет-магазин сонячного обладнання в Україні. Балконні СЕС, гібридні інвертори, акумулятори LiFePO4. Доставка по Україні. Кредит 0%.',
+    links: [
+      { href: '/', label: 'Головна' },
+      { href: '/catalog', label: 'Каталог' },
+      { href: '/blog', label: 'Блог' },
+    ],
+  },
+};
+
+function SocialFooter({ page }) {
+  const seo = FOOTER_SEO[page] || FOOTER_SEO.default;
   return (
     <footer className="footer">
       <div className="footer-logo"><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></div>
@@ -4240,8 +4323,42 @@ function SocialFooter() {
         <a href="tel:+380674455669">📞 +380 67 445 5669</a>
         <a href="https://t.me/solarbalkon_bot" target="_blank" rel="noopener noreferrer">🤖 @solarbalkon_bot</a>
       </div>
-      <p style={{ marginTop: '0.75rem' }}>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-      <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>📍 Київ, вул. Вікентія Хвойки, 15/15</p>
+
+      {/* SEO block — keyword-rich content for search engines and AI agents */}
+      <div style={{
+        marginTop: '2rem',
+        borderTop: '1px solid rgba(255,255,255,0.12)',
+        paddingTop: '1.5rem',
+        textAlign: 'left',
+        maxWidth: 800,
+        margin: '2rem auto 0',
+      }}>
+        <h2 style={{
+          fontSize: '0.95rem', fontWeight: 700,
+          color: 'rgba(255,255,255,0.9)',
+          marginBottom: '0.6rem', lineHeight: 1.4,
+        }}>
+          {seo.heading}
+        </h2>
+        <p style={{
+          fontSize: '0.78rem', lineHeight: 1.7,
+          color: 'rgba(255,255,255,0.6)',
+          marginBottom: '1rem',
+        }}>
+          {seo.text}
+        </p>
+        <nav aria-label="Корисні посилання" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
+          {seo.links.map(l => (
+            <a key={l.href} href={l.href}
+              style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)', textDecoration: 'underline' }}>
+              {l.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <p style={{ marginTop: '1.25rem' }}>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
+      <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>📍 Україна · Доставка Новою Поштою · ПДВ не платник</p>
     </footer>
   );
 }
@@ -8116,7 +8233,7 @@ export default function SolarBalkon() {
       </section>
 
       {/* FOOTER */}
-      <SocialFooter />
+      <SocialFooter page="home" />
       </>)}
 
       {/* ═══════ ECOFLOW DETAIL PAGE ═══════ */}
@@ -8276,7 +8393,7 @@ export default function SolarBalkon() {
             </button>
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="ecoflow" />
         </div>
       )}
 
@@ -8472,7 +8589,7 @@ export default function SolarBalkon() {
             </button>
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="zendure" />
         </div>
       )}
 
@@ -8641,7 +8758,7 @@ export default function SolarBalkon() {
             </button>
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="deye" />
         </div>
       )}
 
@@ -8831,7 +8948,7 @@ export default function SolarBalkon() {
             </button>
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="anker" />
         </div>
       )}
 
@@ -9257,7 +9374,7 @@ export default function SolarBalkon() {
             </div>
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="credit" />
         </div>
       )}
 
@@ -9299,7 +9416,7 @@ export default function SolarBalkon() {
             ))}
           </div>
 
-          <SocialFooter />
+          <SocialFooter page="blog" />
         </div>
       )}
 
@@ -9451,7 +9568,7 @@ export default function SolarBalkon() {
               </div>
             )}
 
-            <SocialFooter />
+            <SocialFooter page="blog" />
           </div>
         );
       })()}
