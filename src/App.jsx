@@ -2329,9 +2329,70 @@ body {
   font-size: 0.78rem; color: var(--gray-400);
 }
 
+/* HAMBURGER */
+.hamburger {
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:6px;
+  border-radius:6px;
+  margin-left:8px;
+}
+.hamburger span {
+  display:block;
+  width:22px;
+  height:2px;
+  background:var(--green-800);
+  border-radius:2px;
+  transition:all 0.25s ease;
+}
+.hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+.mobile-menu {
+  display:none;
+  position:fixed;
+  top:64px;
+  left:0; right:0;
+  background:#fff;
+  z-index:999;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  border-bottom:2px solid var(--green-200);
+  max-height:calc(100vh - 64px);
+  overflow-y:auto;
+}
+.mobile-menu.open { display:block; }
+.mobile-menu ul {
+  list-style:none;
+  margin:0; padding:0.5rem 0;
+}
+.mobile-menu ul li a {
+  display:block;
+  padding:13px 1.5rem;
+  font-size:1rem;
+  font-weight:500;
+  color:var(--text-primary);
+  text-decoration:none;
+  border-bottom:1px solid var(--green-50);
+  transition:background 0.15s;
+}
+.mobile-menu ul li a:hover,
+.mobile-menu ul li a:active { background:var(--green-50); color:var(--green-700); }
+.mobile-menu ul li a.nav-audit { color:var(--yellow-600); font-weight:700; }
+.mobile-menu-social {
+  display:flex;
+  gap:12px;
+  padding:1rem 1.5rem;
+  border-top:1px solid var(--green-50);
+}
+
 /* MOBILE */
 @media (max-width:768px) {
   .nav-links { display:none; }
+  .hamburger { display:flex; }
   .nav-social { gap:10px; }
   .nav-social a { width:34px; height:34px; }
   .nav-social svg { width:16px; height:16px; }
@@ -4228,6 +4289,19 @@ const ADMIN_CSS = `
 .adm-header{background:#2d7a3a;color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .adm-header h1{font-size:1.1rem;font-weight:700;margin:0}
 .adm-tabs{display:flex;gap:0;background:white;border-bottom:2px solid #e0e0e0;padding:0 1.5rem;overflow-x:auto}
+.adm-hamburger{display:none;background:none;border:1.5px solid #e0e0e0;border-radius:6px;cursor:pointer;padding:6px 10px;font-size:0.85rem;font-weight:600;color:#2d7a3a;align-items:center;gap:6px;white-space:nowrap}
+.adm-mobile-tabs{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.12);border-bottom:2px solid #e0e0e0}
+.adm-mobile-tabs.open{display:block}
+.adm-mobile-tabs button{display:block;width:100%;text-align:left;padding:13px 1.5rem;font-size:0.95rem;font-weight:500;color:#424242;background:none;border:none;border-bottom:1px solid #f5f5f5;cursor:pointer}
+.adm-mobile-tabs button:hover,.adm-mobile-tabs button.active{background:#e8f5e9;color:#2d7a3a}
+@media(max-width:768px){
+  .adm-tabs{display:none}
+  .adm-hamburger{display:flex}
+  .adm-mobile-header{display:block!important}
+}
+@media(min-width:769px){
+  .adm-mobile-header{display:none!important}
+}
 .adm-tab{padding:12px 20px;font-size:0.9rem;font-weight:600;color:#757575;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
 .adm-tab.active{color:#2d7a3a;border-bottom-color:#2d7a3a}
 .adm-body{max-width:1200px;margin:0 auto;padding:1.5rem}
@@ -5396,6 +5470,7 @@ function AdminPanel({ goToPage }) {
   const [password, setPassword]   = useState(() => sessionStorage.getItem('sb_admin_token') || '');
   const [authError, setAuthError] = useState('');
   const [tab, setTab]             = useState('inverters');
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [saving, setSaving]       = useState(false);
   const [toast, setToast]         = useState('');
   const [adminData, setAdminData] = useState(null);
@@ -5659,6 +5734,7 @@ function AdminPanel({ goToPage }) {
         </div>
       </div>
 
+      {/* Desktop tabs */}
       <div className="adm-tabs">
         {[
           { id: 'inverters', label: `⚡ Інвертори (${mergedInverters.length})` },
@@ -5675,6 +5751,42 @@ function AdminPanel({ goToPage }) {
             {t.label}
           </button>
         ))}
+      </div>
+
+      {/* Mobile: hamburger tabs */}
+      <div style={{position:'relative'}} className="adm-mobile-header">
+        <button className="adm-hamburger" onClick={() => setAdminMenuOpen(m => !m)}>
+          <span style={{fontSize:'1.1rem'}}>{adminMenuOpen ? '✕' : '☰'}</span>
+          {[
+            { id: 'inverters', label: `⚡ Інвертори` },
+            { id: 'batteries', label: `🔋 Батареї` },
+            { id: 'systems',   label: `🏠 Системи` },
+            { id: 'components', label: `⚙️ Конфігуратор` },
+            { id: 'reviews',    label: `⭐ Відгуки` },
+            { id: 'pages',     label: `📄 Сторінки` },
+            { id: 'blog',      label: `📝 Блог` },
+            { id: 'settings',  label: '⚙️ Ціни' },
+            { id: 'export',    label: '📱 Мобільний' },
+          ].find(t => t.id === tab)?.label || 'Меню'}
+        </button>
+        <div className={`adm-mobile-tabs${adminMenuOpen ? ' open' : ''}`}>
+          {[
+            { id: 'inverters',  label: `⚡ Інвертори (${mergedInverters.length})` },
+            { id: 'batteries',  label: `🔋 Батареї (${mergedBatteries.length})` },
+            { id: 'systems',    label: `🏠 Системи` },
+            { id: 'components', label: `⚙️ Конфігуратор` },
+            { id: 'reviews',    label: `⭐ Відгуки${pendingReviews.length > 0 ? ' 🔴 ' + pendingReviews.length : ''} та пари` },
+            { id: 'pages',      label: `📄 Сторінки` },
+            { id: 'blog',       label: `📝 Блог` },
+            { id: 'settings',   label: '⚙️ Ціни' },
+            { id: 'export',     label: '📱 Мобільний' },
+          ].map(t => (
+            <button key={t.id} className={tab === t.id ? 'active' : ''}
+              onClick={() => { setTab(t.id); setAdminMenuOpen(false); }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="adm-body">
@@ -6465,6 +6577,7 @@ export default function SolarBalkon() {
   const [selectedAppliances, setSelectedAppliances] = useState([0]);
   const [consumption, setConsumption] = useState(250);
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showMoreAppliances, setShowMoreAppliances] = useState(false);
   const [sheetPrices, setSheetPrices] = useState(null);
   const [sheetComponents, setSheetComponents] = useState([]);
@@ -6965,7 +7078,7 @@ export default function SolarBalkon() {
       {/* NAV */}
       <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-inner">
-          <a href="/" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); }}><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></a>
+          <a href="/" className="nav-logo" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); }}><img src="/logo-bolt.png" alt="SolarBalkon" /> Solar<span>Balkon</span></a>
           <ul className="nav-links">
             <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); }}>Головна</a></li>
             <li><a href="/#calc" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('calc')?.scrollIntoView({behavior:'smooth'}), 100); }}>Калькулятор</a></li>
@@ -6986,6 +7099,9 @@ export default function SolarBalkon() {
             </svg>
             {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
           </button>
+          <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(m => !m)} aria-label="Меню">
+            <span/><span/><span/>
+          </button>
           <div className="nav-social">
             <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
@@ -6996,6 +7112,31 @@ export default function SolarBalkon() {
           </div>
         </div>
       </nav>
+
+      {/* MOBILE MENU DROPDOWN */}
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`}>
+        <ul>
+          <li><a href="/" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); }}>🏠 Головна</a></li>
+          <li><a href="/#calc" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); setTimeout(() => document.getElementById('calc')?.scrollIntoView({behavior:'smooth'}), 100); }}>🧮 Калькулятор</a></li>
+          <li><a href="/#systems" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); setTimeout(() => document.getElementById('systems')?.scrollIntoView({behavior:'smooth'}), 100); }}>🔋 Системи</a></li>
+          <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>⚙️ Конфігуратор</a></li>
+          <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setMenuOpen(false); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>💰 Економія</a></li>
+          <li><a href="/audit" className="nav-audit" onClick={(e) => { e.preventDefault(); goToPage('audit'); setMenuOpen(false); }}>⚡ Аудит СЕС</a></li>
+          <li><a href="/catalog" onClick={(e) => { e.preventDefault(); goToPage('catalog'); setMenuOpen(false); }}>🛒 Каталог</a></li>
+          <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); setMenuOpen(false); }}>📝 Блог</a></li>
+          <li><a href="/credit" onClick={(e) => { e.preventDefault(); goToPage('credit'); setMenuOpen(false); }}>🏦 Кредит 0%</a></li>
+        </ul>
+        <div className="mobile-menu-social">
+          <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:6,color:'#e1306c',fontWeight:600,fontSize:'0.9rem',textDecoration:'none'}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Instagram
+          </a>
+          <a href="https://t.me/solarbalkonshop" target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:6,color:'#0088cc',fontWeight:600,fontSize:'0.9rem',textDecoration:'none'}}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Telegram
+          </a>
+        </div>
+      </div>
 
       {/* HERO */}
       {currentPage === 'home' && (<>
