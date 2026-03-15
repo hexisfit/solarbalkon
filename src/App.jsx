@@ -4829,13 +4829,20 @@ function AdminPanel({ goToPage }) {
   const [pageEditor, setPageEditor] = useState(null); // null | page object
   const [components, setComponents] = useState([]);
   const [compModal, setCompModal] = useState(null);
+  const [sheetCompsApi, setSheetCompsApi] = useState([]); // from /api/prices
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
 
   // Auto-load data if already authenticated (page refresh)
   useEffect(() => {
-    if (authed && password) loadData(password);
-  }, []);
+    if (authed && password) {
+      loadData(password);
+      // Fetch sheet components from /api/prices
+      fetch('/api/prices').then(r => r.ok ? r.json() : null).then(data => {
+        if (data?.components?.length) setSheetCompsApi(data.components);
+      }).catch(() => {});
+    }
+  }, [authed]);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -5206,63 +5213,85 @@ function AdminPanel({ goToPage }) {
         })()}
 
         {tab === 'components' && (() => {
-          // Merge sheet components with admin overrides for display
-          const sheetComps = []; // shown from API, admin overrides shown separately
-          const BASE_SYSTEMS = ['zendure','ecoflow','deye','anker'];
+          // Merge sheet components with admin overrides
+          const ovMap = {};
+          components.forEach(c => { if (c.sku) ovMap[c.sku] = c; });
+          // All components: sheet base + admin-only new ones
+          const allComps = [
+            ...sheetCompsApi.map(c => ({ ...c, ...(ovMap[c.sku] || {}), _fromSheet: true })),
+            ...components.filter(c => !sheetCompsApi.find(s => s.sku === c.sku)),
+          ];
           return (
           <div className="adm-card">
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
-              <h3 style={{margin:0}}>Компоненти конфігуратора</h3>
+              <h3 style={{margin:0}}>Компоненти конфігуратора ({allComps.length})</h3>
               <button className="adm-btn adm-btn-primary adm-btn-sm"
                 onClick={() => setCompModal({name:'',sku:'',qty:1,priceEur:0,systems:['zendure','ecoflow','deye','anker'],optional:false})}>
                 + Новий компонент
               </button>
             </div>
             <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
-              Базові компоненти беруться з Google Sheets. Тут можна додати нові або приховати/змінити існуючі по артикулу.
+              Базові з Google Sheets + додані через адмінку. Редагуй будь-який — зміни зберігаються в admin.json.
             </p>
-            {components.length === 0 ? (
-              <div style={{textAlign:'center',padding:'3rem',color:'#9e9e9e'}}>
-                <div style={{fontSize:'3rem',marginBottom:'1rem'}}>⚙️</div>
-                <p>Немає змін. Натисни "+ Новий компонент" або додай override.</p>
+            {allComps.length === 0 ? (
+              <div style={{textAlign:'center',padding:'2rem',color:'#9e9e9e'}}>
+                <p>Завантаження компонентів...</p>
               </div>
             ) : (
-              <table className="adm-table">
-                <thead>
-                  <tr><th>Назва</th><th>Артикул</th><th>Ціна EUR</th><th>К-ть</th><th>Системи</th><th>Статус</th><th></th></tr>
-                </thead>
-                <tbody>
-                  {components.map(comp => (
-                    <tr key={comp.sku}>
-                      <td style={{fontWeight:600,fontSize:'0.85rem'}}>{comp.name}</td>
-                      <td style={{fontFamily:'monospace',fontSize:'0.78rem',color:'#9e9e9e'}}>{comp.sku}</td>
-                      <td style={{fontSize:'0.85rem'}}>{comp.priceEur}€</td>
-                      <td style={{fontSize:'0.85rem'}}>× {comp.qty}</td>
-                      <td>
-                        <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
-                          {(comp.systems||[]).map(s => (
-                            <span key={s} className="adm-badge adm-badge-ok" style={{fontSize:'0.7rem'}}>{s}</span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        {comp.hidden
-                          ? <span className="adm-badge adm-badge-no">Приховано</span>
-                          : comp.optional
-                            ? <span className="adm-badge adm-badge-warn">Опція</span>
-                            : <span className="adm-badge adm-badge-ok">Обов'язковий</span>
-                        }
-                      </td>
-                      <td style={{display:'flex',gap:6}}>
-                        <button className="adm-btn adm-btn-ghost adm-btn-sm"
-                          onClick={() => setCompModal(comp)}>✏️</button>
-                        <button className="adm-btn adm-btn-danger adm-btn-sm"
-                          onClick={() => { if(window.confirm('Видалити?')) setComponents(p => p.filter(c => c.sku !== comp.sku)); }}>🗑</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div style={{overflowX:'auto'}}>
+                <table className="adm-table">
+                  <thead>
+                    <tr><th>Назва</th><th>Артикул</th><th>Ціна EUR</th><th>К-ть</th><th>Системи</th><th>Тип</th><th>Статус</th><th></th></tr>
+                  </thead>
+                  <tbody>
+                    {allComps.map(comp => {
+                      const isOverridden = comp._fromSheet && ovMap[comp.sku];
+                      const isNew = !comp._fromSheet;
+                      return (
+                        <tr key={comp.sku}>
+                          <td style={{fontWeight:600,fontSize:'0.85rem',maxWidth:200}}>{comp.name}</td>
+                          <td style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e'}}>{comp.sku}</td>
+                          <td style={{fontSize:'0.85rem'}}>{comp.priceEur ? `${comp.priceEur}€` : '—'}</td>
+                          <td style={{fontSize:'0.85rem'}}>× {comp.qty}</td>
+                          <td>
+                            <div style={{display:'flex',gap:3,flexWrap:'wrap'}}>
+                              {(comp.systems||[]).map(s => (
+                                <span key={s} className="adm-badge adm-badge-ok" style={{fontSize:'0.68rem'}}>{s}</span>
+                              ))}
+                            </div>
+                          </td>
+                          <td style={{fontSize:'0.8rem'}}>
+                            {comp.optional ? <span className="adm-badge adm-badge-warn">Опція</span>
+                              : <span className="adm-badge adm-badge-ok">Обов'язковий</span>}
+                          </td>
+                          <td>
+                            {comp.hidden
+                              ? <span className="adm-badge adm-badge-no">Приховано</span>
+                              : isNew
+                                ? <span className="adm-badge" style={{background:'#e3f2fd',color:'#1565c0'}}>Новий</span>
+                                : isOverridden
+                                  ? <span className="adm-badge" style={{background:'#fff3e0',color:'#e65100'}}>Змінено</span>
+                                  : <span className="adm-badge" style={{background:'#f5f5f5',color:'#616161'}}>Sheets</span>
+                            }
+                          </td>
+                          <td style={{display:'flex',gap:4}}>
+                            <button className="adm-btn adm-btn-ghost adm-btn-sm"
+                              onClick={() => setCompModal({ ...comp })}>✏️</button>
+                            {isNew && (
+                              <button className="adm-btn adm-btn-danger adm-btn-sm"
+                                onClick={() => { if(window.confirm('Видалити?')) setComponents(p => p.filter(c => c.sku !== comp.sku)); }}>🗑</button>
+                            )}
+                            {isOverridden && (
+                              <button className="adm-btn adm-btn-ghost adm-btn-sm" title="Скинути зміни"
+                                onClick={() => { if(window.confirm('Скинути до оригіналу?')) setComponents(p => p.filter(c => c.sku !== comp.sku)); }}>↺</button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
           );
