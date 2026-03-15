@@ -567,6 +567,10 @@ function setSEO({ title, description, url, image, type = 'website', article = nu
     el.setAttribute('content', val);
   };
   setMeta('name', 'description', description);
+  setMeta('name', 'robots', 'index, follow');
+  setMeta('name', 'author', 'SolarBalkon');
+  setMeta('property', 'og:site_name', 'SolarBalkon');
+  setMeta('property', 'og:locale', 'uk_UA');
   setMeta('property', 'og:title', title);
   setMeta('property', 'og:description', description);
   setMeta('property', 'og:url', url);
@@ -2991,6 +2995,44 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
   };
 
   const item = findItem();
+
+  // Set SEO for product page
+  useEffect(() => {
+    if (!item) return;
+    document.title = `${item.name} — купити в Україні | SolarBalkon`;
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
+    meta.content = `${item.name} (${item.model}) — ${item.category}. ${item.price > 0 ? 'Ціна: ' + item.price.toLocaleString('uk-UA') + ' грн.' : ''} Купити з доставкою по Україні. SolarBalkon.`;
+    let can = document.querySelector('link[rel="canonical"]');
+    if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
+    can.href = `https://solarbalkon.shop/catalog/${itemKey}`;
+    // Product Schema.org
+    const existingSchema = document.getElementById('product-schema');
+    if (existingSchema) existingSchema.remove();
+    const schema = document.createElement('script');
+    schema.id = 'product-schema';
+    schema.type = 'application/ld+json';
+    schema.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: item.name,
+      description: item.category + (item.usp ? '. ' + item.usp : ''),
+      image: item.image ? `https://solarbalkon.shop${item.image}` : undefined,
+      brand: { '@type': 'Brand', name: 'SolarBalkon' },
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'UAH',
+        price: item.price || 0,
+        availability: item.availability === 'В наявності'
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/PreOrder',
+        url: `https://solarbalkon.shop/catalog/${itemKey}`,
+        seller: { '@type': 'Organization', name: 'SolarBalkon' },
+      },
+    });
+    document.head.appendChild(schema);
+    return () => schema.remove();
+  }, [itemKey, item?.name]);
 
   if (!item) return (
     <div style={{ textAlign:'center', padding:'4rem', color:'var(--gray-400)' }}>
@@ -5945,12 +5987,52 @@ export default function SolarBalkon() {
         title: 'Аудит об\'єкта — Розрахунок СЕС | SolarBalkon',
         desc: 'Безкоштовний онлайн-калькулятор сонячної електростанції. Розрахунок потужності, генерації, окупності та специфікації обладнання для вашого об\'єкта в Україні.',
       },
+      blog: {
+        title: 'Блог — Статті про сонячну енергію | SolarBalkon',
+        desc: 'Корисні статті про балконні сонячні електростанції, тарифи на електроенергію, державні програми кредитування та порівняння обладнання в Україні.',
+      },
+      catalog: {
+        title: 'Каталог товарів — Сонячні системи, Інвертори, Батареї | SolarBalkon',
+        desc: 'Повний каталог сонячного обладнання: балконні системи EcoFlow, Zendure, Deye, комерційні інвертори Deye, батареї LiFePO4. Ціни в грн. Доставка по Україні.',
+      },
     };
+
+    // Dynamic SEO for catalog product pages
+    if (currentPage.startsWith('catalog:')) {
+      const key = currentPage.slice(8);
+      const cleanKey = key.replace(/^(inv-|bat-|comp-)/, '');
+      document.title = `${cleanKey.toUpperCase()} — купити в Україні | SolarBalkon`;
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
+      meta.content = `Купити ${cleanKey} в Україні. Актуальна ціна, характеристики, наявність. Доставка по Україні. SolarBalkon — сонячні системи.`;
+      // canonical
+      let can = document.querySelector('link[rel="canonical"]');
+      if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
+      can.href = 'https://solarbalkon.shop/catalog/' + key;
+      return;
+    }
+
     const page = seo[currentPage] || seo.home;
     document.title = page.title;
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
     meta.content = page.desc;
+
+    // Update canonical URL
+    let can = document.querySelector('link[rel="canonical"]');
+    if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
+    const canonicalMap = {
+      home: 'https://solarbalkon.shop/',
+      ecoflow: 'https://solarbalkon.shop/ecoflow',
+      zendure: 'https://solarbalkon.shop/zendure',
+      deye: 'https://solarbalkon.shop/deye',
+      anker: 'https://solarbalkon.shop/anker',
+      credit: 'https://solarbalkon.shop/credit',
+      audit: 'https://solarbalkon.shop/audit',
+      blog: 'https://solarbalkon.shop/blog',
+      catalog: 'https://solarbalkon.shop/catalog',
+    };
+    can.href = canonicalMap[currentPage] || 'https://solarbalkon.shop/';
   }, [currentPage]);
 
   const tariff = TARIFFS[tariffType];
