@@ -4977,10 +4977,7 @@ function AdminComponentModal({ component, onSave, onClose, password }) {
         <div className="adm-field">
           <label>Технічні характеристики (кожна з нового рядка: Назва: Значення)</label>
           <textarea value={form.specs} onChange={e => setForm(p => ({...p, specs: e.target.value}))}
-            placeholder={"Потужність: 455 Вт
-Ефективність: 21.5%
-Розмір: 2094×1038 мм
-Вага: 22.5 кг"}
+            placeholder={"Потужність: 455 Вт\nЕфективність: 21.5%\nРозмір: 2094×1038 мм\nВага: 22.5 кг"}
             style={{minHeight:100,resize:'vertical',width:'100%',padding:'9px 12px',fontFamily:'monospace',
               border:'1px solid #e0e0e0',borderRadius:8,fontSize:'0.82rem',outline:'none'}}
             onFocus={e=>e.target.style.borderColor='#2d7a3a'}
