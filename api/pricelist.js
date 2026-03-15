@@ -115,6 +115,13 @@ export default async function handler(req, res) {
       weight: str.match(/([\d.]+)\s*кг/)?.[1] || '',
     };
   };
+  // Нормализация наличия → числовой формат
+  const stock = (v) => {
+    const s = cs(v).toLowerCase();
+    if (s.includes('є в наявності'))  return 5;
+    if (s.includes('закінчуються'))   return 1;
+    return null;  // немає, в дорозі, передзамолення → пусто
+  };
 
   // ─── GET ACCESS TOKEN from Refresh Token ───────────────────
   async function getAccessToken() {
@@ -163,7 +170,7 @@ export default async function handler(req, res) {
         sku,
         name,
         price_dealer_usd: price,
-        availability:     cs(row[sheet.availCol]),
+        availability:     stock(row[sheet.availCol]),
       };
 
       // Dims+weight
