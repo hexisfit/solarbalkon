@@ -2393,9 +2393,10 @@ body {
 @media (max-width:768px) {
   .nav-links { display:none; }
   .hamburger { display:flex; }
-  .nav-social { gap:10px; }
-  .nav-social a { width:34px; height:34px; }
-  .nav-social svg { width:16px; height:16px; }
+  .nav-inner { padding: 0 1rem; }
+  .nav-cart-btn { order: 2; }
+  .hamburger { order: 3; }
+  .nav-social { display:none; }
   .hero { padding:100px 1.5rem 40px; }
   .hero::after { display: none; }
   .hero-inner { text-align: center; }
