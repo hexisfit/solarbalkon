@@ -24,13 +24,15 @@ export default async function handler(req, res) {
 
   // Battery images — { file: filename_without_ext, keys: [model_keywords] }
   // Some files have '------------' prefix — uploaded via admin before sanitize fix
+  // Battery images with GitHub raw URLs (bypasses Vercel SPA rewrite for filenames with dashes)
+  const GH_RAW = 'https://raw.githubusercontent.com/hexisfit/solarbalkon/main/public/batteries/';
   const BATTERY_IMGS = [
-    { file: 'Deye-SE-F5-Pro-C-',                       keys: ['SE-F5-Pro-C'] },
-    { file: '------------Deye-SE-F12-C',                keys: ['SE-F12-C'] },
-    { file: '------------Deye-SE-F16-C',                keys: ['SE-F16-C'] },
-    { file: '------------Deye-SE-G5-1Pro-B-51.2kWh',   keys: ['SE-G5-1Pro-B'] },
-    { file: 'BMS-BDU-Deye-GB-L-Pro',                   keys: ['GB-L-Pro-BMS', 'GB-L-Pro-BDU', 'BMS-BDU'] },
-    { file: '------------Deye-GB-L-Pro-4kWh',           keys: ['GB-L-Pro-4kWh'] },
+    { url: '/batteries/Deye-SE-F5-Pro-C-.png',                                        keys: ['SE-F5-Pro-C'] },
+    { url: GH_RAW + '------------Deye-SE-F12-C.png',                                  keys: ['SE-F12-C'] },
+    { url: GH_RAW + '------------Deye-SE-F16-C.png',                                  keys: ['SE-F16-C'] },
+    { url: GH_RAW + '------------Deye-SE-G5-1Pro-B-51.2kWh.png',                      keys: ['SE-G5-1Pro-B'] },
+    { url: '/batteries/BMS-BDU-Deye-GB-L-Pro.png',                                    keys: ['GB-L-Pro-BMS', 'GB-L-Pro-BDU', 'BMS-BDU'] },
+    { url: GH_RAW + '------------Deye-GB-L-Pro-4kWh.png',                             keys: ['GB-L-Pro-4kWh'] },
   ];
 
   function findImageUrl(model, category) {
@@ -45,7 +47,7 @@ export default async function handler(req, res) {
       const match = BATTERY_IMGS.find(b =>
         b.keys.some(k => modelLower.includes(k.toLowerCase()))
       );
-      if (match) return `/batteries/${match.file}.png`;
+      if (match) return match.url;
       return null;
     }
 
