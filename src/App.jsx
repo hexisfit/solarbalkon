@@ -2555,6 +2555,79 @@ body {
 .cart-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
 .cart-page-title { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1.5rem; }
 @media(max-width:600px){ .cart-drawer{ max-width:100%; } }
+
+/* ═══════ CATALOG ═══════ */
+.catalog-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+.catalog-hero { background: linear-gradient(135deg, var(--green-50) 0%, white 100%); padding: 2.5rem 1rem; margin-bottom: 0; border-bottom: 1px solid var(--gray-200); }
+.catalog-hero-inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.catalog-hero h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--green-700); margin-bottom: 0.5rem; }
+.catalog-hero p { color: var(--gray-600); font-size: 1rem; }
+.catalog-layout { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+.catalog-filters { position: sticky; top: 80px; height: fit-content; }
+.catalog-filter-card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); padding: 1.25rem; margin-bottom: 1rem; }
+.catalog-filter-title { font-size: 0.8rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+.catalog-filter-btn { display: block; width: 100%; text-align: left; padding: 7px 12px; border-radius: 8px; border: none; background: none; cursor: pointer; font-size: 0.88rem; color: var(--gray-700); font-family: var(--font-body); transition: all .15s; margin-bottom: 2px; }
+.catalog-filter-btn:hover { background: var(--green-50); color: var(--green-700); }
+.catalog-filter-btn.active { background: var(--green-700); color: white; font-weight: 600; }
+.catalog-filter-count { float: right; background: var(--gray-100); color: var(--gray-500); border-radius: 10px; padding: 1px 7px; font-size: 0.75rem; }
+.catalog-filter-btn.active .catalog-filter-count { background: rgba(255,255,255,0.25); color: white; }
+.catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+.catalog-card { background: white; border-radius: var(--radius); border: 1px solid var(--gray-200); overflow: hidden; cursor: pointer; transition: box-shadow .2s, transform .2s; display: flex; flex-direction: column; }
+.catalog-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--green-300); }
+.catalog-card-img { height: 180px; background: var(--gray-50); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.catalog-card-img img { max-width: 100%; max-height: 100%; object-fit: contain; padding: 1rem; }
+.catalog-card-img-placeholder { font-size: 3.5rem; opacity: .4; }
+.catalog-card-badge { position: absolute; top: 8px; left: 8px; background: var(--green-700); color: white; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+.catalog-card-badge.badge-warn { background: var(--yellow-500); color: #333; }
+.catalog-card-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+.catalog-card-cat { font-size: 0.72rem; font-weight: 700; color: var(--green-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.catalog-card-name { font-size: 0.9rem; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; line-height: 1.3; }
+.catalog-card-model { font-size: 0.75rem; color: var(--gray-500); font-family: monospace; margin-bottom: 8px; }
+.catalog-card-specs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.catalog-card-spec { font-size: 0.72rem; background: var(--gray-100); color: var(--gray-600); padding: 2px 7px; border-radius: 10px; }
+.catalog-card-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.catalog-card-price { font-size: 1rem; font-weight: 800; color: var(--green-700); }
+.catalog-card-price-eur { font-size: 0.72rem; color: var(--gray-400); }
+.catalog-card-btn { padding: 7px 14px; background: var(--green-700); color: white; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background .15s; }
+.catalog-card-btn:hover { background: var(--green-900); }
+.catalog-empty { text-align: center; padding: 4rem; color: var(--gray-400); }
+.catalog-empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+/* Product detail page */
+.product-detail { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+.product-detail-back { display: inline-flex; align-items: center; gap: 6px; color: var(--green-700); font-size: 0.88rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; background: none; border: none; font-family: var(--font-body); }
+.product-detail-back:hover { text-decoration: underline; }
+.product-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+.product-detail-gallery { position: sticky; top: 80px; }
+.product-detail-main-img { background: var(--gray-50); border-radius: var(--radius-lg); padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 320px; margin-bottom: 1rem; border: 1px solid var(--gray-200); }
+.product-detail-main-img img { max-width: 100%; max-height: 300px; object-fit: contain; }
+.product-detail-breadcrumb { font-size: 0.82rem; color: var(--gray-500); margin-bottom: 0.75rem; }
+.product-detail-breadcrumb a { color: var(--green-700); cursor: pointer; text-decoration: none; }
+.product-detail-breadcrumb a:hover { text-decoration: underline; }
+.product-detail-cat { font-size: 0.8rem; font-weight: 700; color: var(--green-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.product-detail-name { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.5rem; }
+.product-detail-model { font-size: 0.82rem; color: var(--gray-400); font-family: monospace; margin-bottom: 1rem; }
+.product-detail-avail { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; margin-bottom: 1rem; }
+.product-detail-avail.in-stock { background: var(--green-50); color: var(--green-700); }
+.product-detail-avail.pre-order { background: #fff3e0; color: #e65100; }
+.product-detail-price { font-size: 2rem; font-weight: 800; color: var(--green-700); margin-bottom: 4px; }
+.product-detail-price-eur { font-size: 0.88rem; color: var(--gray-400); margin-bottom: 1.25rem; }
+.product-detail-actions { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.product-detail-buy { flex: 1; min-width: 140px; padding: 14px 20px; background: var(--green-700); color: white; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--font-body); transition: background .15s; }
+.product-detail-buy:hover { background: var(--green-900); }
+.product-detail-order { flex: 1; min-width: 140px; padding: 14px 20px; background: white; color: var(--green-700); border: 2px solid var(--green-700); border-radius: var(--radius); font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--font-body); transition: all .15s; }
+.product-detail-order:hover { background: var(--green-50); }
+.product-detail-specs { border-top: 1px solid var(--gray-200); padding-top: 1.25rem; }
+.product-detail-specs h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--gray-700); }
+.product-detail-spec-row { display: flex; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 0.88rem; }
+.product-detail-spec-label { flex: 0 0 45%; color: var(--gray-500); font-weight: 500; }
+.product-detail-spec-value { font-weight: 600; color: var(--gray-800); }
+.product-detail-usp { background: var(--yellow-100); border-left: 3px solid var(--yellow-500); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 0.88rem; color: var(--gray-700); margin-bottom: 1rem; }
+@media(max-width: 768px) {
+  .catalog-layout { grid-template-columns: 1fr; }
+  .catalog-filters { position: static; }
+  .product-detail-grid { grid-template-columns: 1fr; }
+  .product-detail-gallery { position: static; }
+}
 `;
 
 const VIDEOS = [
@@ -2641,6 +2714,375 @@ const AUDIT_BATT = [{name:'Zendure SolarFlow 2400 AC+',cap:2.4,price:50000},{nam
 const AUDIT_MO_FAC = [0.04,0.05,0.08,0.10,0.12,0.13,0.13,0.12,0.09,0.07,0.04,0.03];
 const AUDIT_MO_NAMES = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 const AUDIT_TIPS = {clientType:'Побутовий — домогосподарства. Комерційний — бізнес, ФОП, ОСББ.',region:'Область визначає кількість сонячних годин (PVOUT) та середню температуру.',consumption:'Середнє місячне споживання. Подивіться в рахунку.',install:'Тип монтажу впливає на ефективність системи.',orient:'Напрямок панелей. Південь — найкраще.',incl:'Кут нахилу. Оптимум для України: 30-35°.',blackout:'Якщо є відключення — потрібен акумулятор.',phases:'1 фаза (220В) або 3 фази (380В).',autonomy:'Години автономної роботи при блекауті.',critLoad:'Потужність приладів при блекауті (кВт).',sysEff:'Загальна ефективність з урахуванням втрат (без температури).',battDoD:'Глибина розряду. LiFePO4 = 90%.',battEff:'ККД батареї. LiFePO4 = 90-95%.',deg:'Деградація панелей/рік. Якісні: 0.4-0.55%.',tariff:'Побутовий: 4.32 грн. Комерційний: 5-9 грн.',profile:'Профіль визначає розподіл споживання протягом доби. Впливає на розмір батареї.',tariffType:'Однозонний — єдиний тариф. Двозонний — різні тарифи вдень та вночі.',nightTariff:'Нічний тариф (23:00-7:00). Побутовий: 2.16 грн, комерційний: ~5.25 грн.'};
+
+/* ═══════════════════════════════════════════════════
+   CATALOG PAGE & PRODUCT DETAIL
+═══════════════════════════════════════════════════ */
+function CatalogPage({ goToPage, addToCart, setDirectOrder, setShowOrderForm, setOrderStatus, setOrderForm,
+  PRODUCTS, commercialInverters, nkonBatteries, sheetComponents, formatPrice }) {
+
+  const [filter, setFilter] = useState('all');
+
+  // Build unified catalog items
+  const allItems = [
+    // Побутові системи
+    ...PRODUCTS.map(p => ({
+      id: p.key,
+      key: p.key,
+      name: p.name,
+      model: p.key.toUpperCase(),
+      category: 'system',
+      categoryLabel: 'Побутова система',
+      price: p.price,
+      priceEur: null,
+      image: p.image,
+      available: p.available !== false,
+      availability: 'В наявності',
+      specs: [
+        `${p.capacity} Вт·год`,
+        `${p.output} Вт`,
+        `${p.cycles} циклів`,
+        p.ups ? '⚡ UPS' : null,
+      ].filter(Boolean),
+      usp: null,
+      color: p.color,
+      data: p,
+    })),
+    // Комерційні інвертори
+    ...commercialInverters
+      .filter(i => { const c = (i.category||'').toLowerCase(); return !c.includes('батар') && !c.includes('bms'); })
+      .map(inv => ({
+        id: `inv-${inv.model}`,
+        key: `inv-${inv.model}`,
+        name: inv.name,
+        model: inv.model,
+        category: 'inverter',
+        categoryLabel: 'Інвертор Deye',
+        price: inv.priceUah,
+        priceEur: inv.clientEur,
+        image: inv.imageUrl,
+        available: true,
+        availability: inv.availability || 'В наявності',
+        specs: [
+          `${inv.kw} кВт`,
+          inv.phases === 1 ? '1-фаза' : '3-фази',
+          inv.weight ? `${inv.weight} кг` : null,
+        ].filter(Boolean),
+        usp: inv.usp,
+        data: inv,
+      })),
+    // Батареї
+    ...nkonBatteries.map(bat => ({
+      id: `bat-${bat.model}`,
+      key: `bat-${bat.model}`,
+      name: bat.name,
+      model: bat.model,
+      category: 'battery',
+      categoryLabel: 'Батарея Deye',
+      price: bat.priceUah,
+      priceEur: bat.clientEur,
+      image: bat.imageUrl,
+      available: true,
+      availability: bat.availability || 'В наявності',
+      specs: ['LiFePO4', bat.weight ? `${bat.weight} кг` : null].filter(Boolean),
+      usp: bat.usp,
+      data: bat,
+    })),
+    // Компоненти
+    ...sheetComponents
+      .filter(c => !c.optional && !c.name.toLowerCase().includes('панель'))
+      .slice(0, 20)
+      .map(c => ({
+        id: `comp-${c.sku}`,
+        key: `comp-${c.sku}`,
+        name: c.name,
+        model: c.sku,
+        category: 'component',
+        categoryLabel: 'Компонент',
+        price: c.priceUah,
+        priceEur: c.priceEur,
+        image: null,
+        available: true,
+        availability: 'В наявності',
+        specs: c.systems ? c.systems.map(s => s.charAt(0).toUpperCase() + s.slice(1)) : [],
+        usp: null,
+        data: c,
+      })),
+  ];
+
+  const FILTERS = [
+    { id: 'all',       label: 'Всі товари',   count: allItems.length },
+    { id: 'system',    label: 'Системи',       count: allItems.filter(i => i.category === 'system').length },
+    { id: 'inverter',  label: 'Інвертори',     count: allItems.filter(i => i.category === 'inverter').length },
+    { id: 'battery',   label: 'Батареї',       count: allItems.filter(i => i.category === 'battery').length },
+    { id: 'component', label: 'Компоненти',    count: allItems.filter(i => i.category === 'component').length },
+  ];
+
+  const filtered = filter === 'all' ? allItems : allItems.filter(i => i.category === filter);
+
+  const CATEGORY_ICONS = { system:'🏠', inverter:'⚡', battery:'🔋', component:'🔧' };
+
+  return (
+    <>
+      <div className="catalog-hero">
+        <div className="catalog-hero-inner">
+          <h1>Каталог товарів</h1>
+          <p>Побутові системи, комерційні інвертори, батареї та компоненти для сонячних електростанцій</p>
+        </div>
+      </div>
+
+      <div className="catalog-layout">
+        {/* Filters sidebar */}
+        <aside className="catalog-filters">
+          <div className="catalog-filter-card">
+            <div className="catalog-filter-title">Категорія</div>
+            {FILTERS.map(f => (
+              <button key={f.id} className={`catalog-filter-btn ${filter === f.id ? 'active' : ''}`}
+                onClick={() => setFilter(f.id)}>
+                {CATEGORY_ICONS[f.id] || '📦'} {f.label}
+                <span className="catalog-filter-count">{f.count}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* Grid */}
+        <div>
+          <div style={{ marginBottom:'1rem', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+            <span style={{ fontSize:'0.88rem', color:'var(--gray-500)' }}>
+              {filtered.length} товарів
+            </span>
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="catalog-empty">
+              <div className="catalog-empty-icon">📦</div>
+              <p>Немає товарів у цій категорії</p>
+            </div>
+          ) : (
+            <div className="catalog-grid">
+              {filtered.map(item => (
+                <div key={item.id} className="catalog-card"
+                  onClick={() => goToPage(`catalog:${item.key}`)}>
+                  <div className="catalog-card-img">
+                    {item.image
+                      ? <img src={item.image} alt={item.name} />
+                      : <div className="catalog-card-img-placeholder">{CATEGORY_ICONS[item.category]}</div>
+                    }
+                    <span className={`catalog-card-badge ${item.availability !== 'В наявності' ? 'badge-warn' : ''}`}>
+                      {item.availability === 'В наявності' ? '✓ Є' : 'Замовлення'}
+                    </span>
+                  </div>
+                  <div className="catalog-card-body">
+                    <div className="catalog-card-cat">{item.categoryLabel}</div>
+                    <div className="catalog-card-name">{item.name}</div>
+                    <div className="catalog-card-model">{item.model}</div>
+                    {item.specs.length > 0 && (
+                      <div className="catalog-card-specs">
+                        {item.specs.slice(0,3).map((s,i) => <span key={i} className="catalog-card-spec">{s}</span>)}
+                      </div>
+                    )}
+                    <div className="catalog-card-footer" onClick={e => e.stopPropagation()}>
+                      <div>
+                        {item.price > 0 && <div className="catalog-card-price">{formatPrice(item.price)}</div>}
+                        {item.priceEur && <div className="catalog-card-price-eur">{item.priceEur.toFixed(2)} €</div>}
+                      </div>
+                      <button className="catalog-card-btn"
+                        onClick={() => addToCart({ id: item.id, name: item.name, model: item.model, price: item.price, type: item.category })}>
+                        🛒 В кошик
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setShowOrderForm, setOrderStatus, setOrderForm,
+  PRODUCTS, commercialInverters, nkonBatteries, sheetComponents, formatPrice }) {
+
+  // Find item by key
+  const findItem = () => {
+    // System
+    const sys = PRODUCTS.find(p => p.key === itemKey);
+    if (sys) return {
+      type: 'system', name: sys.name, model: itemKey.toUpperCase(),
+      category: 'Побутова система',
+      price: sys.price, priceEur: null,
+      image: sys.image, availability: 'В наявності',
+      usp: null, color: sys.color,
+      specs: [
+        { label: 'Ємність', value: `${sys.capacity} Вт·год` },
+        { label: 'Вихідна потужність', value: `${sys.output} Вт` },
+        { label: 'Цикли', value: `${sys.cycles}` },
+        { label: 'Гарантія', value: `${sys.warranty} роки` },
+        { label: 'Тип батареї', value: sys.battery },
+        { label: 'Захист', value: sys.ip },
+        { label: 'UPS функція', value: sys.ups ? 'Так ⚡' : 'Ні' },
+        { label: 'Макс. панелей', value: `${sys.maxPanels} шт` },
+      ],
+      data: sys,
+    };
+
+    // Inverter
+    const invKey = itemKey.replace(/^inv-/, '');
+    const inv = commercialInverters.find(i => i.model === invKey);
+    if (inv) {
+      const specPairs = inv.specs ? inv.specs.split(';').map(s => {
+        const [k,...v] = s.split(':'); return k && v.length ? {label:k.trim(),value:v.join(':').trim()} : null;
+      }).filter(Boolean) : [];
+      return {
+        type: 'inverter', name: inv.name, model: inv.model,
+        category: 'Гібридний інвертор Deye',
+        price: inv.priceUah, priceEur: inv.clientEur,
+        image: inv.imageUrl, availability: inv.availability,
+        usp: inv.usp,
+        specs: [
+          { label: 'Потужність', value: `${inv.kw} кВт` },
+          { label: 'Фази', value: inv.phases === 1 ? '1-фаза' : '3-фази' },
+          { label: 'Вага', value: inv.weight ? `${inv.weight} кг` : '—' },
+          ...specPairs,
+        ],
+        data: inv,
+      };
+    }
+
+    // Battery
+    const batKey = itemKey.replace(/^bat-/, '');
+    const bat = nkonBatteries.find(b => b.model === batKey);
+    if (bat) {
+      const specPairs = bat.specs ? bat.specs.split(';').map(s => {
+        const [k,...v] = s.split(':'); return k && v.length ? {label:k.trim(),value:v.join(':').trim()} : null;
+      }).filter(Boolean) : [];
+      return {
+        type: 'battery', name: bat.name, model: bat.model,
+        category: 'Акумуляторна батарея Deye',
+        price: bat.priceUah, priceEur: bat.clientEur,
+        image: bat.imageUrl, availability: bat.availability,
+        usp: bat.usp,
+        specs: [{ label: 'Хімія', value: 'LiFePO4' }, ...specPairs],
+        data: bat,
+      };
+    }
+
+    // Component
+    const compKey = itemKey.replace(/^comp-/, '');
+    const comp = sheetComponents.find(c => c.sku === compKey);
+    if (comp) return {
+      type: 'component', name: comp.name, model: comp.sku,
+      category: 'Компонент',
+      price: comp.priceUah, priceEur: comp.priceEur,
+      image: null, availability: 'В наявності',
+      usp: null,
+      specs: [
+        { label: 'Артикул', value: comp.sku },
+        { label: 'Кількість в комплекті', value: `${comp.qty} шт` },
+        { label: 'Сумісність', value: (comp.systems||[]).join(', ') },
+      ],
+      data: comp,
+    };
+
+    return null;
+  };
+
+  const item = findItem();
+
+  if (!item) return (
+    <div style={{ textAlign:'center', padding:'4rem', color:'var(--gray-400)' }}>
+      <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>🔍</div>
+      <p>Товар не знайдено</p>
+      <button className="hero-cta" style={{ marginTop:'1.5rem', display:'inline-block' }} onClick={() => goToPage('catalog')}>
+        ← Повернутись до каталогу
+      </button>
+    </div>
+  );
+
+  const CATEGORY_ICONS = { system:'🏠', inverter:'⚡', battery:'🔋', component:'🔧' };
+
+  return (
+    <div className="product-detail">
+      {/* Breadcrumb */}
+      <div className="product-detail-breadcrumb">
+        <a onClick={() => goToPage('home')}>Головна</a> › <a onClick={() => goToPage('catalog')}>Каталог</a> › {item.name}
+      </div>
+
+      <button className="product-detail-back" onClick={() => goToPage('catalog')}>
+        ← Назад до каталогу
+      </button>
+
+      <div className="product-detail-grid">
+        {/* Left: image */}
+        <div className="product-detail-gallery">
+          <div className="product-detail-main-img">
+            {item.image
+              ? <img src={item.image} alt={item.name} />
+              : <div style={{ fontSize:'6rem', opacity:.3 }}>{CATEGORY_ICONS[item.type]}</div>
+            }
+          </div>
+        </div>
+
+        {/* Right: info */}
+        <div>
+          <div className="product-detail-cat">{item.category}</div>
+          <h1 className="product-detail-name">{item.name}</h1>
+          <div className="product-detail-model">{item.model}</div>
+
+          {item.availability && (
+            <span className={`product-detail-avail ${item.availability === 'В наявності' ? 'in-stock' : 'pre-order'}`}>
+              {item.availability === 'В наявності' ? '✓ ' : '⏳ '}{item.availability}
+            </span>
+          )}
+
+          {item.usp && <div className="product-detail-usp">💡 {item.usp}</div>}
+
+          {item.price > 0 && (
+            <>
+              <div className="product-detail-price">{formatPrice(item.price)}</div>
+              {item.priceEur && (
+                <div className="product-detail-price-eur">{item.priceEur.toFixed(2)} € · курс ПриватБанку</div>
+              )}
+            </>
+          )}
+
+          <div className="product-detail-actions">
+            <button className="product-detail-buy"
+              onClick={() => addToCart({ id: itemKey, name: item.name, model: item.model, price: item.price, type: item.type })}>
+              🛒 В кошик
+            </button>
+            <button className="product-detail-order"
+              onClick={() => {
+                setDirectOrder({ name: item.name, price: item.price });
+                setShowOrderForm(true);
+                setOrderStatus(null);
+                setOrderForm({ name:'', phone:'', address:'' });
+              }}>
+              Замовити одразу
+            </button>
+          </div>
+
+          {/* Specs */}
+          {item.specs.length > 0 && (
+            <div className="product-detail-specs">
+              <h3>Характеристики</h3>
+              {item.specs.map((s, i) => (
+                <div key={i} className="product-detail-spec-row">
+                  <span className="product-detail-spec-label">{s.label}</span>
+                  <span className="product-detail-spec-value">{s.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function AuditTip({text}){const[s,setS]=useState(false);return(<span style={{position:'relative',display:'inline-flex',marginLeft:6,cursor:'help'}} onMouseEnter={()=>setS(true)} onMouseLeave={()=>setS(false)} onClick={()=>setS(v=>!v)}><span style={{width:18,height:18,borderRadius:'50%',background:'#eee',color:'#9e9e9e',display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:'0.7rem',fontWeight:700}}>?</span>{s&&(<span style={{position:'absolute',bottom:'calc(100% + 8px)',left:'50%',transform:'translateX(-50%)',background:'#212121',color:'white',padding:'10px 14px',borderRadius:8,fontSize:'0.78rem',lineHeight:1.5,width:260,boxShadow:'0 8px 24px rgba(0,0,0,0.2)',zIndex:100}}>{text}<span style={{position:'absolute',bottom:-5,left:'50%',transform:'translateX(-50%)',width:0,height:0,borderLeft:'6px solid transparent',borderRight:'6px solid transparent',borderTop:'6px solid #212121'}}/></span>)}</span>);}
 
@@ -5108,6 +5550,8 @@ export default function SolarBalkon() {
     if (path === '/admin') return 'admin';
     if (path === '/blog') return 'blog';
     if (path.startsWith('/blog/')) return 'article:' + path.slice(6);
+    if (path === '/catalog') return 'catalog';
+    if (path.startsWith('/catalog/')) return 'catalog:' + path.slice(9);
     return 'home';
   });
 
@@ -5115,6 +5559,8 @@ export default function SolarBalkon() {
     let url;
     if (page === 'home') url = '/';
     else if (page.startsWith('article:')) url = `/blog/${page.slice(8)}`;
+    else if (page === 'catalog') url = '/catalog';
+    else if (page.startsWith('catalog:')) url = `/catalog/${page.slice(8)}`;
     else url = `/${page}`;
     window.history.pushState({page}, '', url);
     setCurrentPage(page);
@@ -5131,6 +5577,8 @@ export default function SolarBalkon() {
         else if (path === '/audit') setCurrentPage('audit');
         else if (path.startsWith('/blog/')) setCurrentPage('article:' + path.slice(6));
         else if (path === '/admin') setCurrentPage('admin');
+        else if (path === '/catalog') setCurrentPage('catalog');
+        else if (path.startsWith('/catalog/')) setCurrentPage('catalog:' + path.slice(9));
         else if (path === '/') setCurrentPage('home');
         else setCurrentPage(path.slice(1));
       }
@@ -5536,6 +5984,7 @@ export default function SolarBalkon() {
             <li><a href="/#equip" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('equip')?.scrollIntoView({behavior:'smooth'}), 100); }}>{tariffType === 'commercial' ? 'Аудит СЕС' : 'Конфігуратор'}</a></li>
             <li><a href="/#savings" onClick={(e) => { e.preventDefault(); goToPage('home'); setTimeout(() => document.getElementById('savings')?.scrollIntoView({behavior:'smooth'}), 100); }}>Економія</a></li>
             <li><a href="/audit" className="nav-audit" onClick={(e) => { e.preventDefault(); goToPage('audit'); }}>⚡ Аудит СЕС</a></li>
+            <li><a href="/catalog" onClick={(e) => { e.preventDefault(); goToPage('catalog'); }}>Каталог</a></li>
             <li><a href="/blog" onClick={(e) => { e.preventDefault(); goToPage('blog'); }}>Блог</a></li>
           </ul>
           <button
@@ -7862,6 +8311,41 @@ export default function SolarBalkon() {
 
       {/* ═══════ ADMIN PAGE ═══════ */}
       {currentPage === 'admin' && <AdminPanel goToPage={goToPage} />}
+
+      {/* ═══════ CATALOG PAGE ═══════ */}
+      {currentPage === 'catalog' && (
+        <CatalogPage
+          goToPage={goToPage}
+          addToCart={addToCart}
+          setDirectOrder={setDirectOrder}
+          setShowOrderForm={setShowOrderForm}
+          setOrderStatus={setOrderStatus}
+          setOrderForm={setOrderForm}
+          PRODUCTS={PRODUCTS}
+          commercialInverters={commercialInverters}
+          nkonBatteries={nkonBatteries}
+          sheetComponents={sheetComponents}
+          formatPrice={formatPrice}
+        />
+      )}
+
+      {/* ═══════ PRODUCT DETAIL PAGE ═══════ */}
+      {currentPage.startsWith('catalog:') && (
+        <ProductDetailPage
+          itemKey={currentPage.slice(8)}
+          goToPage={goToPage}
+          addToCart={addToCart}
+          setDirectOrder={setDirectOrder}
+          setShowOrderForm={setShowOrderForm}
+          setOrderStatus={setOrderStatus}
+          setOrderForm={setOrderForm}
+          PRODUCTS={PRODUCTS}
+          commercialInverters={commercialInverters}
+          nkonBatteries={nkonBatteries}
+          sheetComponents={sheetComponents}
+          formatPrice={formatPrice}
+        />
+      )}
 
 
       {/* ═══════ CART DRAWER ═══════ */}
