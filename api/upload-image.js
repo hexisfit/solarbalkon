@@ -31,7 +31,13 @@ export default async function handler(req, res) {
     }
 
     // Sanitize filename
-    const safeName = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+    // Sanitize: replace invalid chars with '-', then remove leading dashes/dots
+    const safeName = filename
+      .replace(/[^a-zA-Z0-9.\-_]/g, '-')  // replace invalid chars
+      .replace(/^[\-_.]+/, '')              // remove leading dashes/dots/underscores
+      .replace(/[\-_.]+$/, '')              // remove trailing dashes/dots
+      .replace(/--+/g, '-')                 // collapse multiple dashes
+      || 'image.png';
     const filePath = `public/${folder}/${safeName}`;
     const fileUrl  = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}`;
 
