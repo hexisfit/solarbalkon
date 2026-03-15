@@ -3084,14 +3084,28 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
 
   // Знайти ручні пари по ключах
   const findByKey = (key) => {
+    if (!key) return null;
+    // Inverter: inv-SUN-10K-... or just SUN-10K-...
     if (key.startsWith('inv-')) {
-      const inv = commercialInverters.find(i => i.model === key.replace('inv-',''));
-      if (inv) return { id: key, name: inv.name, model: inv.model, price: inv.priceUah, image: inv.imageUrl, category: 'Інвертор Deye' };
+      const modelKey = key.replace('inv-', '');
+      const inv = commercialInverters.find(i =>
+        i.model === modelKey ||
+        i.model.toLowerCase().includes(modelKey.toLowerCase()) ||
+        modelKey.toLowerCase().includes(i.model.toLowerCase().slice(0, 8))
+      );
+      if (inv) return { id: 'inv-' + inv.model, name: inv.name, model: inv.model, price: inv.priceUah, image: inv.imageUrl, category: 'Інвертор Deye' };
     }
+    // Battery: bat-SE-F5-Pro-C or bat-GB-L-Pro-BMS etc
     if (key.startsWith('bat-')) {
-      const bat = nkonBatteries.find(b => b.model === key.replace('bat-',''));
-      if (bat) return { id: key, name: bat.name, model: bat.model, price: bat.priceUah, image: bat.imageUrl, category: 'Батарея Deye' };
+      const modelKey = key.replace('bat-', '');
+      const bat = nkonBatteries.find(b =>
+        b.model === modelKey ||
+        b.model.toLowerCase().includes(modelKey.toLowerCase()) ||
+        modelKey.toLowerCase().includes(b.model.toLowerCase().slice(0, 8))
+      );
+      if (bat) return { id: 'bat-' + bat.model, name: bat.name, model: bat.model, price: bat.priceUah, image: bat.imageUrl, category: 'Батарея Deye' };
     }
+    // System
     const sys = PRODUCTS.find(p => p.key === key);
     if (sys) return { id: key, name: sys.name, model: key.toUpperCase(), price: sys.price, image: sys.image, category: 'Побутова система' };
     return null;
@@ -3227,7 +3241,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
             Купують разом
           </h2>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:'1rem' }}>
-            {relatedItems.map(rel => (
+            {(relatedItems||[]).map(rel => (
               <div key={rel.id}
                 style={{ background:'white', border:'1px solid var(--gray-200)', borderRadius:'var(--radius)',
                   overflow:'hidden', cursor:'pointer', transition:'box-shadow .2s' }}
@@ -3308,7 +3322,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
           </div>
         ) : (
           <div style={{ display:'grid', gap:'1rem' }}>
-            {allReviews.map((r, i) => (
+            {(allReviews||[]).map((r, i) => (
               <div key={i} style={{ background:'white', border:'1px solid var(--gray-200)', borderRadius:'var(--radius)', padding:'1.25rem' }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.5rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -3345,7 +3359,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
    REVIEW FORM COMPONENT
 ═══════════════════════════════════════════════════ */
 function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
-  const GOOGLE_CLIENT_ID = ''; // Set in env or hardcode after creating OAuth app
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
   const [step, setStep] = useState('choose'); // 'choose' | 'google' | 'form' | 'write' | 'done'
   const [googleUser, setGoogleUser] = useState(null);
   const [formData, setFormData] = useState({ name:'', email:'', phone:'', city:'' });
@@ -3361,14 +3375,17 @@ function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
     setCaptcha({ a, b, answer:'', correct: a+b });
   }, []);
 
+  const hasGoogleClientId = !!(GOOGLE_CLIENT_ID || window.VITE_GOOGLE_CLIENT_ID || '');
+
   // Google OAuth init
   useEffect(() => {
+    if (!hasGoogleClientId) return; // skip if no client ID configured
     loadGoogleAuth();
     const timer = setInterval(() => {
       if (window.google?.accounts?.id) {
         clearInterval(timer);
         window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID || window.GOOGLE_CLIENT_ID || '',
+          client_id: GOOGLE_CLIENT_ID || window.VITE_GOOGLE_CLIENT_ID || '',
           callback: (resp) => {
             // Decode JWT
             try {
@@ -3386,10 +3403,20 @@ function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
   }, []);
 
   const handleGoogleBtn = () => {
+    // Check if Client ID is configured
+    const clientId = GOOGLE_CLIENT_ID || window.VITE_GOOGLE_CLIENT_ID || '';
+    if (!clientId) {
+      setError('Google авторизація тимчасово недоступна. Використайте форму.');
+      return;
+    }
     if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt();
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          setError('Google вікно заблоковано браузером. Спробуйте через форму.');
+        }
+      });
     } else {
-      setError('Google авторизація недоступна. Спробуйте через форму.');
+      setError('Google авторизація не завантажилась. Спробуйте через форму.');
     }
   };
 
@@ -3483,6 +3510,7 @@ function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
       <p style={{ color:'var(--gray-500)', fontSize:'0.85rem', marginBottom:'1.25rem' }}>
         Оберіть спосіб авторизації:
       </p>
+      {hasGoogleClientId ? (
       <button onClick={handleGoogleBtn}
         style={{ width:'100%', padding:'12px', border:'1px solid #e0e0e0', borderRadius:10,
           background:'white', cursor:'pointer', display:'flex', alignItems:'center', gap:12,
@@ -3498,6 +3526,19 @@ function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
         </svg>
         Увійти через Google
       </button>
+      ) : (
+      <div style={{ width:'100%', padding:'12px', border:'1px dashed #e0e0e0', borderRadius:10,
+        display:'flex', alignItems:'center', gap:12, fontSize:'0.9rem', color:'#9e9e9e',
+        marginBottom:10, opacity:0.7 }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" opacity="0.4">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google (незабаром)
+      </div>
+      )}
       <div style={{ position:'relative', textAlign:'center', margin:'12px 0' }}>
         <div style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'#e0e0e0' }} />
         <span style={{ position:'relative', background:'white', padding:'0 12px', color:'var(--gray-400)', fontSize:'0.82rem' }}>або</span>
@@ -5998,7 +6039,7 @@ function AdminPanel({ goToPage }) {
               <table className="adm-table">
                 <thead><tr><th>Товар</th><th>Автор</th><th>Email/Тел</th><th>Місто</th><th>★</th><th>Текст</th><th>Дата</th><th></th></tr></thead>
                 <tbody>
-                  {pendingReviews.map((r, i) => (
+                  {(pendingReviews||[]).map((r, i) => (
                     <tr key={i}>
                       <td style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e',maxWidth:100}}>{r.productKey}</td>
                       <td style={{fontWeight:600,fontSize:'0.85rem'}}>{r.author}</td>
@@ -6046,7 +6087,7 @@ function AdminPanel({ goToPage }) {
                 <table className="adm-table">
                   <thead><tr><th>Товар</th><th>Автор</th><th>Рейтинг</th><th>Текст</th><th>Дата</th><th></th></tr></thead>
                   <tbody>
-                    {reviews.map((r, i) => (
+                    {(reviews||[]).map((r, i) => (
                       <tr key={i}>
                         <td style={{fontFamily:'monospace',fontSize:'0.78rem',color:'#9e9e9e',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis'}}>{r.productKey}</td>
                         <td style={{fontWeight:600,fontSize:'0.85rem'}}>{r.author}</td>
@@ -6085,7 +6126,7 @@ function AdminPanel({ goToPage }) {
                 <table className="adm-table">
                   <thead><tr><th>Головний товар</th><th>Супутні (ключі)</th><th></th></tr></thead>
                   <tbody>
-                    {pairs.map((p, i) => (
+                    {(pairs||[]).map((p, i) => (
                       <tr key={i}>
                         <td style={{fontFamily:'monospace',fontSize:'0.82rem',fontWeight:600}}>{p.key}</td>
                         <td style={{fontSize:'0.82rem',color:'#616161'}}>{(p.relatedKeys||[]).join(', ')}</td>
@@ -6113,7 +6154,7 @@ function AdminPanel({ goToPage }) {
                   <table className="adm-table">
                     <thead><tr><th>Ім'я</th><th>Email</th><th>Телефон</th><th>Місто</th><th>Товар</th><th>Дата</th></tr></thead>
                     <tbody>
-                      {leads.map((l, i) => (
+                      {(leads||[]).map((l, i) => (
                         <tr key={i}>
                           <td style={{fontWeight:600,fontSize:'0.85rem'}}>{l.name}</td>
                           <td style={{fontSize:'0.82rem'}}>{l.email || '—'}</td>
@@ -6236,8 +6277,10 @@ function AdminPanel({ goToPage }) {
                 placeholder={'bat-GB-L-Pro-4kWh / bat-SE-F5-Pro-C'} style={{fontFamily:'monospace',fontSize:'0.85rem'}} />
             </div>
             <div style={{background:'#f5f5f5',borderRadius:8,padding:'0.75rem',fontSize:'0.8rem',color:'#616161',marginBottom:'1rem'}}>
-              <strong>Приклад:</strong> Головний товар: <code>bat-GB-L-Pro-BMS</code><br/>
-              Супутні: <code>bat-GB-L-Pro-4kWh</code>
+              <strong>Формат ключів:</strong><br/>
+              Інвертори: <code>inv-SUN-10K-SG05LP3-EU-SM2</code><br/>
+              Батареї: <code>bat-SE-F5-Pro-C</code> або <code>bat-GB-L-Pro</code><br/>
+              Системи: <code>ecoflow</code> / <code>zendure</code> / <code>deye</code> / <code>anker</code>
             </div>
             <div style={{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f0f0f0',paddingTop:'1rem'}}>
               <button className="adm-btn adm-btn-ghost" onClick={() => setPairModal(null)}>Скасувати</button>
@@ -6419,6 +6462,14 @@ export default function SolarBalkon() {
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
+
+  // Merge ARTICLES + adminArticles — must be declared before useEffect closures
+  const ALL_ARTICLES = (() => {
+    const map = {};
+    ARTICLES.forEach(a => { map[a.slug] = a; });
+    adminArticles.forEach(a => { map[a.slug] = { ...map[a.slug], ...a }; });
+    return Object.values(map).sort((a, b) => new Date(b.date) - new Date(a.date));
+  })();
 
   // SEO — update meta tags on page change
   useEffect(() => {
@@ -6834,13 +6885,6 @@ export default function SolarBalkon() {
   const paybackMonths = monthlySaving > 0 ? Math.ceil(systemCost / monthlySaving) : 0;
   const saving10y = yearlySaving * 10 - systemCost;
 
-  // Merge hardcoded articles with admin articles (admin ones override by slug)
-  const ALL_ARTICLES = (() => {
-    const map = {};
-    ARTICLES.forEach(a => { map[a.slug] = a; });
-    adminArticles.forEach(a => { map[a.slug] = { ...map[a.slug], ...a }; });
-    return Object.values(map).sort((a, b) => new Date(b.date) - new Date(a.date));
-  })();
 
   return (
     <>
