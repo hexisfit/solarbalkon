@@ -1,25 +1,3 @@
 {
-  "_ping": true,
-  "settings": {
-    "markupEur": 25,
-    "markupPercent": 15
-  },
-  "overrides": [],
-  "blogPosts": [],
-  "products": [],
-  "components": [],
-  "reviews": [],
-  "pendingReviews": [],
-  "leads": [],
-  "productPairs": [
-    {
-      "key": "GB-L-Pro-BMS-BDU",
-      "relatedKeys": [
-        "GB-L-Pro-4kWh"
-      ]
-    }
-  ],
-  "pages": {},
-  "mobileExportVersion": 2,
-  "updatedAt": "2026-03-15T11:00:21.889Z"
+  "_ping": true
 }
