@@ -1,33 +1,16 @@
 {
   "rewrites": [
-    {
-      "source": "/ecoflow",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/zendure",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/deye",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/anker",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/credit",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/ecoflow", "destination": "/index.html" },
+    { "source": "/zendure", "destination": "/index.html" },
+    { "source": "/deye", "destination": "/index.html" },
+    { "source": "/anker", "destination": "/index.html" },
+    { "source": "/credit", "destination": "/index.html" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
-  "functions": {
-    "api/upload-image.js": {
-      "maxDuration": 30
+  "crons": [
+    {
+      "path": "/api/pricelist",
+      "schedule": "0 3 * * *"
     }
-  }
+  ]
 }
