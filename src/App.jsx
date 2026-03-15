@@ -4364,7 +4364,7 @@ function SocialFooter({ page }) {
       </div>
 
       <p style={{ marginTop: '1.25rem' }}>© 2025 SolarBalkon.shop — Сонячна енергія для кожного балкону</p>
-      <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>📍 Україна · Доставка Новою Поштою · ПДВ не платник</p>
+      <p style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>📍 Україна · Доставка Новою Поштою</p>
     </footer>
   );
 }
