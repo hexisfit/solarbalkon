@@ -2907,33 +2907,31 @@ function CatalogPage({ goToPage, addToCart, setDirectOrder, setShowOrderForm, se
   );
 }
 
-function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setShowOrderForm, setOrderStatus, setOrderForm,
-  PRODUCTS, commercialInverters, nkonBatteries, sheetComponents, formatPrice }) {
 
-  // Find item by key
+function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setShowOrderForm, setOrderStatus, setOrderForm,
+  PRODUCTS, commercialInverters, nkonBatteries, sheetComponents, formatPrice, adminData }) {
+
   const findItem = () => {
-    // System
     const sys = PRODUCTS.find(p => p.key === itemKey);
     if (sys) return {
       type: 'system', name: sys.name, model: itemKey.toUpperCase(),
       category: 'Побутова система',
-      price: sys.price, priceEur: null,
+      price: sys.price,
       image: sys.image, availability: 'В наявності',
+      description: sys.description || '',
       usp: null, color: sys.color,
       specs: [
-        { label: 'Ємність', value: `${sys.capacity} Вт·год` },
-        { label: 'Вихідна потужність', value: `${sys.output} Вт` },
-        { label: 'Цикли', value: `${sys.cycles}` },
-        { label: 'Гарантія', value: `${sys.warranty} роки` },
+        { label: 'Ємність', value: sys.capacity + ' Вт·год' },
+        { label: 'Вихідна потужність', value: sys.output + ' Вт' },
+        { label: 'Цикли заряду', value: sys.cycles + ' циклів' },
+        { label: 'Гарантія', value: sys.warranty + ' роки' },
         { label: 'Тип батареї', value: sys.battery },
-        { label: 'Захист', value: sys.ip },
+        { label: 'Клас захисту', value: sys.ip },
         { label: 'UPS функція', value: sys.ups ? 'Так ⚡' : 'Ні' },
-        { label: 'Макс. панелей', value: `${sys.maxPanels} шт` },
+        { label: 'Макс. панелей', value: sys.maxPanels + ' шт' },
       ],
       data: sys,
     };
-
-    // Inverter
     const invKey = itemKey.replace(/^inv-/, '');
     const inv = commercialInverters.find(i => i.model === invKey);
     if (inv) {
@@ -2943,20 +2941,19 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
       return {
         type: 'inverter', name: inv.name, model: inv.model,
         category: 'Гібридний інвертор Deye',
-        price: inv.priceUah, priceEur: inv.clientEur,
+        price: inv.priceUah,
         image: inv.imageUrl, availability: inv.availability,
+        description: inv.description || '',
         usp: inv.usp,
         specs: [
-          { label: 'Потужність', value: `${inv.kw} кВт` },
+          { label: 'Потужність', value: inv.kw + ' кВт' },
           { label: 'Фази', value: inv.phases === 1 ? '1-фаза' : '3-фази' },
-          { label: 'Вага', value: inv.weight ? `${inv.weight} кг` : '—' },
+          { label: 'Вага', value: inv.weight ? inv.weight + ' кг' : '—' },
           ...specPairs,
         ],
         data: inv,
       };
     }
-
-    // Battery
     const batKey = itemKey.replace(/^bat-/, '');
     const bat = nkonBatteries.find(b => b.model === batKey);
     if (bat) {
@@ -2966,73 +2963,66 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
       return {
         type: 'battery', name: bat.name, model: bat.model,
         category: 'Акумуляторна батарея Deye',
-        price: bat.priceUah, priceEur: bat.clientEur,
+        price: bat.priceUah,
         image: bat.imageUrl, availability: bat.availability,
+        description: bat.description || '',
         usp: bat.usp,
         specs: [{ label: 'Хімія', value: 'LiFePO4' }, ...specPairs],
         data: bat,
       };
     }
-
-    // Component
     const compKey = itemKey.replace(/^comp-/, '');
     const comp = sheetComponents.find(c => c.sku === compKey);
     if (comp) return {
       type: 'component', name: comp.name, model: comp.sku,
       category: 'Компонент',
-      price: comp.priceUah, priceEur: comp.priceEur,
+      price: comp.priceUah,
       image: null, availability: 'В наявності',
+      description: '',
       usp: null,
       specs: [
         { label: 'Артикул', value: comp.sku },
-        { label: 'Кількість в комплекті', value: `${comp.qty} шт` },
+        { label: 'Кількість', value: comp.qty + ' шт' },
         { label: 'Сумісність', value: (comp.systems||[]).join(', ') },
       ],
       data: comp,
     };
-
     return null;
   };
 
   const item = findItem();
 
-  // Set SEO for product page
+  // SEO
   useEffect(() => {
     if (!item) return;
-    document.title = `${item.name} — купити в Україні | SolarBalkon`;
+    document.title = item.name + ' — купити в Україні | SolarBalkon';
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
-    meta.content = `${item.name} (${item.model}) — ${item.category}. ${item.price > 0 ? 'Ціна: ' + item.price.toLocaleString('uk-UA') + ' грн.' : ''} Купити з доставкою по Україні. SolarBalkon.`;
+    meta.content = item.name + ' (' + item.model + ') — ' + item.category + '. ' + (item.price > 0 ? 'Ціна: ' + item.price.toLocaleString('uk-UA') + ' грн.' : '') + ' Купити з доставкою по Україні. SolarBalkon.';
     let can = document.querySelector('link[rel="canonical"]');
     if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
-    can.href = `https://solarbalkon.shop/catalog/${itemKey}`;
-    // Product Schema.org
+    can.href = 'https://solarbalkon.shop/catalog/' + itemKey;
     const existingSchema = document.getElementById('product-schema');
     if (existingSchema) existingSchema.remove();
     const schema = document.createElement('script');
     schema.id = 'product-schema';
     schema.type = 'application/ld+json';
     schema.text = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Product',
+      '@context': 'https://schema.org', '@type': 'Product',
       name: item.name,
       description: item.category + (item.usp ? '. ' + item.usp : ''),
-      image: item.image ? `https://solarbalkon.shop${item.image}` : undefined,
+      image: item.image ? 'https://solarbalkon.shop' + item.image : undefined,
       brand: { '@type': 'Brand', name: 'SolarBalkon' },
       offers: {
-        '@type': 'Offer',
-        priceCurrency: 'UAH',
-        price: item.price || 0,
-        availability: item.availability === 'В наявності'
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/PreOrder',
-        url: `https://solarbalkon.shop/catalog/${itemKey}`,
+        '@type': 'Offer', priceCurrency: 'UAH', price: item.price || 0,
+        availability: item.availability === 'В наявності' ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder',
+        url: 'https://solarbalkon.shop/catalog/' + itemKey,
         seller: { '@type': 'Organization', name: 'SolarBalkon' },
       },
     });
     document.head.appendChild(schema);
     return () => schema.remove();
-  }, [itemKey, item?.name]);
+  }, [itemKey, item && item.name]);
 
   if (!item) return (
     <div style={{ textAlign:'center', padding:'4rem', color:'var(--gray-400)' }}>
@@ -3044,19 +3034,84 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
     </div>
   );
 
+  // ── Відгуки з admin.json ─────────────────────────────────────────
+  const allReviews = (adminData && adminData.reviews) ? adminData.reviews.filter(r => r.productKey === itemKey) : [];
+  const avgRating = allReviews.length > 0
+    ? (allReviews.reduce((s, r) => s + (r.rating || 5), 0) / allReviews.length).toFixed(1)
+    : null;
+
+  // ── Супутні товари ───────────────────────────────────────────────
+  // 1. Ручні пари з admin.json
+  const manualPairs = (adminData && adminData.productPairs) ? adminData.productPairs.filter(p => p.key === itemKey) : [];
+  const manualRelatedKeys = manualPairs.flatMap(p => p.relatedKeys || []);
+
+  // 2. Авто: для інвертора → батареї; для батареї → інвертори; для системи → компоненти
+  const getAutoRelated = () => {
+    if (item.type === 'inverter') {
+      return nkonBatteries.slice(0, 3).map(b => ({
+        id: 'bat-' + b.model, name: b.name, model: b.model,
+        price: b.priceUah, image: b.imageUrl, category: 'Батарея Deye',
+      }));
+    }
+    if (item.type === 'battery') {
+      return commercialInverters.slice(0, 3).map(i => ({
+        id: 'inv-' + i.model, name: i.name, model: i.model,
+        price: i.priceUah, image: i.imageUrl, category: 'Інвертор Deye',
+      }));
+    }
+    if (item.type === 'system') {
+      return PRODUCTS.filter(p => p.key !== itemKey).slice(0, 3).map(p => ({
+        id: p.key, name: p.name, model: p.key.toUpperCase(),
+        price: p.price, image: p.image, category: 'Побутова система',
+      }));
+    }
+    return [];
+  };
+
+  // Знайти ручні пари по ключах
+  const findByKey = (key) => {
+    if (key.startsWith('inv-')) {
+      const inv = commercialInverters.find(i => i.model === key.replace('inv-',''));
+      if (inv) return { id: key, name: inv.name, model: inv.model, price: inv.priceUah, image: inv.imageUrl, category: 'Інвертор Deye' };
+    }
+    if (key.startsWith('bat-')) {
+      const bat = nkonBatteries.find(b => b.model === key.replace('bat-',''));
+      if (bat) return { id: key, name: bat.name, model: bat.model, price: bat.priceUah, image: bat.imageUrl, category: 'Батарея Deye' };
+    }
+    const sys = PRODUCTS.find(p => p.key === key);
+    if (sys) return { id: key, name: sys.name, model: key.toUpperCase(), price: sys.price, image: sys.image, category: 'Побутова система' };
+    return null;
+  };
+
+  const manualRelated = manualRelatedKeys.map(findByKey).filter(Boolean);
+  const autoRelated = getAutoRelated().filter(r => !manualRelatedKeys.includes(r.id));
+  const relatedItems = [...manualRelated, ...autoRelated].slice(0, 4);
+
+  const STARS = (rating) => {
+    const full = Math.round(rating || 5);
+    return Array.from({length:5}, (_,i) => (
+      <span key={i} style={{color: i < full ? '#fbc02d' : '#e0e0e0', fontSize:'1.1rem'}}>★</span>
+    ));
+  };
+
   const CATEGORY_ICONS = { system:'🏠', inverter:'⚡', battery:'🔋', component:'🔧' };
 
   return (
     <div className="product-detail">
       {/* Breadcrumb */}
       <div className="product-detail-breadcrumb">
-        <a onClick={() => goToPage('home')}>Головна</a> › <a onClick={() => goToPage('catalog')}>Каталог</a> › {item.name}
+        <a onClick={() => goToPage('home')}>Головна</a>
+        {' › '}
+        <a onClick={() => goToPage('catalog')}>Каталог</a>
+        {' › '}
+        <span>{item.name}</span>
       </div>
 
       <button className="product-detail-back" onClick={() => goToPage('catalog')}>
         ← Назад до каталогу
       </button>
 
+      {/* Main grid */}
       <div className="product-detail-grid">
         {/* Left: image */}
         <div className="product-detail-gallery">
@@ -3066,31 +3121,60 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
               : <div style={{ fontSize:'6rem', opacity:.3 }}>{CATEGORY_ICONS[item.type]}</div>
             }
           </div>
+          {/* Trust badges */}
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:'1rem' }}>
+            {['🚚 Доставка по Україні', '🛡 Гарантія', '💳 Кредит 0%'].map(b => (
+              <span key={b} style={{ fontSize:'0.78rem', background:'var(--gray-50)', border:'1px solid var(--gray-200)',
+                borderRadius:20, padding:'4px 10px', color:'var(--gray-600)' }}>{b}</span>
+            ))}
+          </div>
         </div>
 
         {/* Right: info */}
         <div>
           <div className="product-detail-cat">{item.category}</div>
           <h1 className="product-detail-name">{item.name}</h1>
-          <div className="product-detail-model">{item.model}</div>
+          <div className="product-detail-model">Арт.: {item.model}</div>
 
+          {/* Rating */}
+          <div style={{ display:'flex', alignItems:'center', gap:10, margin:'0.75rem 0' }}>
+            {STARS(avgRating || 5)}
+            {allReviews.length > 0 ? (
+              <span style={{ fontSize:'0.85rem', color:'var(--gray-500)' }}>
+                {avgRating} · {allReviews.length} відгук{allReviews.length === 1 ? '' : allReviews.length < 5 ? 'и' : 'ів'}
+              </span>
+            ) : (
+              <span style={{ fontSize:'0.82rem', color:'var(--gray-400)' }}>Немає відгуків · Будьте першим</span>
+            )}
+          </div>
+
+          {/* Availability */}
           {item.availability && (
-            <span className={`product-detail-avail ${item.availability === 'В наявності' ? 'in-stock' : 'pre-order'}`}>
-              {item.availability === 'В наявності' ? '✓ ' : '⏳ '}{item.availability}
-            </span>
+            <div style={{ marginBottom:'0.75rem' }}>
+              <span className={'product-detail-avail ' + (item.availability === 'В наявності' ? 'in-stock' : 'pre-order')}>
+                {item.availability === 'В наявності' ? '✓ ' : '⏳ '}{item.availability}
+              </span>
+            </div>
           )}
 
+          {/* USP */}
           {item.usp && <div className="product-detail-usp">💡 {item.usp}</div>}
 
-          {item.price > 0 && (
-            <>
-              <div className="product-detail-price">{formatPrice(item.price)}</div>
-              {item.priceEur && (
-                <div className="product-detail-price-eur">{item.priceEur.toFixed(2)} € · курс ПриватБанку</div>
-              )}
-            </>
+          {/* Description */}
+          {item.description && (
+            <p style={{ fontSize:'0.95rem', color:'var(--gray-600)', lineHeight:1.7, marginBottom:'1rem' }}>
+              {item.description}
+            </p>
           )}
 
+          {/* Price — тільки грн, без EUR */}
+          {item.price > 0 && (
+            <div style={{ marginBottom:'1.25rem' }}>
+              <div className="product-detail-price">{formatPrice(item.price)}</div>
+            </div>
+          )}
+
+          {/* Actions */}
           <div className="product-detail-actions">
             <button className="product-detail-buy"
               onClick={() => addToCart({ id: itemKey, name: item.name, model: item.model, price: item.price, type: item.type })}>
@@ -3110,7 +3194,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
           {/* Specs */}
           {item.specs.length > 0 && (
             <div className="product-detail-specs">
-              <h3>Характеристики</h3>
+              <h3>Технічні характеристики</h3>
               {item.specs.map((s, i) => (
                 <div key={i} className="product-detail-spec-row">
                   <span className="product-detail-spec-label">{s.label}</span>
@@ -3121,6 +3205,95 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
           )}
         </div>
       </div>
+
+      {/* ── Супутні товари ── */}
+      {relatedItems.length > 0 && (
+        <div style={{ marginTop:'3rem', borderTop:'1px solid var(--gray-200)', paddingTop:'2rem' }}>
+          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, marginBottom:'1.25rem' }}>
+            Купують разом
+          </h2>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:'1rem' }}>
+            {relatedItems.map(rel => (
+              <div key={rel.id}
+                style={{ background:'white', border:'1px solid var(--gray-200)', borderRadius:'var(--radius)',
+                  overflow:'hidden', cursor:'pointer', transition:'box-shadow .2s' }}
+                onClick={() => goToPage('catalog:' + rel.id)}
+                onMouseEnter={e => e.currentTarget.style.boxShadow='var(--shadow-md)'}
+                onMouseLeave={e => e.currentTarget.style.boxShadow='none'}>
+                <div style={{ height:130, background:'var(--gray-50)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {rel.image
+                    ? <img src={rel.image} alt={rel.name} style={{ maxHeight:110, maxWidth:'100%', objectFit:'contain', padding:'0.5rem' }} />
+                    : <div style={{ fontSize:'2.5rem', opacity:.3 }}>📦</div>
+                  }
+                </div>
+                <div style={{ padding:'0.75rem' }}>
+                  <div style={{ fontSize:'0.7rem', color:'var(--green-600)', fontWeight:700, textTransform:'uppercase', marginBottom:3 }}>{rel.category}</div>
+                  <div style={{ fontSize:'0.85rem', fontWeight:700, lineHeight:1.3, marginBottom:6, color:'var(--gray-900)' }}>
+                    {rel.name.length > 40 ? rel.name.slice(0,40) + '…' : rel.name}
+                  </div>
+                  {rel.price > 0 && (
+                    <div style={{ fontSize:'0.95rem', fontWeight:800, color:'var(--green-700)', marginBottom:8 }}>
+                      {rel.price.toLocaleString('uk-UA')} ₴
+                    </div>
+                  )}
+                  <button
+                    style={{ width:'100%', padding:'6px', background:'var(--green-700)', color:'white', border:'none',
+                      borderRadius:6, fontSize:'0.78rem', fontWeight:700, cursor:'pointer' }}
+                    onClick={e => { e.stopPropagation(); addToCart({ id:rel.id, name:rel.name, model:rel.model, price:rel.price, type:'related' }); }}>
+                    + В кошик
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Відгуки ── */}
+      <div style={{ marginTop:'3rem', borderTop:'1px solid var(--gray-200)', paddingTop:'2rem' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem' }}>
+          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, margin:0 }}>
+            Відгуки покупців
+          </h2>
+          {allReviews.length > 0 && (
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              {STARS(avgRating)}
+              <span style={{ fontWeight:700, fontSize:'1.1rem' }}>{avgRating}</span>
+              <span style={{ color:'var(--gray-400)', fontSize:'0.85rem' }}>/ 5</span>
+            </div>
+          )}
+        </div>
+
+        {allReviews.length === 0 ? (
+          <div style={{ background:'var(--gray-50)', borderRadius:'var(--radius)', padding:'2rem', textAlign:'center', color:'var(--gray-400)' }}>
+            <div style={{ fontSize:'2.5rem', marginBottom:'0.75rem' }}>💬</div>
+            <p style={{ fontWeight:600, marginBottom:4 }}>Відгуків поки немає</p>
+            <p style={{ fontSize:'0.85rem' }}>Будьте першим хто оцінить цей товар</p>
+          </div>
+        ) : (
+          <div style={{ display:'grid', gap:'1rem' }}>
+            {allReviews.map((r, i) => (
+              <div key={i} style={{ background:'white', border:'1px solid var(--gray-200)', borderRadius:'var(--radius)', padding:'1.25rem' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.5rem' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--green-100)',
+                      display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, color:'var(--green-700)', fontSize:'0.9rem' }}>
+                      {(r.author || 'А')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight:700, fontSize:'0.9rem' }}>{r.author || 'Анонім'}</div>
+                      <div style={{ fontSize:'0.75rem', color:'var(--gray-400)' }}>{r.date || ''}</div>
+                    </div>
+                  </div>
+                  <div>{STARS(r.rating || 5)}</div>
+                </div>
+                {r.text && <p style={{ fontSize:'0.9rem', color:'var(--gray-700)', lineHeight:1.6, margin:0 }}>{r.text}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
@@ -4871,6 +5044,10 @@ function AdminPanel({ goToPage }) {
   const [pageEditor, setPageEditor] = useState(null); // null | page object
   const [components, setComponents] = useState([]);
   const [compModal, setCompModal] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [pairs, setPairs] = useState([]);
+  const [reviewModal, setReviewModal] = useState(null);
+  const [pairModal, setPairModal] = useState(null);
   const [sheetCompsApi, setSheetCompsApi] = useState([]); // from /api/prices
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
@@ -4917,6 +5094,8 @@ function AdminPanel({ goToPage }) {
       setBlogPosts(admin.blogPosts || []);
       setSystems(admin.products || []);
       setComponents(admin.components || []);
+      setReviews(admin.reviews || []);
+      setPairs(admin.productPairs || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
       setEditOverrides(ovMap);
@@ -4936,6 +5115,8 @@ function AdminPanel({ goToPage }) {
         products: systems,
         components,
         pages: adminData?.pages || {},
+        reviews,
+        productPairs: pairs,
         pages,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
         updatedAt: new Date().toISOString(),
@@ -5104,6 +5285,7 @@ function AdminPanel({ goToPage }) {
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
           { id: 'systems',   label: `🏠 Системи (${4 + systems.filter(s => !['ecoflow','zendure','deye','anker'].includes(s.key)).length})` },
           { id: 'components', label: `⚙️ Конфігуратор (${components.length})` },
+          { id: 'reviews',    label: `⭐ Відгуки та пари` },
           { id: 'pages',      label: '📄 Сторінки товарів' },
           { id: 'pages',     label: `📄 Сторінки (${(adminData?.pages?.length||0)})` },
           { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
@@ -5477,6 +5659,93 @@ function AdminPanel({ goToPage }) {
           );
         })()}
 
+        {tab === 'reviews' && (() => {
+          // Group reviews by product
+          const ALL_KEYS = [
+            ...['ecoflow','zendure','deye','anker'],
+            ...mergedInverters.map(i => 'inv-' + i.model),
+            ...mergedBatteries.map(b => 'bat-' + b.model),
+          ];
+          return (
+          <>
+            {/* ── ВІДГУКИ ── */}
+            <div className="adm-card">
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
+                <h3 style={{margin:0}}>Відгуки покупців ({reviews.length})</h3>
+                <button className="adm-btn adm-btn-primary adm-btn-sm"
+                  onClick={() => setReviewModal({productKey:'',author:'',rating:5,text:'',date:new Date().toISOString().slice(0,10)})}>
+                  + Додати відгук
+                </button>
+              </div>
+              <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
+                Відгуки відображаються на картці товару. Додавай реальні відгуки клієнтів.
+              </p>
+              {reviews.length === 0 ? (
+                <div style={{textAlign:'center',padding:'2rem',color:'#9e9e9e'}}>
+                  <p>Немає відгуків. Натисни "+ Додати відгук"</p>
+                </div>
+              ) : (
+                <table className="adm-table">
+                  <thead><tr><th>Товар</th><th>Автор</th><th>Рейтинг</th><th>Текст</th><th>Дата</th><th></th></tr></thead>
+                  <tbody>
+                    {reviews.map((r, i) => (
+                      <tr key={i}>
+                        <td style={{fontFamily:'monospace',fontSize:'0.78rem',color:'#9e9e9e',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis'}}>{r.productKey}</td>
+                        <td style={{fontWeight:600,fontSize:'0.85rem'}}>{r.author}</td>
+                        <td>{'★'.repeat(r.rating || 5)}{'☆'.repeat(5-(r.rating||5))}</td>
+                        <td style={{fontSize:'0.82rem',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.text}</td>
+                        <td style={{fontSize:'0.78rem',color:'#9e9e9e'}}>{r.date}</td>
+                        <td style={{display:'flex',gap:6}}>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setReviewModal({...r, _idx: i})}>✏️</button>
+                          <button className="adm-btn adm-btn-danger adm-btn-sm"
+                            onClick={() => { if(window.confirm('Видалити відгук?')) setReviews(p => p.filter((_,j) => j !== i)); }}>🗑</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* ── СУПУТНІ ПАРИ ── */}
+            <div className="adm-card">
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
+                <h3 style={{margin:0}}>Супутні товари (Купують разом)</h3>
+                <button className="adm-btn adm-btn-primary adm-btn-sm"
+                  onClick={() => setPairModal({key:'',relatedKeys:[]})}>
+                  + Додати пару
+                </button>
+              </div>
+              <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
+                Наприклад: BMS Deye GB-L-Pro завжди пропонується разом з акумулятором GB-L-Pro 4kWh.
+              </p>
+              {pairs.length === 0 ? (
+                <div style={{textAlign:'center',padding:'2rem',color:'#9e9e9e'}}>
+                  <p>Немає пар. Натисни "+ Додати пару"</p>
+                </div>
+              ) : (
+                <table className="adm-table">
+                  <thead><tr><th>Головний товар</th><th>Супутні (ключі)</th><th></th></tr></thead>
+                  <tbody>
+                    {pairs.map((p, i) => (
+                      <tr key={i}>
+                        <td style={{fontFamily:'monospace',fontSize:'0.82rem',fontWeight:600}}>{p.key}</td>
+                        <td style={{fontSize:'0.82rem',color:'#616161'}}>{(p.relatedKeys||[]).join(', ')}</td>
+                        <td style={{display:'flex',gap:6}}>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setPairModal({...p, _idx: i})}>✏️</button>
+                          <button className="adm-btn adm-btn-danger adm-btn-sm"
+                            onClick={() => { if(window.confirm('Видалити?')) setPairs(p2 => p2.filter((_,j) => j !== i)); }}>🗑</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+          );
+        })()}
+
         {tab === 'export' && (
           <div className="adm-card">
             <h3>📱 Мобільний експорт</h3>
@@ -5499,6 +5768,113 @@ function AdminPanel({ goToPage }) {
           </div>
         )}
       </div>
+
+      {reviewModal && (
+        <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && setReviewModal(null)}>
+          <div className="adm-modal" style={{maxWidth:480}}>
+            <div className="adm-modal-head">
+              <h3>{reviewModal._idx !== undefined ? '✏️ Редагувати відгук' : '+ Новий відгук'}</h3>
+              <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setReviewModal(null)}>✕</button>
+            </div>
+            <div className="adm-field">
+              <label>Ключ товару (наприклад: inv-SUN-10K-SG05LP3-EU-SM2)</label>
+              <input value={reviewModal.productKey||''} onChange={e => setReviewModal(p=>({...p,productKey:e.target.value}))}
+                placeholder="inv-SUN-10K-SG05LP3-EU-SM2 або bat-SE-F5-Pro-C" />
+            </div>
+            <div className="adm-grid2">
+              <div className="adm-field">
+                <label>Ім'я автора</label>
+                <input value={reviewModal.author||''} onChange={e => setReviewModal(p=>({...p,author:e.target.value}))} placeholder="Іван К." />
+              </div>
+              <div className="adm-field">
+                <label>Рейтинг</label>
+                <select value={reviewModal.rating||5} onChange={e => setReviewModal(p=>({...p,rating:parseInt(e.target.value)}))}>
+                  <option value={5}>★★★★★ (5)</option>
+                  <option value={4}>★★★★☆ (4)</option>
+                  <option value={3}>★★★☆☆ (3)</option>
+                  <option value={2}>★★☆☆☆ (2)</option>
+                  <option value={1}>★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+            </div>
+            <div className="adm-field">
+              <label>Текст відгуку</label>
+              <textarea rows={4} value={reviewModal.text||''} onChange={e => setReviewModal(p=>({...p,text:e.target.value}))}
+                placeholder="Чудовий інвертор, встановили за день..." />
+            </div>
+            <div className="adm-field">
+              <label>Дата</label>
+              <input type="date" value={reviewModal.date||''} onChange={e => setReviewModal(p=>({...p,date:e.target.value}))} />
+            </div>
+            <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:'1rem',borderTop:'1px solid #f0f0f0',paddingTop:'1rem'}}>
+              <button className="adm-btn adm-btn-ghost" onClick={() => setReviewModal(null)}>Скасувати</button>
+              <button className="adm-btn adm-btn-primary"
+                disabled={!reviewModal.productKey || !reviewModal.author}
+                onClick={() => {
+                  const {_idx, ...rev} = reviewModal;
+                  if (_idx !== undefined) {
+                    setReviews(p => { const n=[...p]; n[_idx]=rev; return n; });
+                  } else {
+                    setReviews(p => [...p, rev]);
+                  }
+                  setReviewModal(null);
+                  showToast('✅ Відгук збережено — натисни "Зберегти"');
+                }}>
+                💾 Зберегти
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pairModal && (
+        <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && setPairModal(null)}>
+          <div className="adm-modal" style={{maxWidth:520}}>
+            <div className="adm-modal-head">
+              <h3>{pairModal._idx !== undefined ? '✏️ Редагувати пару' : '+ Нова пара товарів'}</h3>
+              <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setPairModal(null)}>✕</button>
+            </div>
+            <div className="adm-field">
+              <label>Ключ головного товару</label>
+              <input value={pairModal.key||''} onChange={e => setPairModal(p=>({...p,key:e.target.value}))}
+                placeholder="bat-GB-L-Pro-BMS" style={{fontFamily:'monospace'}} />
+              <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginTop:4}}>
+                Формат: inv-MODEL, bat-MODEL, ecoflow, zendure, deye, anker
+              </p>
+            </div>
+            <div className="adm-field">
+              <label>Супутні товари (по одному на рядку)</label>
+              <textarea rows={4}
+                value={(pairModal.relatedKeys||[]).join('
+')}
+                onChange={e => setPairModal(p=>({...p,relatedKeys:e.target.value.split('
+').map(s=>s.trim()).filter(Boolean)}))}
+                placeholder={'bat-GB-L-Pro-4kWh / bat-SE-F5-Pro-C'} style={{fontFamily:'monospace',fontSize:'0.85rem'}} />
+            </div>
+            <div style={{background:'#f5f5f5',borderRadius:8,padding:'0.75rem',fontSize:'0.8rem',color:'#616161',marginBottom:'1rem'}}>
+              <strong>Приклад:</strong> Головний товар: <code>bat-GB-L-Pro-BMS</code><br/>
+              Супутні: <code>bat-GB-L-Pro-4kWh</code>
+            </div>
+            <div style={{display:'flex',gap:8,justifyContent:'flex-end',borderTop:'1px solid #f0f0f0',paddingTop:'1rem'}}>
+              <button className="adm-btn adm-btn-ghost" onClick={() => setPairModal(null)}>Скасувати</button>
+              <button className="adm-btn adm-btn-primary"
+                disabled={!pairModal.key}
+                onClick={() => {
+                  const {_idx, ...pair} = pairModal;
+                  if (_idx !== undefined) {
+                    setPairs(p => { const n=[...p]; n[_idx]=pair; return n; });
+                  } else {
+                    setPairs(p => [...p, pair]);
+                  }
+                  setPairModal(null);
+                  showToast('✅ Пару збережено — натисни "Зберегти"');
+                }}>
+                💾 Зберегти
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {compModal && (
         <AdminComponentModal
@@ -5712,6 +6088,7 @@ export default function SolarBalkon() {
     fetch('https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json')
       .then(r => r.ok ? r.json() : null)
       .then(data => {
+        setAdminData(data);
         if (data?.blogPosts?.length)    setAdminArticles(data.blogPosts);
         if (data?.products?.length)     setAdminProducts(data.products);
         if (data?.components?.length)   setAdminComponents(data.components);
@@ -8455,6 +8832,7 @@ export default function SolarBalkon() {
           nkonBatteries={nkonBatteries}
           sheetComponents={sheetComponents}
           formatPrice={formatPrice}
+          adminData={adminData}
         />
       )}
 
