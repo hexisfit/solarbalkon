@@ -2333,13 +2333,16 @@ body {
 .hamburger {
   display:none;
   flex-direction:column;
+  justify-content:center;
   gap:5px;
   background:none;
   border:none;
   cursor:pointer;
-  padding:6px;
+  padding:8px;
   border-radius:6px;
-  margin-left:8px;
+  min-width:36px;
+  min-height:36px;
+  flex-shrink:0;
 }
 .hamburger span {
   display:block;
@@ -2393,10 +2396,8 @@ body {
 @media (max-width:768px) {
   .nav-links { display:none; }
   .hamburger { display:flex; }
-  .nav-inner { padding: 0 1rem; }
-  .nav-cart-btn { order: 2; }
-  .hamburger { order: 3; }
   .nav-social { display:none; }
+  .nav { padding: 0 1rem; }
   .hero { padding:100px 1.5rem 40px; }
   .hero::after { display: none; }
   .hero-inner { text-align: center; }
@@ -7100,8 +7101,26 @@ export default function SolarBalkon() {
             </svg>
             {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
           </button>
-          <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(m => !m)} aria-label="Меню">
-            <span/><span/><span/>
+          <button
+            className={`hamburger${menuOpen ? ' open' : ''}`}
+            onClick={() => setMenuOpen(m => !m)}
+            aria-label="Меню"
+            style={{
+              flexDirection: 'column', justifyContent: 'center', gap: '5px',
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '8px', borderRadius: '6px',
+              minWidth: '36px', minHeight: '36px', flexShrink: 0,
+            }}
+          >
+            <span style={{display:'block',width:'22px',height:'2px',background:'#1b5e20',borderRadius:'2px',
+              transition:'all 0.25s',
+              transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none'}}/>
+            <span style={{display:'block',width:'22px',height:'2px',background:'#1b5e20',borderRadius:'2px',
+              transition:'all 0.25s',
+              opacity: menuOpen ? 0 : 1}}/>
+            <span style={{display:'block',width:'22px',height:'2px',background:'#1b5e20',borderRadius:'2px',
+              transition:'all 0.25s',
+              transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none'}}/>
           </button>
           <div className="nav-social">
             <a href="https://instagram.com/solarbalkon.shop" target="_blank" rel="noopener noreferrer" className="ig" title="Instagram">
