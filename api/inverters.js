@@ -8,7 +8,9 @@ export default async function handler(req, res) {
   const ADMIN_JSON    = 'https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json';
 
   // Inverter images — exact filenames from /public/inverters/
+  // Inverter images — exact filenames from /public/inverters/ (without .png)
   const INVERTER_IMGS = [
+    'SUN-10K-SG05LP3-EU-SM2',
     'SUN-12K-SG02LP1-EU',
     'SUN-12K-SG05LP3-EU',
     'SUN-3.6K-LP1',
@@ -20,34 +22,40 @@ export default async function handler(req, res) {
     'SUN-8K-SG05LP3-EU',
   ];
 
-  // Battery images — exact filenames from /public/batteries/
+  // Battery images — { file: filename_without_ext, keys: [model_keywords] }
+  // Some files have '------------' prefix — uploaded via admin before sanitize fix
   const BATTERY_IMGS = [
-    'Deye-SE-F5-Pro-C-',
+    { file: 'Deye-SE-F5-Pro-C-',                       keys: ['SE-F5-Pro-C'] },
+    { file: '------------Deye-SE-F12-C',                keys: ['SE-F12-C'] },
+    { file: '------------Deye-SE-F16-C',                keys: ['SE-F16-C'] },
+    { file: '------------Deye-SE-G5-1Pro-B-51.2kWh',   keys: ['SE-G5-1Pro-B'] },
+    { file: 'BMS-BDU-Deye-GB-L-Pro',                   keys: ['GB-L-Pro-BMS', 'GB-L-Pro-BDU', 'BMS-BDU'] },
+    { file: '------------Deye-GB-L-Pro-4kWh',           keys: ['GB-L-Pro-4kWh'] },
   ];
 
   function findImageUrl(model, category) {
-    const isBattery = category && (category.toLowerCase().includes('батар') || category.toLowerCase().includes('bms'));
+    const isBattery = category && (
+      category.toLowerCase().includes('батар') ||
+      category.toLowerCase().includes('bms') ||
+      category.toLowerCase().includes('battery')
+    );
 
     if (isBattery) {
-      // Search in /public/batteries/
-      const sanitized = model.replace(/[^a-zA-Z0-9.\-_]/g, '-');
-      const exact = BATTERY_IMGS.find(f => f === sanitized);
-      if (exact) return `/batteries/${exact}.png`;
-      // Partial match — model contains file name or vice versa
-      const partial = BATTERY_IMGS.find(f =>
-        sanitized.includes(f.replace(/-$/, '')) || f.includes(sanitized.substring(0, 10))
+      const modelLower = model.toLowerCase();
+      const match = BATTERY_IMGS.find(b =>
+        b.keys.some(k => modelLower.includes(k.toLowerCase()))
       );
-      if (partial) return `/batteries/${partial}.png`;
+      if (match) return `/batteries/${match.file}.png`;
       return null;
     }
 
-    // Inverter: search in /public/inverters/
+    // Inverter: exact match first
     const exact = INVERTER_IMGS.find(f => f === model);
     if (exact) return `/inverters/${exact}.png`;
-    // Strip suffixes for partial match: SUN-3.6K-LP1-EU-AM2 → SUN-3.6K-LP1
+    // Partial match — strip region/revision suffixes
     const core = model
-      .replace(/-(SG\d+LP\d+|SG\d+HP\d+).*$/i, '') // remove SG suffix
-      .replace(/-(EU|AM\d*|SM\d*|AU|US)([-A-Z0-9]*)?$/i, ''); // remove region suffix
+      .replace(/-(SG\d+LP\d+|SG\d+HP\d+).*$/i, '')
+      .replace(/-(EU|AM\d*|SM\d*|AU|US)([-A-Z0-9]*)?$/i, '');
     const partial = INVERTER_IMGS.find(f => f === core || f.startsWith(core) || core.startsWith(f));
     return partial ? `/inverters/${partial}.png` : null;
   }
