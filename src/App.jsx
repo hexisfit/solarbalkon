@@ -3056,7 +3056,11 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
 
   // ── Супутні товари ───────────────────────────────────────────────
   // 1. Ручні пари з admin.json
-  const manualPairs = (adminData && adminData.productPairs) ? adminData.productPairs.filter(p => p.key === itemKey) : [];
+  // Match pairs by exact key OR by itemKey without prefix (bat-/inv-/comp-)
+  const itemKeyNaked = itemKey.replace(/^(bat-|inv-|comp-)/, '');
+  const manualPairs = (adminData && adminData.productPairs)
+    ? adminData.productPairs.filter(p => p.key === itemKey || p.key === itemKeyNaked)
+    : [];
   const manualRelatedKeys = manualPairs.flatMap(p => p.relatedKeys || []);
 
   // 2. Авто: для інвертора → батареї; для батареї → інвертори; для системи → компоненти
@@ -3085,6 +3089,11 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
   // Знайти ручні пари по ключах
   const findByKey = (key) => {
     if (!key) return null;
+    // If no prefix given, try bat- first (most pairs are batteries)
+    const tryBat = !key.startsWith('inv-') && !key.startsWith('bat-') && !key.startsWith('comp-')
+      ? nkonBatteries.find(b => b.model === key || b.model.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(b.model.toLowerCase().slice(0,8)))
+      : null;
+    if (tryBat) return { id: 'bat-' + tryBat.model, name: tryBat.name, model: tryBat.model, price: tryBat.priceUah, image: tryBat.imageUrl, category: 'Батарея Deye' };
     // Inverter: inv-SUN-10K-... or just SUN-10K-...
     if (key.startsWith('inv-')) {
       const modelKey = key.replace('inv-', '');
@@ -3359,7 +3368,10 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
    REVIEW FORM COMPONENT
 ═══════════════════════════════════════════════════ */
 function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
-  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  // VITE_GOOGLE_CLIENT_ID is replaced at build time by Vite
+  // Fallback for non-Vite environments (e.g. previews)
+  let GOOGLE_CLIENT_ID = '';
+  try { GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''; } catch(e) { GOOGLE_CLIENT_ID = ''; }
   const [step, setStep] = useState('choose'); // 'choose' | 'google' | 'form' | 'write' | 'done'
   const [googleUser, setGoogleUser] = useState(null);
   const [formData, setFormData] = useState({ name:'', email:'', phone:'', city:'' });
