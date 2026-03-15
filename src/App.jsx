@@ -3198,6 +3198,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
   const CATEGORY_ICONS = { system:'🏠', inverter:'⚡', battery:'🔋', component:'🔧' };
 
   return (
+    <>
     <div className="product-detail">
       {/* Breadcrumb */}
       <div className="product-detail-breadcrumb">
@@ -3425,6 +3426,7 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
 
     </div>
     <SocialFooter page="catalog" />
+    </>
   );
 }
 
@@ -3958,6 +3960,7 @@ function AuditWizard({ goToPage, liveInverters = [] }) {
   );
 
   return (
+    <>
     <div ref={wizardRef} style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#e8f5e9 0%,white 35%,#fff9c4 100%)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* HEADER */}
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -4226,6 +4229,7 @@ function AuditWizard({ goToPage, liveInverters = [] }) {
       </div>
     </div>
     <SocialFooter page="audit" />
+    </>
   );
 }/* ═══════════ END AUDIT WIZARD ═══════════ */
 
