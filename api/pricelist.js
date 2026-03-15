@@ -5,7 +5,7 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=21600, stale-while-revalidate=43200');
+  res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=86400');
 
   const SPREADSHEET_ID  = process.env.DOLYA_SPREADSHEET_ID;
   const REFRESH_TOKEN   = process.env.GOOGLE_REFRESH_TOKEN;
