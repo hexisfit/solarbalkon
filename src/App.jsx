@@ -3050,21 +3050,37 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
       };
     }
     const compKey = itemKey.replace(/^comp-/, '');
-    const comp = sheetComponents.find(c => c.sku === compKey);
-    if (comp) return {
-      type: 'component', name: comp.name, model: comp.sku,
-      category: 'Компонент',
-      price: comp.priceUah,
-      image: null, availability: 'В наявності',
-      description: '',
-      usp: null,
-      specs: [
-        { label: 'Артикул', value: comp.sku },
-        { label: 'Кількість', value: comp.qty + ' шт' },
-        { label: 'Сумісність', value: (comp.systems||[]).join(', ') },
-      ],
-      data: comp,
-    };
+    // Merge sheetComponents with admin overrides for full data
+    const compBase = sheetComponents.find(c => c.sku === compKey) || {};
+    const compOv = (adminData?.overrides||[]).find(o => o.sku === compKey || o.model === compKey) || {};
+    const comp = { ...compBase, ...compOv };
+    if (comp.sku || comp.name) {
+      // Parse specs string "Key: Value\nKey2: Value2" into array
+      const specsArr = comp.specs
+        ? comp.specs.split('\n').filter(Boolean).map(l => {
+            const idx = l.indexOf(':');
+            return idx > 0 ? { label: l.slice(0,idx).trim(), value: l.slice(idx+1).trim() } : null;
+          }).filter(Boolean)
+        : [];
+      // Add default spec rows
+      if (!specsArr.find(s => s.label === 'Артикул')) specsArr.unshift({ label: 'Артикул', value: comp.sku });
+      if (comp.qty > 1) specsArr.push({ label: 'К-ть в комплекті', value: comp.qty + ' шт' });
+      if ((comp.systems||[]).length) specsArr.push({ label: 'Сумісність', value: (comp.systems||[]).join(', ') });
+      if (comp.warranty) specsArr.push({ label: 'Гарантія', value: comp.warranty });
+      return {
+        type: 'component', name: comp.name, model: comp.sku,
+        image: comp.imageUrl || null,
+        description: comp.description || '',
+        category: comp.brand ? 'Компонент · ' + comp.brand : 'Компонент',
+        price: comp.priceUah || 0,
+        image: comp.imageUrl || null,
+        availability: 'В наявності',
+        description: comp.description || '',
+        usp: comp.description || null,
+        specs: specsArr,
+        data: comp,
+      };
+    }
     return null;
   };
 
@@ -4808,18 +4824,25 @@ function PageBuilderModal({ productKey, productName, pageData, password, onSave,
 }
 
 
-function AdminComponentModal({ component, onSave, onClose }) {
+function AdminComponentModal({ component, onSave, onClose, password }) {
   const isNew = !component.sku;
   const ALL_SYSTEMS = ['zendure','ecoflow','deye','anker'];
   const [form, setForm] = useState({
-    name:     component.name     || '',
-    sku:      component.sku      || '',
-    qty:      component.qty      || 1,
-    priceEur: component.priceEur || 0,
-    systems:  component.systems  || ['zendure','ecoflow','deye'],
-    optional: !!component.optional,
-    hidden:   !!component.hidden,
+    name:        component.name        || '',
+    sku:         component.sku         || '',
+    qty:         component.qty         || 1,
+    priceEur:    component.priceEur    || 0,
+    systems:     component.systems     || ['zendure','ecoflow','deye'],
+    optional:    !!component.optional,
+    hidden:      !!component.hidden,
+    imageUrl:    component.imageUrl    || '',
+    description: component.description || '',
+    specs:       component.specs       || '',
+    brand:       component.brand       || '',
+    warranty:    component.warranty    || '',
   });
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(component.imageUrl || null);
 
   const toggleSystem = (sys) => {
     setForm(p => ({
@@ -4830,12 +4853,77 @@ function AdminComponentModal({ component, onSave, onClose }) {
     }));
   };
 
+  const handleImageUpload = async (file) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploading(true);
+    const base64 = await new Promise(res => {
+      const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.readAsDataURL(file);
+    });
+    setPreview(URL.createObjectURL(file));
+    try {
+      const resp = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${password}` },
+        body: JSON.stringify({ fileBase64: base64, filename: file.name, folder: 'components' }),
+      });
+      const data = await resp.json();
+      if (data.success) setForm(p => ({ ...p, imageUrl: data.url }));
+      else alert('Помилка завантаження: ' + (data.error || ''));
+    } catch(e) { alert('Помилка: ' + e.message); }
+    setUploading(false);
+  };
+
   return (
     <div className="adm-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="adm-modal" style={{ maxWidth: 520 }}>
+      <div className="adm-modal" style={{ maxWidth: 620 }}>
         <div className="adm-modal-head">
           <h3>{isNew ? '➕ Новий компонент' : `✏️ ${form.name}`}</h3>
           <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Photo upload */}
+        <div className="adm-field">
+          <label>Фото компонента</label>
+          <div style={{display:'flex',gap:16,alignItems:'flex-start'}}>
+            <div style={{flexShrink:0,width:100,height:100,borderRadius:10,border:'2px dashed #e0e0e0',
+              background:'#fafafa',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',cursor:'pointer',position:'relative'}}
+              onClick={() => document.getElementById('comp-img-input').click()}>
+              {preview
+                ? <img src={preview} alt="" style={{width:'100%',height:'100%',objectFit:'contain'}} />
+                : <span style={{fontSize:'2rem',color:'#bdbdbd'}}>📷</span>
+              }
+              {uploading && (
+                <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,0.8)',
+                  display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.75rem',color:'#2d7a3a',fontWeight:700}}>
+                  ⏳ Завантаження...
+                </div>
+              )}
+            </div>
+            <div style={{flex:1}}>
+              <input id="comp-img-input" type="file" accept="image/*" style={{display:'none'}}
+                onChange={e => e.target.files[0] && handleImageUpload(e.target.files[0])} />
+              <button className="adm-btn adm-btn-ghost adm-btn-sm" style={{marginBottom:8}}
+                onClick={() => document.getElementById('comp-img-input').click()}>
+                📁 Вибрати файл
+              </button>
+              <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginBottom:6}}>PNG, JPG, WebP до 5MB</p>
+              {form.imageUrl && (
+                <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                  <span style={{fontSize:'0.72rem',color:'#4caf50',fontFamily:'monospace',
+                    maxWidth:180,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                    ✅ {form.imageUrl}
+                  </span>
+                  <button onClick={() => { setForm(p=>({...p,imageUrl:''})); setPreview(null); }}
+                    style={{background:'none',border:'none',cursor:'pointer',color:'#e53935',fontSize:'0.8rem'}}>✕</button>
+                </div>
+              )}
+              <div style={{marginTop:6}}>
+                <input value={form.imageUrl} onChange={e => { setForm(p=>({...p,imageUrl:e.target.value})); setPreview(e.target.value); }}
+                  placeholder="або вставте URL зображення"
+                  style={{width:'100%',padding:'6px 10px',border:'1px solid #e0e0e0',borderRadius:6,fontSize:'0.8rem',fontFamily:'monospace'}} />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="adm-field">
@@ -4851,18 +4939,54 @@ function AdminComponentModal({ component, onSave, onClose }) {
               style={{fontFamily:'monospace'}} placeholder="TSM-DE09R.28-455" />
           </div>
           <div className="adm-field">
+            <label>Виробник / Бренд</label>
+            <input value={form.brand} onChange={e => setForm(p => ({...p, brand: e.target.value}))}
+              placeholder="Trina Solar, Risen, JA Solar..." />
+          </div>
+        </div>
+
+        <div className="adm-grid2">
+          <div className="adm-field">
             <label>Кількість в комплекті</label>
             <input type="number" min={1} value={form.qty}
               onChange={e => setForm(p => ({...p, qty: parseInt(e.target.value)||1}))} />
           </div>
+          <div className="adm-field">
+            <label>Ціна (EUR)</label>
+            <input type="number" step="0.01" value={form.priceEur}
+              onChange={e => setForm(p => ({...p, priceEur: parseFloat(e.target.value)||0}))} />
+          </div>
         </div>
 
         <div className="adm-field">
-          <label>Ціна (EUR)</label>
-          <input type="number" step="0.01" value={form.priceEur}
-            onChange={e => setForm(p => ({...p, priceEur: parseFloat(e.target.value)||0}))} />
-          <p style={{fontSize:'0.75rem',color:'#9e9e9e',marginTop:4}}>
-            Конвертується в грн автоматично за курсом ПриватБанку
+          <label>Гарантія</label>
+          <input value={form.warranty} onChange={e => setForm(p => ({...p, warranty: e.target.value}))}
+            placeholder="2 роки, 10 років на продуктивність..." />
+        </div>
+
+        <div className="adm-field">
+          <label>Короткий опис (для каталогу)</label>
+          <textarea value={form.description} onChange={e => setForm(p => ({...p, description: e.target.value}))}
+            placeholder="Монокристалічна панель 455 Вт, ефективність 21.5%, розмір 2094×1038 мм"
+            style={{minHeight:72,resize:'vertical',width:'100%',padding:'9px 12px',
+              border:'1px solid #e0e0e0',borderRadius:8,fontFamily:'inherit',fontSize:'0.9rem',outline:'none'}}
+            onFocus={e=>e.target.style.borderColor='#2d7a3a'}
+            onBlur={e=>e.target.style.borderColor='#e0e0e0'} />
+        </div>
+
+        <div className="adm-field">
+          <label>Технічні характеристики (кожна з нового рядка: Назва: Значення)</label>
+          <textarea value={form.specs} onChange={e => setForm(p => ({...p, specs: e.target.value}))}
+            placeholder={"Потужність: 455 Вт
+Ефективність: 21.5%
+Розмір: 2094×1038 мм
+Вага: 22.5 кг"}
+            style={{minHeight:100,resize:'vertical',width:'100%',padding:'9px 12px',fontFamily:'monospace',
+              border:'1px solid #e0e0e0',borderRadius:8,fontSize:'0.82rem',outline:'none'}}
+            onFocus={e=>e.target.style.borderColor='#2d7a3a'}
+            onBlur={e=>e.target.style.borderColor='#e0e0e0'} />
+          <p style={{fontSize:'0.72rem',color:'#9e9e9e',marginTop:4}}>
+            Формат: «Назва: Значення» — відображається в картці товару
           </p>
         </div>
 
@@ -4900,7 +5024,7 @@ function AdminComponentModal({ component, onSave, onClose }) {
           borderTop:'1px solid #f0f0f0',paddingTop:'1rem'}}>
           <button className="adm-btn adm-btn-ghost" onClick={onClose}>Скасувати</button>
           <button className="adm-btn adm-btn-primary"
-            disabled={!form.name.trim() || !form.sku.trim()}
+            disabled={!form.name.trim() || !form.sku.trim() || uploading}
             onClick={() => onSave(form)}>
             💾 Зберегти
           </button>
@@ -5116,8 +5240,17 @@ function AdminBlogModal({ post, onSave, onClose, password }) {
         body: JSON.stringify({ fileBase64: base64, filename: file.name, folder: 'blog' }),
       });
       const data = await resp.json();
-      if (data.success) setForm(p => ({ ...p, image: data.url }));
-    } catch(e) { console.error(e); }
+      if (data.success) {
+        setForm(p => ({ ...p, image: data.url }));
+        setPreview(data.url);
+      } else {
+        alert('❌ Помилка завантаження: ' + (data.error || 'невідома помилка'));
+        setPreview(null);
+      }
+    } catch(e) {
+      alert('❌ ' + e.message);
+      setPreview(null);
+    }
     setUploading(false);
   };
 
@@ -5218,6 +5351,17 @@ function AdminBlogModal({ post, onSave, onClose, password }) {
           <div>
             <div className="adm-field">
               <label>Фото обкладинки</label>
+              {form.image && !preview && (
+                <div style={{marginBottom:8,padding:'8px 12px',background:'#e8f5e9',borderRadius:8,
+                  fontSize:'0.82rem',display:'flex',alignItems:'center',gap:8}}>
+                  <img src={form.image} alt="" style={{width:48,height:32,objectFit:'cover',borderRadius:4}} />
+                  <span style={{color:'#2d7a3a',fontWeight:600}}>Поточне фото збережено</span>
+                  <span style={{fontFamily:'monospace',color:'#9e9e9e',fontSize:'0.72rem',flex:1,overflow:'hidden',
+                    textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.image}</span>
+                  <button onClick={() => setForm(p=>({...p,image:''}))}
+                    style={{background:'none',border:'none',cursor:'pointer',color:'#e53935',fontWeight:700}}>✕</button>
+                </div>
+              )}
               <div className="adm-upload-zone"
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => { e.preventDefault(); handleImageUpload(e.dataTransfer.files[0]); }}
@@ -6135,7 +6279,7 @@ function AdminPanel({ goToPage }) {
               <div style={{overflowX:'auto'}}>
                 <table className="adm-table">
                   <thead>
-                    <tr><th>Назва</th><th>Артикул</th><th>Ціна EUR</th><th>К-ть</th><th>Системи</th><th>Тип</th><th>Статус</th><th></th></tr>
+                    <tr><th>Фото</th><th>Назва / Опис</th><th>Артикул</th><th>Ціна EUR</th><th>К-ть</th><th>Системи</th><th>Тип</th><th>Статус</th><th></th></tr>
                   </thead>
                   <tbody>
                     {allComps.map(comp => {
@@ -6143,7 +6287,17 @@ function AdminPanel({ goToPage }) {
                       const isNew = !comp._fromSheet;
                       return (
                         <tr key={comp.sku}>
-                          <td style={{fontWeight:600,fontSize:'0.85rem',maxWidth:200}}>{comp.name}</td>
+                          <td>
+                            {comp.imageUrl
+                              ? <img src={comp.imageUrl} alt="" style={{width:44,height:44,objectFit:'contain',borderRadius:6,background:'#f5f5f5'}} />
+                              : <div style={{width:44,height:44,background:'#f5f5f5',borderRadius:6,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.2rem'}}>🔧</div>
+                            }
+                          </td>
+                          <td>
+                            <div style={{fontWeight:600,fontSize:'0.85rem',maxWidth:180}}>{comp.name}</div>
+                            {comp.brand && <div style={{fontSize:'0.75rem',color:'#9e9e9e'}}>{comp.brand}</div>}
+                            {comp.description && <div style={{fontSize:'0.72rem',color:'#bdbdbd',marginTop:2,maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{comp.description}</div>}
+                          </td>
                           <td style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e'}}>{comp.sku}</td>
                           <td style={{fontSize:'0.85rem'}}>{comp.priceEur ? `${comp.priceEur}€` : '—'}</td>
                           <td style={{fontSize:'0.85rem'}}>× {comp.qty}</td>
@@ -6615,6 +6769,7 @@ function AdminPanel({ goToPage }) {
       {compModal && (
         <AdminComponentModal
           component={compModal}
+          password={password}
           onSave={(updated) => {
             setComponents(prev => {
               const idx = prev.findIndex(c => c.sku === updated.sku);
@@ -6674,7 +6829,7 @@ function AdminPanel({ goToPage }) {
               return [...prev, updated];
             });
             setBlogModal(null);
-            showToast('✅ Статтю збережено — натисни "Зберегти" щоб опублікувати');
+            showToast('✅ Статтю збережено. ⚠️ Натисни жовту кнопку "💾 Зберегти" вгорі щоб опублікувати на сайті!');
           }}
           onClose={() => setBlogModal(null)}
         />
