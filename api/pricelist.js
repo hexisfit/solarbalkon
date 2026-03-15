@@ -1,11 +1,6 @@
-// /api/pricelist.js — Vercel Serverless Function
-// Читает прайс Dolya через Google Sheets API с OAuth2 Refresh Token
-// Не нужен сервисный аккаунт и JSON ключ — только refresh token
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  // Без CDN кеша — данные всегда актуальные из Google Sheets
   res.setHeader('Cache-Control', 'no-store');
 
   const SPREADSHEET_ID  = process.env.DOLYA_SPREADSHEET_ID;
@@ -14,15 +9,11 @@ export default async function handler(req, res) {
   const CLIENT_SECRET   = process.env.GOOGLE_CLIENT_SECRET;
 
   if (!SPREADSHEET_ID || !REFRESH_TOKEN || !CLIENT_ID || !CLIENT_SECRET) {
-    return res.status(500).json({
-      error: 'Missing env: DOLYA_SPREADSHEET_ID, GOOGLE_REFRESH_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET',
-      items: [],
-    });
+    return res.status(500).json({ error: 'Missing env vars', items: [] });
   }
 
   const wantCsv = req.query.format === 'csv';
 
-  // ─── SHEETS DEFINITION ─────────────────────────────────────
   const SHEETS = [
     {
       name: 'Інвертори Мережеві',
@@ -84,21 +75,20 @@ export default async function handler(req, res) {
       name: 'Готові Комплекти Резервного Живлення',
       range: 'Готові Комплекти Резервного Живлення!A7:M200',
       category: 'Готові Комплекти Резервного Живлення',
-      priceCol: 10, availCol: 12,  // 13-кол. лист
+      priceCol: 10, availCol: 12,
       map: (r) => ({ power_kw: r[4], capacity_kwh: r[5], type: r[6], phases: r[7] }),
     },
     {
       name: 'Зарядні Станції',
       range: 'Зарядні Станції!A7:M200',
       category: 'Зарядні Станції',
-      priceCol: 8, availCol: 10,  // 13-кол. лист
+      priceCol: 8, availCol: 10,
       map: (r) => ({ power_kw: r[4], capacity_wh: r[5] }),
     },
   ];
 
-  // ─── HELPERS ───────────────────────────────────────────────
-  const cs  = (v) => v != null ? String(v).replace(/\s+/g, ' ').trim() : '';
-  const cn  = (v) => {
+  const cs = (v) => v != null ? String(v).replace(/\s+/g, ' ').trim() : '';
+  const cn = (v) => {
     if (v == null || v === '') return null;
     const n = parseFloat(String(v).replace(/[\s\u00A0]/g, '').replace(',', '.'));
     return isNaN(n) ? null : Math.round(n * 100) / 100;
@@ -116,15 +106,13 @@ export default async function handler(req, res) {
       weight: str.match(/([\d.]+)\s*кг/)?.[1] || '',
     };
   };
-  // Нормализация наличия → числовой формат
   const stock = (v) => {
     const s = cs(v).toLowerCase();
     if (s.includes('є в наявності'))  return 5;
     if (s.includes('закінчуються'))   return 1;
-    return null;  // немає, в дорозі, передзамолення → пусто
+    return null;
   };
 
-  // ─── GET ACCESS TOKEN from Refresh Token ───────────────────
   async function getAccessToken() {
     const r = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -141,7 +129,6 @@ export default async function handler(req, res) {
     return data.access_token;
   }
 
-  // ─── BATCH FETCH ALL SHEETS ────────────────────────────────
   async function fetchAll(token) {
     const params = SHEETS.map(s => `ranges=${encodeURIComponent(s.range)}`).join('&');
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:batchGet?${params}&valueRenderOption=FORMATTED_VALUE`;
@@ -153,13 +140,12 @@ export default async function handler(req, res) {
     return r.json();
   }
 
-  // ─── PARSE ROWS ────────────────────────────────────────────
   function parseSheet(rows, sheet) {
     const items = [];
     for (const row of rows || []) {
       while (row.length < 14) row.push('');
-      const sku   = cs(row[2]);
-      const name  = cs(row[3]);
+      const sku  = cs(row[2]);
+      const name = cs(row[3]);
       if (!sku && !name) continue;
       const price = cn(row[sheet.priceCol]);
       if (!price) continue;
@@ -174,7 +160,6 @@ export default async function handler(req, res) {
         availability:     stock(row[sheet.availCol]),
       };
 
-      // Dims+weight
       if (extra._dw !== undefined) {
         const d = dw(extra._dw);
         item.dims   = d.dims;
@@ -182,7 +167,6 @@ export default async function handler(req, res) {
         delete extra._dw;
       }
 
-      // Remaining fields
       for (const [k, v] of Object.entries(extra)) {
         if (v === undefined || v === '') continue;
         const num = cn(v);
@@ -194,7 +178,6 @@ export default async function handler(req, res) {
     return items;
   }
 
-  // ─── MAIN ──────────────────────────────────────────────────
   try {
     const token    = await getAccessToken();
     const data     = await fetchAll(token);
