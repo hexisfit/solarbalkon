@@ -559,6 +559,18 @@ function formatArticleDate(dateStr) {
 }
 
 /* Helper: set SEO meta tags dynamically */
+// Load Google Identity Services once
+let googleAuthLoaded = false;
+function loadGoogleAuth() {
+  if (googleAuthLoaded || document.getElementById('google-gsi')) return;
+  googleAuthLoaded = true;
+  const s = document.createElement('script');
+  s.id = 'google-gsi';
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+}
+
 function setSEO({ title, description, url, image, type = 'website', article = null }) {
   document.title = title;
   const setMeta = (attr, key, val) => {
@@ -2911,6 +2923,8 @@ function CatalogPage({ goToPage, addToCart, setDirectOrder, setShowOrderForm, se
 function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setShowOrderForm, setOrderStatus, setOrderForm,
   PRODUCTS, commercialInverters, nkonBatteries, sheetComponents, formatPrice, adminData }) {
 
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
   const findItem = () => {
     const sys = PRODUCTS.find(p => p.key === itemKey);
     if (sys) return {
@@ -3250,25 +3264,47 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
       )}
 
       {/* ── Відгуки ── */}
+      {showReviewForm && (
+        <ReviewForm
+          productKey={itemKey}
+          productName={item.name}
+          onSubmitted={() => setShowReviewForm(false)}
+          onClose={() => setShowReviewForm(false)}
+        />
+      )}
+
       <div style={{ marginTop:'3rem', borderTop:'1px solid var(--gray-200)', paddingTop:'2rem' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem' }}>
-          <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, margin:0 }}>
-            Відгуки покупців
-          </h2>
-          {allReviews.length > 0 && (
-            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              {STARS(avgRating)}
-              <span style={{ fontWeight:700, fontSize:'1.1rem' }}>{avgRating}</span>
-              <span style={{ color:'var(--gray-400)', fontSize:'0.85rem' }}>/ 5</span>
-            </div>
-          )}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.25rem', flexWrap:'wrap', gap:12 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+            <h2 style={{ fontFamily:'var(--font-display)', fontSize:'1.4rem', fontWeight:700, margin:0 }}>
+              Відгуки покупців
+            </h2>
+            {allReviews.length > 0 && (
+              <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                {STARS(avgRating)}
+                <span style={{ fontWeight:700, fontSize:'1rem' }}>{avgRating}</span>
+                <span style={{ color:'var(--gray-400)', fontSize:'0.82rem' }}>({allReviews.length})</span>
+              </div>
+            )}
+          </div>
+          <button onClick={() => setShowReviewForm(true)}
+            style={{ padding:'9px 20px', background:'var(--green-700)', color:'white', border:'none',
+              borderRadius:8, cursor:'pointer', fontFamily:'var(--font-body)', fontWeight:700,
+              fontSize:'0.88rem', display:'flex', alignItems:'center', gap:6 }}>
+            ✏️ Написати відгук
+          </button>
         </div>
 
         {allReviews.length === 0 ? (
-          <div style={{ background:'var(--gray-50)', borderRadius:'var(--radius)', padding:'2rem', textAlign:'center', color:'var(--gray-400)' }}>
+          <div style={{ background:'var(--gray-50)', borderRadius:'var(--radius)', padding:'2rem', textAlign:'center' }}>
             <div style={{ fontSize:'2.5rem', marginBottom:'0.75rem' }}>💬</div>
-            <p style={{ fontWeight:600, marginBottom:4 }}>Відгуків поки немає</p>
-            <p style={{ fontSize:'0.85rem' }}>Будьте першим хто оцінить цей товар</p>
+            <p style={{ fontWeight:600, color:'var(--gray-600)', marginBottom:4 }}>Відгуків поки немає</p>
+            <p style={{ fontSize:'0.85rem', color:'var(--gray-400)', marginBottom:'1rem' }}>Будьте першим хто оцінить цей товар</p>
+            <button onClick={() => setShowReviewForm(true)}
+              style={{ padding:'9px 20px', background:'var(--green-700)', color:'white', border:'none',
+                borderRadius:8, cursor:'pointer', fontFamily:'var(--font-body)', fontWeight:700, fontSize:'0.88rem' }}>
+              ✏️ Залишити відгук
+            </button>
           </div>
         ) : (
           <div style={{ display:'grid', gap:'1rem' }}>
@@ -3276,12 +3312,18 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
               <div key={i} style={{ background:'white', border:'1px solid var(--gray-200)', borderRadius:'var(--radius)', padding:'1.25rem' }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.5rem' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                    <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--green-100)',
-                      display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, color:'var(--green-700)', fontSize:'0.9rem' }}>
-                      {(r.author || 'А')[0].toUpperCase()}
-                    </div>
+                    {r.googlePicture
+                      ? <img src={r.googlePicture} alt="" style={{ width:36, height:36, borderRadius:'50%' }} />
+                      : <div style={{ width:36, height:36, borderRadius:'50%', background:'var(--green-100)',
+                          display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, color:'var(--green-700)', fontSize:'0.9rem' }}>
+                          {(r.author || 'А')[0].toUpperCase()}
+                        </div>
+                    }
                     <div>
-                      <div style={{ fontWeight:700, fontSize:'0.9rem' }}>{r.author || 'Анонім'}</div>
+                      <div style={{ fontWeight:700, fontSize:'0.9rem' }}>
+                        {r.author || 'Анонім'}
+                        {r.city && <span style={{ fontWeight:400, color:'var(--gray-400)', fontSize:'0.8rem', marginLeft:6 }}>· {r.city}</span>}
+                      </div>
                       <div style={{ fontSize:'0.75rem', color:'var(--gray-400)' }}>{r.date || ''}</div>
                     </div>
                   </div>
@@ -3296,6 +3338,278 @@ function ProductDetailPage({ itemKey, goToPage, addToCart, setDirectOrder, setSh
 
     </div>
   );
+}
+
+
+/* ═══════════════════════════════════════════════════
+   REVIEW FORM COMPONENT
+═══════════════════════════════════════════════════ */
+function ReviewForm({ productKey, productName, onSubmitted, onClose }) {
+  const GOOGLE_CLIENT_ID = ''; // Set in env or hardcode after creating OAuth app
+  const [step, setStep] = useState('choose'); // 'choose' | 'google' | 'form' | 'write' | 'done'
+  const [googleUser, setGoogleUser] = useState(null);
+  const [formData, setFormData] = useState({ name:'', email:'', phone:'', city:'' });
+  const [review, setReview] = useState({ rating:5, text:'' });
+  const [captcha, setCaptcha] = useState({ a:0, b:0, answer:'', correct:0 });
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // Generate math captcha
+  useEffect(() => {
+    const a = Math.floor(Math.random()*10)+1;
+    const b = Math.floor(Math.random()*10)+1;
+    setCaptcha({ a, b, answer:'', correct: a+b });
+  }, []);
+
+  // Google OAuth init
+  useEffect(() => {
+    loadGoogleAuth();
+    const timer = setInterval(() => {
+      if (window.google?.accounts?.id) {
+        clearInterval(timer);
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID || window.GOOGLE_CLIENT_ID || '',
+          callback: (resp) => {
+            // Decode JWT
+            try {
+              const payload = JSON.parse(atob(resp.credential.split('.')[1]));
+              setGoogleUser({ name: payload.name, email: payload.email, picture: payload.picture });
+              setStep('write');
+            } catch(e) { setError('Помилка Google авторизації'); }
+          },
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+      }
+    }, 300);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleGoogleBtn = () => {
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt();
+    } else {
+      setError('Google авторизація недоступна. Спробуйте через форму.');
+    }
+  };
+
+  const handleFormSubmit = () => {
+    setError('');
+    if (!formData.name.trim()) { setError("Вкажіть ім'я"); return; }
+    if (!formData.email.trim() && !formData.phone.trim()) { setError('Вкажіть email або телефон'); return; }
+    if (parseInt(captcha.answer) !== captcha.correct) { setError('Невірна відповідь на капчу'); return; }
+    setStep('write');
+  };
+
+  const handleSubmitReview = async () => {
+    setError('');
+    if (!review.text.trim() || review.text.trim().length < 10) {
+      setError('Напишіть відгук (мінімум 10 символів)');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const body = {
+        productKey,
+        rating: review.rating,
+        text: review.text.trim(),
+        authType: googleUser ? 'google' : 'form',
+        googleName: googleUser?.name,
+        googleEmail: googleUser?.email,
+        author: googleUser ? googleUser.name : formData.name,
+        email: googleUser ? googleUser.email : formData.email,
+        phone: formData.phone,
+        city: formData.city,
+      };
+      const res = await fetch('/api/submit-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStep('done');
+        setTimeout(() => { onSubmitted && onSubmitted(); }, 2000);
+      } else {
+        setError(data.error || 'Помилка відправки');
+      }
+    } catch(e) { setError('Помилка мережі. Спробуйте ще раз.'); }
+    setSubmitting(false);
+  };
+
+  const StarPicker = () => (
+    <div style={{ display:'flex', gap:6, margin:'0.75rem 0' }}>
+      {[1,2,3,4,5].map(n => (
+        <span key={n} onClick={() => setReview(p=>({...p,rating:n}))}
+          style={{ fontSize:'2rem', cursor:'pointer', color: n <= review.rating ? '#fbc02d' : '#e0e0e0',
+            transition:'transform .1s', transform: n <= review.rating ? 'scale(1.1)' : 'scale(1)' }}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+
+  const ModalWrap = ({ children }) => (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:1000,
+      display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={{ background:'white', borderRadius:16, width:'100%', maxWidth:440,
+        padding:'1.75rem', position:'relative', maxHeight:'90vh', overflowY:'auto' }}>
+        <button onClick={onClose} style={{ position:'absolute', top:12, right:12, background:'none',
+          border:'none', fontSize:'1.2rem', cursor:'pointer', color:'var(--gray-400)' }}>✕</button>
+        {children}
+      </div>
+    </div>
+  );
+
+  const H = ({children}) => <div style={{ fontFamily:'var(--font-display)', fontSize:'1.1rem',
+    fontWeight:700, marginBottom:'1.25rem' }}>{children}</div>;
+
+  if (step === 'done') return (
+    <ModalWrap>
+      <div style={{ textAlign:'center', padding:'1rem 0' }}>
+        <div style={{ fontSize:'3rem', marginBottom:'1rem' }}>🎉</div>
+        <H>Дякуємо за відгук!</H>
+        <p style={{ color:'var(--gray-500)', fontSize:'0.9rem' }}>
+          Ваш відгук отримано і буде опублікований після перевірки.
+        </p>
+      </div>
+    </ModalWrap>
+  );
+
+  if (step === 'choose') return (
+    <ModalWrap>
+      <H>Залишити відгук про {productName?.slice(0,30)}</H>
+      <p style={{ color:'var(--gray-500)', fontSize:'0.85rem', marginBottom:'1.25rem' }}>
+        Оберіть спосіб авторизації:
+      </p>
+      <button onClick={handleGoogleBtn}
+        style={{ width:'100%', padding:'12px', border:'1px solid #e0e0e0', borderRadius:10,
+          background:'white', cursor:'pointer', display:'flex', alignItems:'center', gap:12,
+          fontSize:'0.95rem', fontWeight:600, marginBottom:10, fontFamily:'var(--font-body)',
+          transition:'box-shadow .15s' }}
+        onMouseEnter={e=>e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'}
+        onMouseLeave={e=>e.currentTarget.style.boxShadow='none'}>
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Увійти через Google
+      </button>
+      <div style={{ position:'relative', textAlign:'center', margin:'12px 0' }}>
+        <div style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:'#e0e0e0' }} />
+        <span style={{ position:'relative', background:'white', padding:'0 12px', color:'var(--gray-400)', fontSize:'0.82rem' }}>або</span>
+      </div>
+      <button onClick={() => setStep('form')}
+        style={{ width:'100%', padding:'12px', border:'none', borderRadius:10,
+          background:'var(--green-700)', color:'white', cursor:'pointer',
+          fontSize:'0.95rem', fontWeight:600, fontFamily:'var(--font-body)' }}>
+        Заповнити форму
+      </button>
+      {error && <p style={{ color:'#e53935', fontSize:'0.82rem', marginTop:10, textAlign:'center' }}>{error}</p>}
+    </ModalWrap>
+  );
+
+  if (step === 'form') return (
+    <ModalWrap>
+      <H>Ваші контактні дані</H>
+      {[
+        { key:'name', label:"Ім'я та прізвище *", placeholder:'Іван Петренко', type:'text' },
+        { key:'email', label:'Email', placeholder:'ivan@gmail.com', type:'email' },
+        { key:'phone', label:'Телефон', placeholder:'+380 XX XXX XX XX', type:'tel' },
+        { key:'city', label:'Місто', placeholder:'Київ', type:'text' },
+      ].map(f => (
+        <div key={f.key} style={{ marginBottom:'0.75rem' }}>
+          <label style={{ display:'block', fontSize:'0.82rem', fontWeight:600,
+            color:'var(--gray-600)', marginBottom:4 }}>{f.label}</label>
+          <input type={f.type} placeholder={f.placeholder} value={formData[f.key]}
+            onChange={e => setFormData(p=>({...p,[f.key]:e.target.value}))}
+            style={{ width:'100%', padding:'9px 12px', border:'1px solid #e0e0e0',
+              borderRadius:8, fontSize:'0.9rem', fontFamily:'var(--font-body)', outline:'none' }}
+            onFocus={e=>e.target.style.borderColor='var(--green-700)'}
+            onBlur={e=>e.target.style.borderColor='#e0e0e0'} />
+        </div>
+      ))}
+      <p style={{ fontSize:'0.75rem', color:'var(--gray-400)', marginBottom:'1rem' }}>
+        * Email або телефон обов'язковий. Дані використовуються тільки для верифікації.
+      </p>
+      {/* Math CAPTCHA */}
+      <div style={{ background:'var(--gray-50)', borderRadius:8, padding:'0.75rem', marginBottom:'1rem' }}>
+        <label style={{ display:'block', fontSize:'0.82rem', fontWeight:600, color:'var(--gray-600)', marginBottom:6 }}>
+          Захист від спаму: скільки буде {captcha.a} + {captcha.b}?
+        </label>
+        <input type="number" value={captcha.answer}
+          onChange={e => setCaptcha(p=>({...p,answer:e.target.value}))}
+          placeholder="Ваша відповідь"
+          style={{ width:'100%', padding:'9px 12px', border:'1px solid #e0e0e0',
+            borderRadius:8, fontSize:'0.9rem', fontFamily:'var(--font-body)', outline:'none' }}
+          onFocus={e=>e.target.style.borderColor='var(--green-700)'}
+          onBlur={e=>e.target.style.borderColor='#e0e0e0'} />
+      </div>
+      {error && <p style={{ color:'#e53935', fontSize:'0.82rem', marginBottom:8 }}>{error}</p>}
+      <div style={{ display:'flex', gap:8 }}>
+        <button onClick={() => setStep('choose')}
+          style={{ flex:1, padding:'10px', border:'1px solid #e0e0e0', borderRadius:8,
+            background:'white', cursor:'pointer', fontFamily:'var(--font-body)', fontWeight:600 }}>
+          ← Назад
+        </button>
+        <button onClick={handleFormSubmit}
+          style={{ flex:2, padding:'10px', border:'none', borderRadius:8,
+            background:'var(--green-700)', color:'white', cursor:'pointer',
+            fontFamily:'var(--font-body)', fontWeight:700, fontSize:'0.95rem' }}>
+          Далі →
+        </button>
+      </div>
+    </ModalWrap>
+  );
+
+  if (step === 'write') return (
+    <ModalWrap>
+      {googleUser && (
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:'1.25rem',
+          background:'var(--gray-50)', borderRadius:8, padding:'0.75rem' }}>
+          {googleUser.picture && <img src={googleUser.picture} alt="" style={{ width:36, height:36, borderRadius:'50%' }} />}
+          <div>
+            <div style={{ fontWeight:700, fontSize:'0.9rem' }}>{googleUser.name}</div>
+            <div style={{ fontSize:'0.75rem', color:'var(--gray-400)' }}>{googleUser.email}</div>
+          </div>
+        </div>
+      )}
+      <H>Ваш відгук</H>
+      <div style={{ marginBottom:'0.75rem' }}>
+        <label style={{ display:'block', fontSize:'0.82rem', fontWeight:600, color:'var(--gray-600)', marginBottom:2 }}>Оцінка</label>
+        <StarPicker />
+      </div>
+      <div style={{ marginBottom:'1rem' }}>
+        <label style={{ display:'block', fontSize:'0.82rem', fontWeight:600, color:'var(--gray-600)', marginBottom:4 }}>Текст відгуку *</label>
+        <textarea rows={5} value={review.text} onChange={e=>setReview(p=>({...p,text:e.target.value}))}
+          placeholder="Розкажіть про ваш досвід з цим товаром..."
+          style={{ width:'100%', padding:'9px 12px', border:'1px solid #e0e0e0', borderRadius:8,
+            fontSize:'0.9rem', fontFamily:'var(--font-body)', outline:'none', resize:'vertical',
+            lineHeight:1.6 }}
+          onFocus={e=>e.target.style.borderColor='var(--green-700)'}
+          onBlur={e=>e.target.style.borderColor='#e0e0e0'} />
+        <div style={{ fontSize:'0.75rem', color: review.text.length < 10 ? '#e53935' : 'var(--gray-400)', marginTop:3 }}>
+          {review.text.length} символів (мінімум 10)
+        </div>
+      </div>
+      {error && <p style={{ color:'#e53935', fontSize:'0.82rem', marginBottom:8 }}>{error}</p>}
+      <button onClick={handleSubmitReview} disabled={submitting}
+        style={{ width:'100%', padding:'12px', border:'none', borderRadius:8,
+          background: submitting ? '#ccc' : 'var(--green-700)', color:'white',
+          cursor: submitting ? 'not-allowed' : 'pointer',
+          fontFamily:'var(--font-body)', fontWeight:700, fontSize:'1rem' }}>
+        {submitting ? '⏳ Відправляємо...' : '📩 Надіслати відгук'}
+      </button>
+      <p style={{ fontSize:'0.75rem', color:'var(--gray-400)', textAlign:'center', marginTop:8 }}>
+        Відгук з'явиться після перевірки модератором
+      </p>
+    </ModalWrap>
+  );
+
+  return null;
 }
 
 
@@ -5045,6 +5359,8 @@ function AdminPanel({ goToPage }) {
   const [components, setComponents] = useState([]);
   const [compModal, setCompModal] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [pendingReviews, setPendingReviews] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [pairs, setPairs] = useState([]);
   const [reviewModal, setReviewModal] = useState(null);
   const [pairModal, setPairModal] = useState(null);
@@ -5095,6 +5411,8 @@ function AdminPanel({ goToPage }) {
       setSystems(admin.products || []);
       setComponents(admin.components || []);
       setReviews(admin.reviews || []);
+      setPendingReviews(admin.pendingReviews || []);
+      setLeads(admin.leads || []);
       setPairs(admin.productPairs || []);
       const ovMap = {};
       (admin.overrides || []).forEach(o => { ovMap[o.model] = o; });
@@ -5116,6 +5434,8 @@ function AdminPanel({ goToPage }) {
         components,
         pages: adminData?.pages || {},
         reviews,
+        pendingReviews,
+        leads,
         productPairs: pairs,
         pages,
         mobileExportVersion: (adminData?.mobileExportVersion || 1) + 1,
@@ -5285,7 +5605,7 @@ function AdminPanel({ goToPage }) {
           { id: 'batteries', label: `🔋 Батареї (${mergedBatteries.length})` },
           { id: 'systems',   label: `🏠 Системи (${4 + systems.filter(s => !['ecoflow','zendure','deye','anker'].includes(s.key)).length})` },
           { id: 'components', label: `⚙️ Конфігуратор (${components.length})` },
-          { id: 'reviews',    label: `⭐ Відгуки та пари` },
+          { id: 'reviews',    label: `⭐ Відгуки${pendingReviews.length > 0 ? ' 🔴' + pendingReviews.length : ''} та пари` },
           { id: 'pages',      label: '📄 Сторінки товарів' },
           { id: 'pages',     label: `📄 Сторінки (${(adminData?.pages?.length||0)})` },
           { id: 'blog',      label: `📝 Блог (${(adminData?.blogPosts?.length || 0) + 5})` },
@@ -5669,16 +5989,54 @@ function AdminPanel({ goToPage }) {
           return (
           <>
             {/* ── ВІДГУКИ ── */}
+            {/* Pending moderation */}
+            {pendingReviews.length > 0 && (
+            <div className="adm-card" style={{border:'2px solid #fbc02d'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
+                <h3 style={{margin:0,color:'#e65100'}}>🔴 На модерації ({pendingReviews.length})</h3>
+              </div>
+              <table className="adm-table">
+                <thead><tr><th>Товар</th><th>Автор</th><th>Email/Тел</th><th>Місто</th><th>★</th><th>Текст</th><th>Дата</th><th></th></tr></thead>
+                <tbody>
+                  {pendingReviews.map((r, i) => (
+                    <tr key={i}>
+                      <td style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e',maxWidth:100}}>{r.productKey}</td>
+                      <td style={{fontWeight:600,fontSize:'0.85rem'}}>{r.author}</td>
+                      <td style={{fontSize:'0.78rem',color:'#616161'}}>{r.email || r.phone}</td>
+                      <td style={{fontSize:'0.78rem'}}>{r.city || '—'}</td>
+                      <td>{'★'.repeat(r.rating||5)}</td>
+                      <td style={{fontSize:'0.82rem',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.text}</td>
+                      <td style={{fontSize:'0.75rem',color:'#9e9e9e'}}>{r.date}</td>
+                      <td style={{display:'flex',gap:4}}>
+                        <button className="adm-btn adm-btn-primary adm-btn-sm"
+                          title="Затвердити і опублікувати"
+                          onClick={() => {
+                            const {status, submittedAt, authType, ...pub} = r;
+                            setReviews(p => [...p, pub]);
+                            setPendingReviews(p => p.filter((_,j) => j !== i));
+                            showToast('✅ Відгук опубліковано — натисни "Зберегти"');
+                          }}>✓ Публікувати</button>
+                        <button className="adm-btn adm-btn-danger adm-btn-sm"
+                          title="Відхилити"
+                          onClick={() => { if(window.confirm('Відхилити відгук?')) setPendingReviews(p => p.filter((_,j) => j !== i)); }}>✕</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            )}
+
             <div className="adm-card">
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
-                <h3 style={{margin:0}}>Відгуки покупців ({reviews.length})</h3>
+                <h3 style={{margin:0}}>Опубліковані відгуки ({reviews.length})</h3>
                 <button className="adm-btn adm-btn-primary adm-btn-sm"
                   onClick={() => setReviewModal({productKey:'',author:'',rating:5,text:'',date:new Date().toISOString().slice(0,10)})}>
-                  + Додати відгук
+                  + Додати вручну
                 </button>
               </div>
               <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
-                Відгуки відображаються на картці товару. Додавай реальні відгуки клієнтів.
+                Відгуки відображаються на картці товару.
               </p>
               {reviews.length === 0 ? (
                 <div style={{textAlign:'center',padding:'2rem',color:'#9e9e9e'}}>
@@ -5740,6 +6098,34 @@ function AdminPanel({ goToPage }) {
                     ))}
                   </tbody>
                 </table>
+              )}
+            </div>
+            {/* LEADS */}
+            <div className="adm-card">
+              <h3>📊 Ліди для маркетингу ({leads.length})</h3>
+              <p style={{fontSize:'0.82rem',color:'#9e9e9e',marginBottom:'1rem'}}>
+                Всі клієнти які залишили відгук — їх контакти для розсилок та повторних продажів.
+              </p>
+              {leads.length === 0 ? (
+                <p style={{textAlign:'center',color:'#9e9e9e',padding:'1rem'}}>Поки немає лідів</p>
+              ) : (
+                <div style={{overflowX:'auto'}}>
+                  <table className="adm-table">
+                    <thead><tr><th>Ім'я</th><th>Email</th><th>Телефон</th><th>Місто</th><th>Товар</th><th>Дата</th></tr></thead>
+                    <tbody>
+                      {leads.map((l, i) => (
+                        <tr key={i}>
+                          <td style={{fontWeight:600,fontSize:'0.85rem'}}>{l.name}</td>
+                          <td style={{fontSize:'0.82rem'}}>{l.email || '—'}</td>
+                          <td style={{fontSize:'0.82rem'}}>{l.phone || '—'}</td>
+                          <td style={{fontSize:'0.82rem'}}>{l.city || '—'}</td>
+                          <td style={{fontFamily:'monospace',fontSize:'0.75rem',color:'#9e9e9e'}}>{l.productKey}</td>
+                          <td style={{fontSize:'0.75rem',color:'#9e9e9e'}}>{l.submittedAt?.slice(0,10)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </>
