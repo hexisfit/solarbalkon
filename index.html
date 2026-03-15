@@ -1,14 +1,120 @@
 <!DOCTYPE html>
 <html lang="uk">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SolarBalkon.shop — Балконні електростанції</title>
-    <meta name="description" content="Сонячні панелі для балкону. Економія електроенергії для дому та бізнесу. Кредит 0% від держави." />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ═══ PRIMARY SEO ═══ -->
+  <title>SolarBalkon — Балконні сонячні електростанції в Україні</title>
+  <meta name="description" content="Сонячна станція на вашому балконі. Енергонезалежність, економія до 80%, кредит 0% від держави. EcoFlow, Zendure, Deye. Доставка по Україні." />
+  <meta name="keywords" content="балконна сонячна електростанція, сонячні панелі Україна, балконна СЕС, EcoFlow STREAM, Zendure SolarFlow, Deye інвертор, сонячна батарея, кредит 0% сонячні панелі, енергонезалежність" />
+  <meta name="author" content="SolarBalkon" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="Ukrainian" />
+  <meta name="geo.region" content="UA" />
+  <meta name="geo.placename" content="Ukraine" />
+
+  <!-- ═══ CANONICAL ═══ -->
+  <link rel="canonical" href="https://solarbalkon.shop/" />
+
+  <!-- ═══ OPEN GRAPH ═══ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SolarBalkon" />
+  <meta property="og:title" content="SolarBalkon — Балконні сонячні електростанції в Україні" />
+  <meta property="og:description" content="Сонячна станція на вашому балконі. Енергонезалежність, економія до 80%, кредит 0% від держави. EcoFlow, Zendure, Deye." />
+  <meta property="og:image" content="https://solarbalkon.shop/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://solarbalkon.shop/" />
+  <meta property="og:locale" content="uk_UA" />
+
+  <!-- ═══ TWITTER CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SolarBalkon — Балконні сонячні електростанції" />
+  <meta name="twitter:description" content="Сонячна станція на вашому балконі. Енергонезалежність, економія до 80%." />
+  <meta name="twitter:image" content="https://solarbalkon.shop/og-image.jpg" />
+
+  <!-- ═══ SCHEMA.ORG — Organization ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SolarBalkon",
+    "url": "https://solarbalkon.shop",
+    "logo": "https://solarbalkon.shop/logo.png",
+    "description": "Балконні сонячні електростанції в Україні — EcoFlow, Zendure, Deye",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": "Ukrainian"
+    },
+    "sameAs": []
+  }
+  </script>
+
+  <!-- ═══ SCHEMA.ORG — WebSite + SearchAction ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "SolarBalkon",
+    "url": "https://solarbalkon.shop",
+    "description": "Балконні сонячні електростанції в Україні",
+    "inLanguage": "uk",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SolarBalkon"
+    }
+  }
+  </script>
+
+  <!-- ═══ SCHEMA.ORG — Store ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "SolarBalkon",
+    "url": "https://solarbalkon.shop",
+    "description": "Інтернет-магазин балконних сонячних електростанцій",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Каталог сонячного обладнання",
+      "itemListElement": [
+        {
+          "@type": "OfferCatalog",
+          "name": "Побутові системи накопичення",
+          "description": "EcoFlow STREAM AC Pro, Zendure SolarFlow 2400 AC+, Deye AE-FS2.0-2H2"
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Комерційні гібридні інвертори Deye",
+          "description": "Однофазні та трифазні гібридні інвертори від 3.6 до 50 кВт"
+        },
+        {
+          "@type": "OfferCatalog",
+          "name": "Акумуляторні батареї LiFePO4",
+          "description": "Батареї Deye від 5 до 16 кВт·год"
+        }
+      ]
+    }
+  }
+  </script>
+
+  <!-- ═══ FAVICON ═══ -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- ═══ PRECONNECT ═══ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.privatbank.ua" />
+
+  <!-- ═══ FONTS ═══ -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
