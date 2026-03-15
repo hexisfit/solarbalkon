@@ -5464,12 +5464,20 @@ function AdminPanel({ goToPage }) {
   };
 
   const save = async () => {
+    if (loading) { showToast('⏳ Дочекайтесь завантаження даних'); return; }
     setSaving(true);
     try {
       const payload = {
         ...adminData,
         settings,
-        overrides: Object.values(editOverrides),
+        // Merge editOverrides with any existing adminData.overrides to prevent data loss
+        overrides: (() => {
+          const existing = {};
+          (adminData?.overrides || []).forEach(o => { if (o.model) existing[o.model] = o; });
+          // editOverrides takes precedence (user's current edits)
+          Object.values(editOverrides).forEach(o => { if (o.model) existing[o.model] = o; });
+          return Object.values(existing);
+        })(),
         blogPosts,
         products: systems,
         components,
