@@ -5982,6 +5982,7 @@ export default function SolarBalkon() {
   const [nkonBatteries, setNkonBatteries] = useState([]);
   const [selectedBattery, setSelectedBattery] = useState(null);
   const [adminArticles, setAdminArticles] = useState([]); // extra articles from admin.json
+  const [siteAdminData, setSiteAdminData] = useState(null); // full admin.json for site
   const [adminProducts, setAdminProducts] = useState([]); // product overrides from admin.json
   const [adminComponents, setAdminComponents] = useState([]); // component overrides from admin.json
   const [currentPage, setCurrentPage] = useState(() => {
@@ -6086,7 +6087,7 @@ export default function SolarBalkon() {
     fetch('https://raw.githubusercontent.com/hexisfit/solarbalkon/main/admin.json')
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        setAdminData(data);
+        setSiteAdminData(data);
         if (data?.blogPosts?.length)    setAdminArticles(data.blogPosts);
         if (data?.products?.length)     setAdminProducts(data.products);
         if (data?.components?.length)   setAdminComponents(data.components);
@@ -8830,7 +8831,7 @@ export default function SolarBalkon() {
           nkonBatteries={nkonBatteries}
           sheetComponents={sheetComponents}
           formatPrice={formatPrice}
-          adminData={adminData}
+          adminData={siteAdminData}
         />
       )}
 
