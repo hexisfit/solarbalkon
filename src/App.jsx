@@ -5845,10 +5845,8 @@ function AdminPanel({ goToPage }) {
             <div className="adm-field">
               <label>Супутні товари (по одному на рядку)</label>
               <textarea rows={4}
-                value={(pairModal.relatedKeys||[]).join('
-')}
-                onChange={e => setPairModal(p=>({...p,relatedKeys:e.target.value.split('
-').map(s=>s.trim()).filter(Boolean)}))}
+                value={(pairModal.relatedKeys||[]).join(String.fromCharCode(10))}
+                onChange={e => setPairModal(p=>({...p,relatedKeys:e.target.value.split(String.fromCharCode(10)).map(s=>s.trim()).filter(Boolean)}))}
                 placeholder={'bat-GB-L-Pro-4kWh / bat-SE-F5-Pro-C'} style={{fontFamily:'monospace',fontSize:'0.85rem'}} />
             </div>
             <div style={{background:'#f5f5f5',borderRadius:8,padding:'0.75rem',fontSize:'0.8rem',color:'#616161',marginBottom:'1rem'}}>
