@@ -5727,6 +5727,60 @@ function AdminPanel({ goToPage }) {
                 × {(1 + settings.markupPercent/100).toFixed(2)} = <strong style={{ color: '#2d7a3a' }}>{((649.95 + settings.markupEur) * (1 + settings.markupPercent/100)).toFixed(2)}€</strong> клієнту
               </div>
             </div>
+
+            {/* ── Прайс-лист для постачальника ── */}
+            <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e0e0e0', paddingTop: '1.25rem' }}>
+              <div style={{ fontSize: '0.92rem', fontWeight: 600, marginBottom: '0.5rem' }}>📦 Файл постачальника</div>
+              <p style={{ fontSize: '0.82rem', color: '#616161', marginBottom: '0.75rem' }}>
+                Прайс-лист усіх товарів у форматі CSV (закупівельні ціни EUR, назви, артикули).
+                Можна передати постачальнику або імпортувати в 1С / таблиці.
+              </p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                <a
+                  href="https://solarbalkon.shop/api/pricelist?format=csv"
+                  download="solarbalkon-pricelist.csv"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 7,
+                    background: '#2d7a3a', color: '#fff',
+                    padding: '8px 16px', borderRadius: 8,
+                    fontWeight: 600, fontSize: '0.88rem',
+                    textDecoration: 'none', cursor: 'pointer',
+                  }}
+                >
+                  ⬇️ Завантажити CSV
+                </a>
+                <a
+                  href="https://solarbalkon.shop/api/pricelist?format=csv"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 7,
+                    background: '#fff', color: '#2d7a3a',
+                    border: '1.5px solid #2d7a3a',
+                    padding: '7px 14px', borderRadius: 8,
+                    fontWeight: 500, fontSize: '0.83rem',
+                    textDecoration: 'none', cursor: 'pointer',
+                  }}
+                >
+                  🔗 Відкрити у браузері
+                </a>
+                <span
+                  onClick={() => { navigator.clipboard.writeText('https://solarbalkon.shop/api/pricelist?format=csv'); alert('Скопійовано!'); }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    color: '#9e9e9e', fontSize: '0.8rem', cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                >
+                  📋 Копіювати посилання
+                </span>
+              </div>
+              <div style={{ marginTop: '0.6rem', fontFamily: 'monospace', fontSize: '0.75rem', color: '#bdbdbd', background: '#fafafa', padding: '6px 10px', borderRadius: 6, display: 'inline-block' }}>
+                https://solarbalkon.shop/api/pricelist?format=csv
+              </div>
+            </div>
           </div>
         )}
 
